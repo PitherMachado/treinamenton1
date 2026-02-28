@@ -1,1 +1,213 @@
 
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Módulo 02 • Crédito do Trabalhador</title>
+  <meta name="description" content="Módulo 02 — Crédito do Trabalhador (CLT): regras, vantagens, desligamento, bancos e documentos." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+
+<body>
+  <script src="../assets/js/app.js"></script>
+  <script>window.N1Auth.guardApp();</script>
+
+  <header class="app-header">
+    <div class="container app-header-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <strong class="brand-name">N1 Treinamento</strong>
+      </div>
+
+      <div class="app-actions">
+        <a class="btn btn-ghost" href="./dashboard.html">Dashboard</a>
+        <button class="btn btn-ghost" type="button" onclick="window.N1Auth.doLogout()">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app">
+    <div class="container">
+
+      <!-- HERO DO MÓDULO -->
+      <section class="module-hero">
+        <div class="module-hero-left">
+          <p class="module-kicker">MÓDULO 02 • Produto</p>
+          <h1 class="module-h1">Crédito do Trabalhador (CLT)</h1>
+          <p class="module-lead">
+            Modalidade com desconto direto em folha, com regras claras de elegibilidade e desligamento.
+            Aqui você aprende o que pode e o que não pode prometer — e como operar com padrão.
+          </p>
+
+          <div class="module-hero-actions">
+            <button class="btn btn-primary" id="btnDone2">Marcar como concluído</button>
+            <a class="btn btn-ghost" href="#conteudo">Ir para o conteúdo</a>
+          </div>
+
+          <p class="module-status" id="statusText2"></p>
+        </div>
+
+        <aside class="module-hero-right">
+          <div class="card module-info">
+            <h3 class="module-info-title">Resumo rápido</h3>
+            <ul class="module-info-list">
+              <li>Desconto em folha (antes do salário cair)</li>
+              <li>Sem consulta SPC/SERASA (conforme regra do produto)</li>
+              <li>Até 48x • juros a partir de 2,9% a.m.</li>
+            </ul>
+          </div>
+        </aside>
+      </section>
+
+      <!-- CONTEÚDO -->
+      <section id="conteudo" class="section section-module">
+        <div class="module-grid">
+
+          <!-- 1) O que é -->
+          <article class="card lesson-card">
+            <h2 class="lesson-title">1) O que é Crédito do Trabalhador</h2>
+            <p class="lesson-text">
+              É uma modalidade de empréstimo destinada a pessoas que exercem funções sob o regime <strong>CLT</strong>.
+              O desconto é <strong>direto em folha</strong> (antes de cair na conta salário).
+            </p>
+            <p class="lesson-text">
+              O cliente pode escolher a conta de recebimento do valor do empréstimo de acordo com a regra de cada banco.
+            </p>
+          </article>
+
+          <!-- 2) Elegibilidade -->
+          <article class="card lesson-card">
+            <h2 class="lesson-title">2) Elegibilidade (regras gerais)</h2>
+            <p class="lesson-text">
+              A maioria dos bancos trabalha com critérios mínimos como:
+            </p>
+            <ul class="bullets">
+              <li><strong>Tempo de CLT:</strong> normalmente 6 meses na mesma empresa</li>
+              <li><strong>Empresa elegível:</strong> registro no eSocial ou Dataprev (tempo mínimo varia)</li>
+              <li><strong>Idade:</strong> mínima e máxima conforme banco</li>
+            </ul>
+
+            <div class="callout">
+              <strong>Observação operacional:</strong> sempre validar a regra do banco e a elegibilidade antes de prometer valor/prazo.
+            </div>
+          </article>
+
+          <!-- 3) Vantagens -->
+          <article class="card lesson-card">
+            <h2 class="lesson-title">3) Vantagens do Crédito do Trabalhador</h2>
+            <ul class="checklist">
+              <li><label><input type="checkbox"> Desconto em folha</label></li>
+              <li><label><input type="checkbox"> Não consulta SPC/SERASA</label></li>
+              <li><label><input type="checkbox"> Parcela em até 48x</label></li>
+              <li><label><input type="checkbox"> Juros a partir de 2,9% ao mês</label></li>
+            </ul>
+          </article>
+
+          <!-- 4) Regras de desligamento -->
+          <article class="card lesson-card lesson-alert">
+            <h2 class="lesson-title">4) Regras de desligamento</h2>
+
+            <div class="split">
+              <div class="split-card">
+                <h3 class="split-title">Foi demitido</h3>
+                <ul class="bullets">
+                  <li>Desconta <strong>100%</strong> da multa rescisória</li>
+                  <li>Desconta <strong>10%</strong> do FGTS</li>
+                  <li>Desconta <strong>35%</strong> da rescisão</li>
+                </ul>
+                <p class="split-text">
+                  Se ainda assim tiver saldo devedor, é transferido para o novo emprego via <strong>eSocial</strong>.
+                </p>
+              </div>
+
+              <div class="split-card">
+                <h3 class="split-title">Pediu demissão</h3>
+                <p class="split-text">
+                  O saldo devedor continuará descontando na folha do próximo emprego automaticamente via <strong>eSocial</strong>.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 5) Bancos parceiros -->
+          <article class="card lesson-card">
+            <h2 class="lesson-title">5) Bancos parceiros</h2>
+            <div class="banks-grid">
+              <div class="bank-item">047 — Banese</div>
+              <div class="bank-item">021 — Banestes</div>
+              <div class="bank-item">237 — Bradesco</div>
+              <div class="bank-item">756 — Bancoob</div>
+              <div class="bank-item">001 — Banco do Brasil</div>
+              <div class="bank-item">004 — BNB</div>
+              <div class="bank-item">070 — BRB</div>
+              <div class="bank-item">041 — Banrisul</div>
+              <div class="bank-item">104 — Caixa / Caixa Tem</div>
+              <div class="bank-item">341 — Itaú</div>
+              <div class="bank-item">623 — Pan</div>
+              <div class="bank-item">033 — Santander</div>
+              <div class="bank-item">318 — BMG</div>
+              <div class="bank-item">748 — Sicredi</div>
+              <div class="bank-item">077 — Inter</div>
+              <div class="bank-item">260 — Nubank</div>
+              <div class="bank-item">336 — C6</div>
+            </div>
+          </article>
+
+          <!-- 6) Documentos -->
+          <article class="card lesson-card">
+            <h2 class="lesson-title">6) Documentos aceitos</h2>
+            <ul class="bullets">
+              <li>RG (digital e físico)</li>
+              <li>CNH (digital e físico)</li>
+              <li>Carteira de Trabalho (física)</li>
+            </ul>
+
+            <div class="callout">
+              <strong>Padrão:</strong> conferir legibilidade e dados antes de enviar para evitar retrabalho e queda de conversão.
+            </div>
+          </article>
+
+        </div>
+
+        <!-- Navegação -->
+        <div class="module-nav">
+          <a class="btn btn-ghost" href="./modulo-01.html">← Módulo anterior</a>
+          <a class="btn btn-primary" href="./modulo-03.html">Próximo módulo →</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-text">© <span id="year"></span> N1 Treinamento</p>
+      <p class="footer-text footer-muted">Módulo 02 • Crédito do Trabalhador</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const KEY = "n1_mod_02_done";
+    const statusEl = document.getElementById("statusText2");
+    const btn = document.getElementById("btnDone2");
+
+    function render(){
+      const done = localStorage.getItem(KEY) === "1";
+      statusEl.textContent = done ? "Status: Concluído ✅" : "Status: Em andamento";
+      btn.textContent = done ? "Concluído" : "Marcar como concluído";
+      btn.disabled = done;
+      btn.style.opacity = done ? ".7" : "1";
+      btn.style.cursor = done ? "not-allowed" : "pointer";
+    }
+
+    btn.addEventListener("click", () => {
+      localStorage.setItem(KEY, "1");
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
