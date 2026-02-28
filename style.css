@@ -22,3 +22,89 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+/* ===============================
+   2) SISTEMA DE CORES (PALETA N1)
+   =============================== */
+
+:root {
+
+  /* Base */
+  --bg-dark: #0a0a12;
+  --bg-deep: #111122;
+
+  /* Roxos */
+  --purple-900: #1b0033;
+  --purple-700: #2d0055;
+  --purple-500: #5c1b8f;
+
+  /* Magenta / Neon */
+  --magenta-600: #b01278;
+  --magenta-500: #e100ff;
+  --magenta-400: #ff2fd8;
+
+  /* Gradiente principal */
+  --gradient-primary: linear-gradient(
+    135deg,
+    #2d0055 0%,
+    #5c1b8f 40%,
+    #b01278 70%,
+    #ff2fd8 100%
+  );
+
+  /* Texto */
+  --text-light: #ffffff;
+  --text-muted: #c7c7d6;
+
+  /* Estrutura */
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --shadow-deep: 0 25px 60px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 40px rgba(255, 47, 216, 0.3);
+}
+/* ===============================
+   3) CONTAINER PADRÃO
+   =============================== */
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+/* ===============================
+   4) HEADER
+   =============================== */
+
+.site-header {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(12px);
+  background: rgba(10, 10, 18, 0.7);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+}
+
+.brand-name {
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.nav-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-left: 24px;
+  transition: 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--magenta-400);
+}
