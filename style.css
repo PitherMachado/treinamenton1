@@ -73,41 +73,58 @@ body {
   padding: 0 24px;
 }
 /* ===============================
-   4) HEADER
+   HEADER N1 PREMIUM
    =============================== */
 
 .site-header {
   position: fixed;
-  width: 100%;
   top: 0;
-  z-index: 1000;
-  backdrop-filter: blur(12px);
-  background: rgba(10, 10, 18, 0.7);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.header-inner {
+  width: 100%;
+  height: 64px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 70px;
+  backdrop-filter: blur(20px);
+  background: rgba(10,10,18,0.75);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  z-index: 1000;
 }
 
-.brand-name {
-  font-weight: 600;
-  letter-spacing: 1px;
+.site-header::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,47,216,0.4),
+    transparent
+  );
 }
 
-.nav-link {
+.brand-name{
+  font-weight:600;
+  letter-spacing:1px;
+  color:white;
+}
+
+.nav{
+  display:flex;
+  align-items:center;
+}
+
+.nav-link{
+  font-size:14px;
   color: var(--text-muted);
-  text-decoration: none;
-  margin-left: 24px;
-  transition: 0.3s ease;
+  margin-left:28px;
+  transition:.3s;
 }
 
-.nav-link:hover {
+.nav-link:hover{
   color: var(--magenta-400);
-}
+}   
 /* ===============================
    5) HERO SECTION
    =============================== */
@@ -169,11 +186,18 @@ body {
   margin-bottom: 20px;
 }
 
-.hero-title {
-  font-size: 48px;
-  font-weight: 700;
-  line-height: 1.1;
-  margin-bottom: 20px;
+.hero-title{
+  font-size:56px;
+  font-weight:800;
+  line-height:1.05;
+  margin-bottom:22px;
+  background: linear-gradient(
+    90deg,
+    #ffffff,
+    #ff2fd8
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .hero-subtitle {
@@ -360,4 +384,47 @@ body {
 @keyframes glowSweep{
   0%   { transform: translateX(-35%) rotate(12deg); opacity: .75; }
   100% { transform: translateX(35%) rotate(12deg);  opacity: 1; }
+}
+/* ===============================
+   CARDS N1
+   =============================== */
+
+.modules-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:30px;
+  margin-top:40px;
+}
+
+.module-card{
+  padding:30px;
+  border-radius:20px;
+  background: rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  transition:.35s ease;
+}
+
+.module-card:hover{
+  transform: translateY(-8px);
+  box-shadow: 0 30px 60px rgba(0,0,0,.6);
+  border-color: rgba(255,47,216,0.4);
+}
+
+.module-number{
+  font-size:14px;
+  color: var(--magenta-400);
+  letter-spacing:2px;
+}
+
+.module-title{
+  font-size:22px;
+  margin:12px 0;
+}
+
+.module-desc{
+  font-size:14px;
+  color: var(--text-muted);
+}
+.section{
+  padding:120px 0;
 }
