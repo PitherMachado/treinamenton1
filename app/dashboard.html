@@ -1,1 +1,105 @@
 
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Dashboard • Treinamento</title>
+  <meta name="description" content="Plataforma interna de treinamento." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+
+  <!-- Guard: trava acesso se não tiver token -->
+  <script src="../assets/js/app.js"></script>
+  <script>window.N1Auth.guardApp();</script>
+
+  <!-- TOPBAR APP
+       Serve para: identidade + busca + logout -->
+  <header class="app-header">
+    <div class="container app-header-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <strong class="brand-name">N1 Treinamento</strong>
+      </div>
+
+      <div class="app-actions">
+        <input class="app-search" type="search" placeholder="Buscar módulo..." aria-label="Buscar módulo" />
+        <button class="btn btn-ghost" type="button" onclick="window.N1Auth.doLogout()">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app">
+    <div class="container">
+      <!-- HERO APP (mini)
+           Serve para: saudação + destaque do próximo passo -->
+      <section class="app-hero">
+        <h1 class="app-title">Seu painel</h1>
+        <p class="app-subtitle">Continue de onde parou. Padrão premium, execução simples.</p>
+      </section>
+
+      <!-- GRID DE MÓDULOS (Netflix)
+           Serve para: catálogo em cards com status -->
+      <section class="section section-modules">
+        <header class="section-header">
+          <h2 class="section-title">Módulos</h2>
+          <p class="section-subtitle">Escolha um módulo para iniciar ou continuar.</p>
+        </header>
+
+        <div class="grid modules-grid">
+          <article class="card module-card">
+            <div class="module-meta">
+              <span class="module-number">01</span>
+              <span class="module-tag">Onboarding</span>
+            </div>
+            <h3 class="module-title">Fundamentos</h3>
+            <p class="module-desc">Base operacional e padrões mínimos para consistência.</p>
+            <div class="module-footer">
+              <span class="pill">Não iniciado</span>
+              <a class="btn btn-primary" href="./modulo-01.html">Abrir</a>
+            </div>
+          </article>
+
+          <article class="card module-card">
+            <div class="module-meta">
+              <span class="module-number">02</span>
+              <span class="module-tag">Técnica</span>
+            </div>
+            <h3 class="module-title">Execução</h3>
+            <p class="module-desc">Fluxo, cadência, disciplina e rotina de performance.</p>
+            <div class="module-footer">
+              <span class="pill">Em andamento</span>
+              <a class="btn btn-primary" href="./modulo-02.html">Continuar</a>
+            </div>
+          </article>
+
+          <article class="card module-card">
+            <div class="module-meta">
+              <span class="module-number">03</span>
+              <span class="module-tag">Qualidade</span>
+            </div>
+            <h3 class="module-title">Melhoria Contínua</h3>
+            <p class="module-desc">Medição, ajustes e repetição com padrão.</p>
+            <div class="module-footer">
+              <span class="pill">Bloqueado</span>
+              <a class="btn btn-ghost" href="#">Em breve</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-text">© <span id="year"></span> N1 Treinamento</p>
+      <p class="footer-text footer-muted">Plataforma interna • Caminho 1</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
