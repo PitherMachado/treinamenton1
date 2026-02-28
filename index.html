@@ -1,225 +1,60 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
+  <!-- Meta / Base -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Módulo 01 • Quem Somos</title>
-  <meta name="description" content="Módulo 01 — Quem Somos: missão, visão, valores, conduta, regras e campanhas N1." />
-  <link rel="stylesheet" href="../style.css" />
+  <title>Treinamento • Página Oficial</title>
+  <meta name="description" content="Treinamento em formato moderno: acesso rápido aos módulos e login." />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./style.css" />
 </head>
 
 <body>
-  <script src="../assets/js/app.js"></script>
-  <script>window.N1Auth.guardApp();</script>
+  <!-- Skip link (acessibilidade) -->
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-  <!-- Topbar da plataforma -->
-  <header class="app-header">
-    <div class="container app-header-inner">
-      <div class="brand">
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand" aria-label="Identidade do treinamento">
         <span class="brand-mark" aria-hidden="true"></span>
-        <strong class="brand-name">N1 Treinamento</strong>
+        <span class="brand-name">Treinamento</span>
       </div>
 
-      <div class="app-actions">
-        <a class="btn btn-ghost" href="./dashboard.html">Dashboard</a>
-        <button class="btn btn-ghost" type="button" onclick="window.N1Auth.doLogout()">Sair</button>
-      </div>
+      <!-- Nav reduzida: só Módulos + Login -->
+      <nav class="nav" aria-label="Navegação principal">
+        <!-- Se você preferir, posso apontar isso para dashboard.html direto -->
+        <a class="nav-link nav-cta" href="./app/dashboard.html">Módulos</a>
+        <a class="nav-link nav-cta" href="./login.html">Login</a>
+      </nav>
     </div>
   </header>
 
-  <main class="app">
-    <div class="container">
+  <!-- CONTEÚDO -->
+  <main id="conteudo">
+    <!-- HERO (100vh) -->
+    <section class="hero" aria-label="Seção principal">
+      <div class="hero-bg" aria-hidden="true"></div>
 
-      <!-- Cabeçalho do módulo -->
-      <section class="module-hero">
-        <div class="module-hero-left">
-          <p class="module-kicker">MÓDULO 01 • Cultura & Padrões</p>
-          <h1 class="module-h1">Quem Somos</h1>
-          <p class="module-lead">
-            Este módulo alinha identidade, comportamento e padrão operacional.
-            É a base para executar com consistência dentro da N1.
+      <div class="container hero-inner">
+        <div class="hero-content">
+          <p class="hero-eyebrow">Treinamento • Operação & Performance</p>
+
+          <h1 class="hero-title">N1 NEGÓCIOS</h1>
+
+          <p class="hero-subtitle">
+            Teoria sem planejamento e execução vai te deixar no mesmo lugar.
           </p>
 
-          <div class="module-hero-actions">
-            <button class="btn btn-primary" id="btnDone">Marcar como concluído</button>
-            <a class="btn btn-ghost" href="#conteudo">Ir para o conteúdo</a>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="./app/dashboard.html">Ver módulos</a>
+            <a class="btn btn-ghost" href="./login.html">Login</a>
           </div>
-
-          <p class="module-status" id="statusText"></p>
         </div>
-
-        <aside class="module-hero-right">
-          <div class="card module-info">
-            <h3 class="module-info-title">O que você vai levar</h3>
-            <ul class="module-info-list">
-              <li>Entender o posicionamento e o papel da N1</li>
-              <li>Executar com conduta e postura profissional</li>
-              <li>Conhecer regras e campanhas internas</li>
-            </ul>
-          </div>
-        </aside>
-      </section>
-
-      <!-- Conteúdo -->
-      <section id="conteudo" class="section section-module">
-        <div class="module-grid">
-
-          <!-- Bloco 1: Quem somos -->
-          <article class="card lesson-card">
-            <h2 class="lesson-title">1) Quem somos</h2>
-            <p class="lesson-text">
-              A <strong>N1 Negócios</strong> é uma empresa correspondente bancária, especializada em conectar clientes às melhores soluções
-              financeiras disponíveis no mercado. Somos uma <strong>plataforma digital</strong> de serviços financeiros que realiza a
-              intermediação entre instituições financeiras e clientes, com foco em <strong>transparência, segurança e agilidade</strong>.
-            </p>
-
-            <div class="callout">
-              <strong>Placeholder:</strong> (Organograma) — inserir imagem/estrutura quando disponível.
-            </div>
-
-            <div class="split">
-              <div class="split-card">
-                <h3 class="split-title">João Nunes</h3>
-                <p class="split-text">Breve descrição pessoal aqui.</p>
-              </div>
-
-              <div class="split-card">
-                <h3 class="split-title">Lucas Curcio</h3>
-                <p class="split-text">Breve descrição pessoal aqui.</p>
-              </div>
-            </div>
-          </article>
-
-          <!-- Bloco 2: Missão / Visão -->
-          <article class="card lesson-card">
-            <h2 class="lesson-title">2) Missão & Visão</h2>
-
-            <div class="kv">
-              <div class="kv-item">
-                <p class="kv-label">MISSÃO</p>
-                <p class="kv-value">
-                  Proporcionar soluções inovadoras e acessíveis que possibilitem nossos clientes a alcançar seus objetivos financeiros com
-                  confiança e segurança.
-                </p>
-              </div>
-
-              <div class="kv-item">
-                <p class="kv-label">VISÃO</p>
-                <p class="kv-value">
-                  Ser referência em soluções financeiras integradas, reconhecida por nossa inovação contínua, excelência no atendimento ao cliente
-                  e compromisso com a acessibilidade financeira.
-                </p>
-              </div>
-            </div>
-          </article>
-
-          <!-- Bloco 3: Valores -->
-          <article class="card lesson-card">
-            <h2 class="lesson-title">3) Valores (padrão N1)</h2>
-            <ul class="checklist">
-              <li><label><input type="checkbox"> Colocamos as pessoas no centro de nossas decisões</label></li>
-              <li><label><input type="checkbox"> Um ambiente positivo molda resultados extraordinários</label></li>
-              <li><label><input type="checkbox"> Fanáticos por resultados</label></li>
-              <li><label><input type="checkbox"> Inovar é a chave para construir um amanhã melhor</label></li>
-              <li><label><input type="checkbox"> A honestidade é a base de toda relação</label></li>
-              <li><label><input type="checkbox"> Ter espírito de dono no que fazemos</label></li>
-              <li><label><input type="checkbox"> Nosso compromisso é a excelência em cada entrega</label></li>
-            </ul>
-          </article>
-
-          <!-- Bloco 4: Código de conduta -->
-          <article class="card lesson-card">
-            <h2 class="lesson-title">4) Código de conduta</h2>
-            <ol class="ordered">
-              <li>Respeito Mútuo</li>
-              <li>Comunicação Clara e Amigável</li>
-              <li>Pontualidade</li>
-              <li>Responsabilidade</li>
-              <li>Confidencialidade</li>
-              <li>Trabalho em Equipe</li>
-              <li>Aparência Profissional</li>
-              <li>Atitude Positiva</li>
-              <li>Feedback Construtivo</li>
-              <li>Cumprimento das Regras</li>
-            </ol>
-          </article>
-
-          <!-- Bloco 5: Regras -->
-          <article class="card lesson-card lesson-alert">
-            <h2 class="lesson-title">5) Regra N1</h2>
-            <p class="lesson-text">
-              <strong>CELULAR DENTRO DA OPERAÇÃO É PROIBIDO.</strong>
-            </p>
-            <p class="lesson-text muted">
-              (Se houver exceções/horários/locais, me mande depois e eu coloco aqui como política oficial.)
-            </p>
-          </article>
-
-          <!-- Bloco 6: Campanhas -->
-          <article class="card lesson-card">
-            <h2 class="lesson-title">6) Campanhas N1</h2>
-
-            <div class="campaign">
-              <h3 class="campaign-title">Sua indicação vale dinheiro</h3>
-              <p class="campaign-text">
-                Indique um amigo e se ele for contratado você pode ganhar <strong>R$ 200,00</strong>.
-              </p>
-              <ul class="bullets">
-                <li>Aprovado na experiência de 14 dias: <strong>R$ 100,00</strong></li>
-                <li>Aprovado na experiência de 60 dias: <strong>R$ 100,00</strong></li>
-              </ul>
-              <p class="campaign-text"><strong>Total:</strong> R$ 200,00 por indicação contratada.</p>
-            </div>
-
-            <div class="campaign">
-              <h3 class="campaign-title">Campanha semanal (operação)</h3>
-              <p class="campaign-text">
-                Toda semana que a operação atingir <strong>100% da meta semanal</strong>, ganhará um happy hour na sexta após as <strong>18:00</strong>.
-              </p>
-            </div>
-          </article>
-
-        </div>
-
-        <!-- Navegação do módulo -->
-        <div class="module-nav">
-          <a class="btn btn-ghost" href="./dashboard.html">← Voltar ao Dashboard</a>
-          <a class="btn btn-primary" href="./modulo-02.html">Próximo módulo →</a>
-        </div>
-      </section>
-    </div>
+      </div>
+    </section>
   </main>
-
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <p class="footer-text">© <span id="year"></span> N1 Treinamento</p>
-      <p class="footer-text footer-muted">Módulo 01 • Quem Somos</p>
-    </div>
-  </footer>
-
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // Progresso simples (localStorage)
-    const KEY = "n1_mod_01_done";
-    const statusEl = document.getElementById("statusText");
-    const btn = document.getElementById("btnDone");
-
-    function render(){
-      const done = localStorage.getItem(KEY) === "1";
-      statusEl.textContent = done ? "Status: Concluído ✅" : "Status: Em andamento";
-      btn.textContent = done ? "Concluído" : "Marcar como concluído";
-      btn.disabled = done;
-      btn.style.opacity = done ? ".7" : "1";
-      btn.style.cursor = done ? "not-allowed" : "pointer";
-    }
-
-    btn.addEventListener("click", () => {
-      localStorage.setItem(KEY, "1");
-      render();
-    });
-
-    render();
-  </script>
 </body>
 </html>
