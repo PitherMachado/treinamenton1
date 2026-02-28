@@ -36,9 +36,8 @@ function guardApp() {
 /** Logout padrão */
 function doLogout() {
   clearAuth();
-  window.location.href = "../login.html";
+  window.location.href = "https://pithermachado.github.io/treinamenton1/";
 }
-
 /** Login (opcional): valida em window.N1_USERS e cria sessão */
 function login(user, pass) {
   const users = Array.isArray(window.N1_USERS) ? window.N1_USERS : [];
