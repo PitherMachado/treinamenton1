@@ -441,3 +441,56 @@ body {
 .section{
   padding:120px 0;
 }
+/* Módulo destaque */
+.module-card-featured{
+  position: relative;
+  overflow: hidden;
+}
+
+.module-card-featured::before{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,47,216,0.22), transparent 55%),
+    radial-gradient(circle at 70% 70%, rgba(92,27,143,0.25), transparent 60%);
+  filter: blur(10px);
+  opacity: .9;
+  pointer-events:none;
+}
+
+.module-card-featured > *{
+  position: relative;
+  z-index: 1;
+}
+
+/* bullets dentro do card */
+.module-points{
+  margin-top: 14px;
+  padding-left: 18px;
+  color: var(--text-muted);
+  font-size: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+/* rodapé do card */
+.module-footer{
+  margin-top: 18px;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.pill{
+  display:inline-flex;
+  align-items:center;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+}   
