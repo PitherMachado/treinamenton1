@@ -89,19 +89,31 @@ body {
   z-index: 1000;
 }
 
-.site-header::after{
-  content:"";
-  position:absolute;
-  bottom:0;
-  left:0;
-  width:100%;
-  height:1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,47,216,0.4),
-    transparent
-  );
+/* ===============================
+   HEADER FIXO PREMIUM AJUSTADO
+   =============================== */
+
+.site-header{
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  background: rgba(10,10,18,0.75);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  z-index: 1000;
+}
+
+.header-inner{
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .brand-name{
@@ -347,19 +359,20 @@ body {
   color: var(--text-muted);
   font-size: 12px;
 }
-/* CTA no menu (Login) */
 .nav-cta{
-  padding: 10px 14px;
+  padding: 8px 16px;
   border-radius: 14px;
   background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.15);
   color: var(--text-light);
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
 }
 
 .nav-cta:hover{
   background: rgba(255, 47, 216, 0.12);
   border-color: rgba(255, 47, 216, 0.35);
-  transform: translateY(-1px);
 }
 /* Luz varrendo (moving glow) — camada adicional no HERO */
 .hero::before{
