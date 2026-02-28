@@ -802,3 +802,22 @@ body{
   .module-nav{ flex-direction: column; }
   .banks-grid{ grid-template-columns: 1fr; }
 }
+/* ===============================
+   BRAND LINK (Header clicável)
+   =============================== */
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color: inherit;
+}
+
+.brand:visited{
+  color: inherit;
+}
+
+.brand:hover .brand-name{
+  color: var(--magenta-400);
+}
