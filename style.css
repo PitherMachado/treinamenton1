@@ -337,3 +337,22 @@ body {
   border-color: rgba(255, 47, 216, 0.35);
   transform: translateY(-1px);
 }
+/* Luz varrendo (moving glow) — camada adicional no HERO */
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  background:
+    radial-gradient(closest-side,
+      rgba(255,47,216,0.22),
+      transparent 65%);
+  filter: blur(10px);
+  transform: translateX(-35%) rotate(12deg);
+  animation: glowSweep 9s ease-in-out infinite alternate;
+  pointer-events:none;
+  z-index: 0;
+}
+
+/* garante conteúdo acima das camadas */
+.hero-inner{ position: relative; z-index: 2; }
+.hero-bg{ z-index: 1; }
