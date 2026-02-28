@@ -395,7 +395,7 @@ body {
 .hero-bg{ z-index: 1; }
 
 @keyframes glowSweep{
-  0%   { transform: translateX(-35%) rotate(12deg); opacity: .75; }
+0%   { transform: translateX(-35%) rotate(12deg); opacity: .75; }
   100% { transform: translateX(35%) rotate(12deg);  opacity: 1; }
 }
 /* ===============================
@@ -786,7 +786,37 @@ body {
 .species-item strong{
   color: #fff;
 }
+/* ===============================
+   GLOW SWEEP (seção: módulos)
+   =============================== */
 
+.section-glow{
+  position: relative;
+  overflow: hidden;
+}
+
+/* camada de luz varrendo */
+.section-glow::before{
+  content:"";
+  position:absolute;
+  inset:-35%;
+  background:
+    radial-gradient(closest-side,
+      rgba(255,47,216,0.18),
+      transparent 65%);
+  filter: blur(14px);
+  transform: translateX(-35%) rotate(12deg);
+  animation: glowSweep 10s ease-in-out infinite alternate;
+  pointer-events:none;
+  z-index: 0;
+  opacity: .95;
+}
+
+/* garante que o conteúdo fique por cima do glow */
+.section-glow > .container{
+  position: relative;
+  z-index: 1;
+}
 .species-bad{
   border-color: rgba(255, 90, 122, 0.30);
   background: rgba(255, 90, 122, 0.06);
