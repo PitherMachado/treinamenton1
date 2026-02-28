@@ -711,3 +711,23 @@ body {
   .split{ grid-template-columns: 1fr; }
   .module-nav{ flex-direction: column; }
 }
+/* Grade de bancos (chips) */
+.banks-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.bank-item{
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+@media (max-width: 900px){
+  .banks-grid{ grid-template-columns: 1fr; }
+}
