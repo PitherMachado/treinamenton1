@@ -323,3 +323,17 @@ body {
   color: var(--text-muted);
   font-size: 12px;
 }
+/* CTA no menu (Login) */
+.nav-cta{
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text-light);
+}
+
+.nav-cta:hover{
+  background: rgba(255, 47, 216, 0.12);
+  border-color: rgba(255, 47, 216, 0.35);
+  transform: translateY(-1px);
+}
