@@ -1,78 +1,122 @@
-
 <!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Login • Treinamento</title>
-  <meta name="description" content="Acesso ao treinamento interno." />
+  <title>Login • N1 Treinamento</title>
+  <meta name="description" content="Acesso interno • N1 Treinamento" />
   <link rel="stylesheet" href="./style.css" />
 </head>
-<body>
 
-  <!-- LOGIN SHELL
-       Serve para: centralizar o card e aplicar fundo tech (via CSS) -->
-  <main class="auth">
-    <div class="auth-bg" aria-hidden="true"></div>
+<body class="auth-page">
 
-    <section class="auth-card" aria-label="Área de login">
-      <header class="auth-header">
-        <p class="auth-eyebrow">N1 • Área de Treinamento</p>
-        <h1 class="auth-title">Acessar Plataforma</h1>
-        <p class="auth-subtitle">Entre para continuar seus módulos.</p>
-      </header>
+  <!-- BACKGROUND / GLOW (seu CSS já controla o visual) -->
+  <div class="bg-glow" aria-hidden="true"></div>
 
-      <!-- FORM
-           Serve para: capturar senha e disparar login -->
-      <form id="loginForm" class="auth-form" autocomplete="off">
-        <label class="field">
-          <span class="field-label">Usuário</span>
-          <input class="field-input" name="user" type="text" placeholder="ex: operador01" required />
-        </label>
+  <main class="auth-wrap">
+    <section class="auth-card" aria-label="Login N1">
+      <p class="auth-kicker">N1 • ÁREA DE TREINAMENTO</p>
 
-        <label class="field">
-          <span class="field-label">Senha</span>
-          <input class="field-input" name="pass" type="password" placeholder="••••••••" required />
-        </label>
+      <h1 class="auth-title">Acessar Plataforma</h1>
+      <p class="auth-subtitle">Entre para continuar seus módulos.</p>
 
-        <p id="loginError" class="auth-error" role="alert" aria-live="polite"></p>
+      <!-- FORM -->
+      <form id="loginForm" class="auth-form" autocomplete="on" novalidate>
+        <div class="field">
+          <label for="loginUser">Usuário</label>
+          <input
+            id="loginUser"
+            name="username"
+            type="text"
+            placeholder="ex: pither"
+            autocomplete="username"
+            required
+          />
+        </div>
 
-        <button class="btn btn-primary btn-block" type="submit">Entrar</button>
+        <div class="field">
+          <label for="loginPass">Senha</label>
+          <input
+            id="loginPass"
+            name="password"
+            type="password"
+            placeholder="••••••"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+
+        <p id="loginError" class="form-error" role="alert" aria-live="polite"></p>
+
+        <button class="btn btn-primary btn-full" type="submit">
+          Entrar
+        </button>
+
+        <p class="auth-footnote">Acesso interno • GitHub Pages (Caminho 1)</p>
       </form>
-
-      <footer class="auth-footer">
-        <small class="muted">Acesso interno • GitHub Pages (Caminho 1)</small>
-      </footer>
     </section>
   </main>
 
+  <!-- 1) USERS (precisa vir antes) -->
   <script src="./assets/js/users.js"></script>
-<script src="./assets/js/app.js"></script>
+
+  <!-- 2) APP (se você usa logout/guard) -->
+  <script src="./assets/js/app.js"></script>
+
+  <!-- 3) LOGIN HANDLER -->
   <script>
-    // LOGIN HANDLER (senha fixa por enquanto)
-    // Obs: Isso é gate visual/operacional (não segurança real).
-    const PASSWORD = "N1@2026"; // troque depois
+    // Se já estiver logado, manda direto pro dashboard
+    if (localStorage.getItem("n1_auth") === "true") {
+      window.location.href = "app/dashboard.html";
+    }
 
     const form = document.getElementById("loginForm");
     const err = document.getElementById("loginError");
 
-    // Se já estiver logado, manda direto pro dashboard
-    if (window.N1Auth.isAuthed()) {
-      window.location.href = "./app/dashboard.html";
+    function setError(msg) {
+      err.textContent = msg || "";
+      err.style.display = msg ? "block" : "none";
     }
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", function (e) {
       e.preventDefault();
-      err.textContent = "";
+      setError("");
 
-      const pass = new FormData(form).get("pass");
+      const userInput = document.getElementById("loginUser").value.trim();
+      const passInput = document.getElementById("loginPass").value.trim();
 
-      if (pass === PASSWORD) {
-        window.N1Auth.setAuth();
-        window.location.href = "./app/dashboard.html";
-      } else {
-        err.textContent = "Senha incorreta. Tente novamente.";
+      if (!userInput || !passInput) {
+        setError("Preencha usuário e senha.");
+        return;
       }
+
+      // Segurança real exige backend. Aqui é controle interno.
+      const users = Array.isArray(window.N1_USERS) ? window.N1_USERS : [];
+
+      const userFound = users.find(u =>
+        u.user === userInput &&
+        u.pass === passInput
+      );
+
+      // Usuário não existe ou senha errada
+      if (!userFound) {
+        setError("Usuário ou senha inválidos.");
+        return;
+      }
+
+      // Usuário bloqueado
+      if (userFound.active !== true) {
+        setError("Usuário bloqueado. Fale com o administrador.");
+        return;
+      }
+
+      // OK -> cria sessão
+      localStorage.setItem("n1_auth", "true");
+      localStorage.setItem("n1_user", userFound.user);
+      localStorage.setItem("n1_role", userFound.role || "aluno");
+
+      // Redireciona
+      window.location.href = "app/dashboard.html";
     });
   </script>
 </body>
