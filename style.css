@@ -356,3 +356,8 @@ body {
 /* garante conteúdo acima das camadas */
 .hero-inner{ position: relative; z-index: 2; }
 .hero-bg{ z-index: 1; }
+
+@keyframes glowSweep{
+  0%   { transform: translateX(-35%) rotate(12deg); opacity: .75; }
+  100% { transform: translateX(35%) rotate(12deg);  opacity: 1; }
+}
