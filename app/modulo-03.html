@@ -1,1 +1,271 @@
 
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Módulo 03 • Crédito Pessoal</title>
+  <meta name="description" content="Módulo 03 — Crédito Pessoal INSS: regras, estados, DDB, espécies, limites, taxa e contratação." />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+
+<body>
+  <script src="../assets/js/app.js"></script>
+  <script>window.N1Auth.guardApp();</script>
+
+  <header class="app-header">
+    <div class="container app-header-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <strong class="brand-name">N1 Treinamento</strong>
+      </div>
+
+      <div class="app-actions">
+        <a class="btn btn-ghost" href="./dashboard.html">Dashboard</a>
+        <button class="btn btn-ghost" type="button" onclick="window.N1Auth.doLogout()">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app">
+    <div class="container">
+
+      <!-- HERO DO MÓDULO -->
+      <section class="module-hero">
+        <div class="module-hero-left">
+          <p class="module-kicker">MÓDULO 03 • Produto • INSS</p>
+          <h1 class="module-h1">Crédito Pessoal</h1>
+          <p class="module-lead">
+            Produto destinado para aposentados e pensionistas do INSS, com pagamento via <strong>débito em conta</strong>.
+            Aqui o foco é operar dentro das regras: estados bloqueados, DDB, espécies e limites.
+          </p>
+
+          <div class="module-hero-actions">
+            <button class="btn btn-primary" id="btnDone3">Marcar como concluído</button>
+            <a class="btn btn-ghost" href="#conteudo">Ir para o conteúdo</a>
+          </div>
+
+          <p class="module-status" id="statusText3"></p>
+        </div>
+
+        <aside class="module-hero-right">
+          <div class="card module-info">
+            <h3 class="module-info-title">Pontos críticos</h3>
+            <ul class="module-info-list">
+              <li>Não usa margem de consignado</li>
+              <li>Débito em conta (após cair)</li>
+              <li>Restrições por Estado/DDB/Espécie</li>
+            </ul>
+          </div>
+        </aside>
+      </section>
+
+      <!-- CONTEÚDO -->
+      <section id="conteudo" class="section section-module">
+        <div class="module-grid">
+
+          <!-- 1) Definição -->
+          <article class="card lesson-card">
+            <h2 class="lesson-title">1) O que é (e para quem é)</h2>
+            <ul class="bullets">
+              <li>Destinado para <strong>aposentados e pensionistas do INSS</strong></li>
+              <li><strong>Não</strong> utiliza a margem do consignado</li>
+              <li>Pagamento via <strong>débito em conta</strong> (desconta depois que cai na conta)</li>
+            </ul>
+          </article>
+
+          <!-- 2) Estados não atendidos -->
+          <article class="card lesson-card lesson-alert">
+            <h2 class="lesson-title">2) Estados que não atendemos</h2>
+
+            <div class="chip-group">
+              <span class="chip chip-bad">AC</span>
+              <span class="chip chip-bad">AP</span>
+              <span class="chip chip-bad">RO</span>
+              <span class="chip chip-bad">TO</span>
+              <span class="chip chip-bad">PB</span>
+            </div>
+
+            <h3 class="lesson-subtitle">Bloqueio por regra de DDB (Data de Despacho do Benefício)</h3>
+            <p class="lesson-text">
+              DDB entre <strong>2010 e 2014</strong> para os estados:
+            </p>
+
+            <div class="chip-group">
+              <span class="chip chip-bad">AP</span>
+              <span class="chip chip-bad">AM</span>
+              <span class="chip chip-bad">RR</span>
+              <span class="chip chip-bad">TO</span>
+              <span class="chip chip-bad">RO</span>
+              <span class="chip chip-bad">AC</span>
+              <span class="chip chip-bad">CE</span>
+              <span class="chip chip-bad">PA</span>
+              <span class="chip chip-bad">MA</span>
+              <span class="chip chip-bad">PI</span>
+            </div>
+          </article>
+
+          <!-- 3) Espécies aceitas -->
+          <article class="card lesson-card">
+            <h2 class="lesson-title">3) Espécies aceitas</h2>
+            <p class="lesson-text">Somente operar dentro desta lista.</p>
+
+            <div class="species-grid">
+              <div class="species-item"><strong>ESPÉCIE 1</strong> — PENSÃO POR MORTE DE TRABALHADOR RURAL</div>
+              <div class="species-item"><strong>ESPÉCIE 2</strong> — PENSÃO POR MORTE DE TRABALHADOR RURAL (ACIDENTE DE TRABALHO)</div>
+              <div class="species-item"><strong>ESPÉCIE 3</strong> — PENSÃO POR MORTE DE EMPREGADOR RURAL</div>
+              <div class="species-item"><strong>ESPÉCIE 4</strong> — APOSENTADORIA POR INVALIDEZ DE TRABALHADOR RURAL</div>
+              <div class="species-item"><strong>ESPÉCIE 5</strong> — APOSENTADORIA POR INVALIDEZ (ACID.TRAB) DE TRABALHADOR RURAL</div>
+              <div class="species-item"><strong>ESPÉCIE 6</strong> — APOSENTADORIA POR INVALIDEZ DE EMPREGADOR RURAL</div>
+              <div class="species-item"><strong>ESPÉCIE 7</strong> — APOSENTADORIA POR IDADE DE TRABALHADOR RURAL</div>
+              <div class="species-item"><strong>ESPÉCIE 8</strong> — APOSENTADORIA POR IDADE DE EMPREGADOR RURAL</div>
+              <div class="species-item"><strong>ESPÉCIE 11</strong> — AMPARO POR INVALIDEZ DE TRABALHADOR RURAL</div>
+              <div class="species-item"><strong>ESPÉCIE 12</strong> — AMPARO POR IDADE DE TRABALHADOR RURAL</div>
+              <div class="species-item"><strong>ESPÉCIE 21</strong> — PENSÃO POR MORTE</div>
+              <div class="species-item"><strong>ESPÉCIE 22</strong> — PENSÃO POR MORTE DE SERVIDOR PUBLICO</div>
+              <div class="species-item"><strong>ESPÉCIE 23</strong> — PENSÃO POR MORTE DE EX-COMBATENTE</div>
+              <div class="species-item"><strong>ESPÉCIE 26</strong> — PENSÃO POR MORTE (CAPESP)</div>
+              <div class="species-item"><strong>ESPÉCIE 27</strong> — PENSÃO POR MORTE DE FERROVIARIO</div>
+              <div class="species-item"><strong>ESPÉCIE 28</strong> — PENSÃO POR MORTE REGIME GERAL</div>
+              <div class="species-item"><strong>ESPÉCIE 29</strong> — PENSÃO COM VANTAGENS</div>
+              <div class="species-item"><strong>ESPÉCIE 30</strong> — RENDA MENSAL VITALICIA POR INVALIDEZ</div>
+              <div class="species-item"><strong>ESPÉCIE 32</strong> — APOSENTADORIA POR INVALIDEZ</div>
+              <div class="species-item"><strong>ESPÉCIE 33</strong> — APOSENTADORIA POR INVALIDEZ (AERONAÚTA)</div>
+              <div class="species-item"><strong>ESPÉCIE 34</strong> — APOSENTADORIA POR INVALIDEZ COM VANT. LEI 1756/52</div>
+              <div class="species-item"><strong>ESPÉCIE 40</strong> — RENDA MENSAL VITALICIA PARA MAIOR DE 70 ANOS</div>
+              <div class="species-item"><strong>ESPÉCIE 41</strong> — APOSENTADORIA POR IDADE</div>
+              <div class="species-item"><strong>ESPÉCIE 42</strong> — APOSENTADORIA POR TEMPO DE CONTRIBUICAO</div>
+              <div class="species-item"><strong>ESPÉCIE 43</strong> — APOSENTADORIA DE EX-COMBATENTE</div>
+              <div class="species-item"><strong>ESPÉCIE 45</strong> — APOSENTADORIA POR TEMPO DE CONTRIBUICAO DE JORNALISTA</div>
+              <div class="species-item"><strong>ESPÉCIE 54</strong> — PENSAO ESPECIAL VITALICIA</div>
+              <div class="species-item"><strong>ESPÉCIE 55</strong> — PENSAO POR MORTE (PLANO BASICO)</div>
+              <div class="species-item"><strong>ESPÉCIE 56</strong> — PENSAO DE VITIMA DA TALIDOMIDA</div>
+              <div class="species-item"><strong>ESPÉCIE 57</strong> — APOSENTADORIA POR TEMPO DE CONTRIBUICAO (PROFESSOR)</div>
+              <div class="species-item"><strong>ESPÉCIE 59</strong> — PENSAO POR MORTE DE ANISTIADO</div>
+              <div class="species-item"><strong>ESPÉCIE 60</strong> — PENSAO ESPECIAL MENSAL VITALICIA</div>
+              <div class="species-item"><strong>ESPÉCIE 72</strong> — APOSENTADORIA POR TEMPO DE CONTRIBUICAO (EX-COMBATENTE)</div>
+              <div class="species-item"><strong>ESPÉCIE 82</strong> — APOSENTADORIA POR TEMPO CONTRIBUICAO (EX-SASSE)</div>
+              <div class="species-item"><strong>ESPÉCIE 83</strong> — APOSENTADORIA POR INVALIDEZ (EX-SASSE)</div>
+              <div class="species-item"><strong>ESPÉCIE 84</strong> — PENSAO POR MORTE (EX-SASSE)</div>
+              <div class="species-item"><strong>ESPÉCIE 92</strong> — APOSENTADORIA POR INVALIDEZ (ACIDENTE DE TRABALHO)</div>
+              <div class="species-item"><strong>ESPÉCIE 93</strong> — PENSAO POR MORTE (ACIDENTE DE TRABALHO)</div>
+              <div class="species-item"><strong>ESPÉCIE 96</strong> — PENSAO ESPECIAL HANSENIASE LEI 11520/07</div>
+            </div>
+          </article>
+
+          <!-- 4) Espécies não aceitas -->
+          <article class="card lesson-card lesson-alert">
+            <h2 class="lesson-title">4) Espécies não aceitas</h2>
+            <p class="lesson-text">Se cair em qualquer uma destas, não prosseguir.</p>
+
+            <div class="species-grid">
+              <div class="species-item species-bad"><strong>ESPÉCIE 37</strong> — APOSENTADORIA DE EXTRA NUMERARIO DA UNIÃO (EX SASSE)</div>
+              <div class="species-item species-bad"><strong>ESPÉCIE 44</strong> — APOSENTADORIA ESPECIAL DE AERONAUTA</div>
+              <div class="species-item species-bad"><strong>ESPÉCIE 46</strong> — APOSENTADORIA ESPECIAL</div>
+              <div class="species-item species-bad"><strong>ESPÉCIE 49</strong> — APOSENTADORIA ORDINARIA</div>
+              <div class="species-item species-bad"><strong>ESPÉCIE 58</strong> — APOSENTADORIA EXCEPCIONAL DE ANISTIADO</div>
+              <div class="species-item species-bad"><strong>ESPÉCIE 87</strong> — AMPARO SOCIAL PESSOA PORTADORA DE DEFICIENCIA</div>
+              <div class="species-item species-bad"><strong>ESPÉCIE 88</strong> — AMPARO SOCIAL AO IDOSO</div>
+            </div>
+          </article>
+
+          <!-- 5) Parâmetros do produto -->
+          <article class="card lesson-card">
+            <h2 class="lesson-title">5) Parâmetros do produto</h2>
+
+            <div class="kv">
+              <div class="kv-item">
+                <p class="kv-label">VALORES</p>
+                <p class="kv-value">
+                  Máx aprox: <strong>R$ 2.050,84</strong> • Mín: <strong>R$ 200,00</strong>
+                </p>
+              </div>
+
+              <div class="kv-item">
+                <p class="kv-label">PARCELAS</p>
+                <p class="kv-value">
+                  Máx: <strong>R$ 486,30</strong> • Prazo: <strong>6x a 12x</strong>
+                </p>
+              </div>
+
+              <div class="kv-item">
+                <p class="kv-label">IDADE</p>
+                <p class="kv-value">
+                  Mín: <strong>22</strong> • Máx: <strong>80</strong> (conforme regra vigente)
+                </p>
+              </div>
+
+              <div class="kv-item">
+                <p class="kv-label">TAXA</p>
+                <p class="kv-value">
+                  <strong>19,85%</strong>
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 6) Documentos -->
+          <article class="card lesson-card">
+            <h2 class="lesson-title">6) Documentos aceitos</h2>
+            <ul class="bullets">
+              <li>RG (físico/digital)</li>
+              <li>CNH (físico/digital)</li>
+              <li>Carteira de Trabalho (físico)</li>
+            </ul>
+            <div class="callout">
+              <strong>Importante:</strong> todos devem conter <strong>assinatura por escrito</strong>.
+            </div>
+          </article>
+
+          <!-- 7) Regras para contratação -->
+          <article class="card lesson-card lesson-alert">
+            <h2 class="lesson-title">7) Regras para realizar contratação</h2>
+            <ul class="checklist">
+              <li><label><input type="checkbox"> Não ser cliente Mercantil</label></li>
+              <li><label><input type="checkbox"> Fazer a portabilidade do benefício para o Mercantil</label></li>
+              <li><label><input type="checkbox"> Estar dentro das regras citadas acima</label></li>
+            </ul>
+          </article>
+
+        </div>
+
+        <div class="module-nav">
+          <a class="btn btn-ghost" href="./modulo-02.html">← Módulo anterior</a>
+          <a class="btn btn-primary" href="./dashboard.html">Voltar ao Dashboard →</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-text">© <span id="year"></span> N1 Treinamento</p>
+      <p class="footer-text footer-muted">Módulo 03 • Crédito Pessoal</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const KEY = "n1_mod_03_done";
+    const statusEl = document.getElementById("statusText3");
+    const btn = document.getElementById("btnDone3");
+
+    function render(){
+      const done = localStorage.getItem(KEY) === "1";
+      statusEl.textContent = done ? "Status: Concluído ✅" : "Status: Em andamento";
+      btn.textContent = done ? "Concluído" : "Marcar como concluído";
+      btn.disabled = done;
+      btn.style.opacity = done ? ".7" : "1";
+      btn.style.cursor = done ? "not-allowed" : "pointer";
+    }
+
+    btn.addEventListener("click", () => {
+      localStorage.setItem(KEY, "1");
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
