@@ -5,18 +5,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Treinamento • Página Oficial</title>
-  <meta name="description" content="Treinamento em formato moderno: módulos, aprendizado prático, diferencial e CTA final." />
+  <meta name="description" content="Treinamento em formato moderno: acesso rápido aos módulos e login." />
 
-  <!-- CSS externo (vamos construir no próximo passo) -->
+  <!-- CSS -->
   <link rel="stylesheet" href="./style.css" />
 </head>
 
 <body>
-  <!-- Skip link: acessibilidade (pular direto para o conteúdo principal) -->
+  <!-- Skip link (acessibilidade) -->
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
-  <!-- HEADER (topo simples, navegação e âncoras) -->
-  <!-- Serve para: manter identidade, facilitar navegação e dar estrutura “profissional” -->
+  <!-- HEADER -->
   <header class="site-header">
     <div class="container header-inner">
       <div class="brand" aria-label="Identidade do treinamento">
@@ -24,266 +23,38 @@
         <span class="brand-name">Treinamento</span>
       </div>
 
+      <!-- Nav reduzida: só Módulos + Login -->
       <nav class="nav" aria-label="Navegação principal">
-        <a class="nav-link" href="#modulos">Módulos</a>
-        <a class="nav-link" href="#aprender">O que vai aprender</a>
-        <a class="nav-link" href="#diferencial">Diferencial</a>
-        <a class="nav-link" href="#cta">Começar</a>
+        <!-- Se você preferir, posso apontar isso para dashboard.html direto -->
+        <a class="nav-link nav-cta" href="./app/dashboard.html">Módulos</a>
         <a class="nav-link nav-cta" href="./login.html">Login</a>
       </nav>
     </div>
   </header>
 
+  <!-- CONTEÚDO -->
   <main id="conteudo">
-    <!-- 1) HERO (100vh) -->
-    <!-- Serve para: primeira impressão forte + mensagem clara + CTA âncora -->
+    <!-- HERO (100vh) -->
     <section class="hero" aria-label="Seção principal">
-      <!-- Background visual: vamos criar com CSS (gradiente radial e micro movimento) -->
       <div class="hero-bg" aria-hidden="true"></div>
 
       <div class="container hero-inner">
         <div class="hero-content">
           <p class="hero-eyebrow">Treinamento • Operação & Performance</p>
 
-          <h1 class="hero-title">
-            N1 NEGÓCIOS
-          </h1>
+          <h1 class="hero-title">N1 NEGÓCIOS</h1>
 
           <p class="hero-subtitle">
             Teoria sem planejamento e execução vai te deixar no mesmo lugar.
           </p>
 
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#modulos">Ver módulos</a>
-            <a class="btn btn-ghost" href="#cta">APOIO</a>
-          </div>
-
-          <!-- Micro prova/apoio visual (sem inventar números) -->
-          <div class="hero-badges" aria-label="Destaques rápidos">
-                      </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2) SEÇÃO DE MÓDULOS (grid de cards) -->
-    <!-- Serve para: organizar conteúdo em etapas e dar leitura rápida -->
-    <section id="modules" class="section section-modules section-glow" aria-label="Seção de módulos"> 
-      <div class="container">
-        <header class="section-header">
-          <h2 class="section-title">Módulos do Treinamento</h2>
-          <p class="section-subtitle">
-            Conteúdo dividido em etapas para manter clareza, progressão e execução prática.
-          </p>
-        </header>
-
-        <!-- Grid: 3 colunas desktop / 1 mobile (vamos fazer no CSS) -->
-        <div class="grid modules-grid">
-          <!-- Card do módulo (repetir conforme necessário) -->
-       <article class="card module-card module-card-featured">
-  <div class="module-meta">
-    <span class="module-number">01</span>
-    <span class="module-tag">Cultura & Padrões</span>
-  </div>
-
-  <h3 class="module-title">Quem Somos</h3>
-
-  <p class="module-desc">
-    Entenda a N1 Negócios: missão, visão, valores, código de conduta, regras internas e campanhas que movem a operação.
-  </p>
-
-  <ul class="module-points">
-    <li>Identidade e posicionamento da empresa</li>
-    <li>Valores e comportamento esperado</li>
-    <li>Regras e campanhas vigentes</li>
-  </ul>
-
-  <div class="module-footer">
-    <span class="pill">Obrigatório</span>
-    <a class="btn btn-primary" href="./login.html">Acessar →</a>
-  </div>
-</article>
-
-<article class="card module-card">
-  <div class="module-meta">
-    <span class="module-number">02</span>
-    <span class="module-tag">Produto • CLT</span>
-  </div>
-
-  <h3 class="module-title">Crédito do Trabalhador</h3>
-
-  <p class="module-desc">
-    Entenda elegibilidade, vantagens, regras de desligamento, bancos parceiros e documentos aceitos para operar com segurança.
-  </p>
-
-  <ul class="module-points">
-    <li>Regras de elegibilidade (tempo CLT / empresa / idade)</li>
-    <li>Vantagens: folha, sem SPC/Serasa, até 48x</li>
-    <li>Desligamento: demissão x pedido de demissão</li>
-  </ul>
-
-  <div class="module-footer">
-    <span class="pill">Produto principal</span>
-    <a class="btn btn-primary" href="./login.html">Acessar →</a>
-  </div>
-</article>
-
-<article class="card module-card">
-  <div class="module-meta">
-    <span class="module-number">03</span>
-    <span class="module-tag">Produto • INSS</span>
-  </div>
-
-  <h3 class="module-title">Crédito Pessoal</h3>
-
-  <p class="module-desc">
-    Regras do produto para INSS: elegibilidade, estados bloqueados, espécies aceitas/não aceitas, limites, prazo e contratação.
-  </p>
-
-  <ul class="module-points">
-    <li>Débito em conta (após cair no benefício)</li>
-    <li>Estados/DDB e espécies (aceitas x não aceitas)</li>
-    <li>Valores, prazo, taxa e regras de contratação</li>
-  </ul>
-
-  <div class="module-footer">
-    <span class="pill">Atenção a regras</span>
-    <a class="btn btn-primary" href="./login.html">Acessar →</a>
-  </div>
-</article>
-
-    <!-- 3) “O QUE VOCÊ VAI APRENDER” (lista premium) -->
-    <!-- Serve para: reforçar valor percebido com tópicos objetivos -->
-    <section id="aprender" class="section section-learn" aria-label="O que você vai aprender">
-      <div class="container">
-        <header class="section-header">
-          <h2 class="section-title">O que você vai aprender</h2>
-          <p class="section-subtitle">
-            Uma lista estruturada, direta e orientada a aplicação.
-          </p>
-        </header>
-
-        <div class="learn-wrap">
-          <ul class="learn-list">
-            <li class="learn-item">
-              <span class="learn-icon" aria-hidden="true"></span>
-              <div class="learn-text">
-                <strong>Processo completo</strong>
-                <p>Do início ao próximo passo, sem lacunas e sem improviso.</p>
-              </div>
-            </li>
-
-            <li class="learn-item">
-              <span class="learn-icon" aria-hidden="true"></span>
-              <div class="learn-text">
-                <strong>Estrutura operacional</strong>
-                <p>Como organizar rotina, padrões mínimos e cadência de execução.</p>
-              </div>
-            </li>
-
-            <li class="learn-item">
-              <span class="learn-icon" aria-hidden="true"></span>
-              <div class="learn-text">
-                <strong>Qualidade + escala</strong>
-                <p>Entregar volume sem perder consistência, com controle e ajustes.</p>
-              </div>
-            </li>
-
-            <li class="learn-item">
-              <span class="learn-icon" aria-hidden="true"></span>
-              <div class="learn-text">
-                <strong>Próximos passos claros</strong>
-                <p>Critérios simples para decidir o que fazer em seguida, sem travar.</p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4) DIFERENCIAL / AUTORIDADE (comparativo/destaque) -->
-    <!-- Serve para: posicionamento premium + “por que este treinamento é diferente” -->
-    <section id="diferencial" class="section section-proof" aria-label="Diferencial e autoridade">
-      <div class="container">
-        <header class="section-header">
-          <h2 class="section-title">Diferencial e Autoridade</h2>
-          <p class="section-subtitle">
-            Clareza de método e execução: o foco aqui é resultado com padrão.
-          </p>
-        </header>
-
-        <div class="grid proof-grid">
-          <!-- Bloco comparativo: “Antes vs Depois” (texto simples, visual no CSS) -->
-          <div class="card proof-card">
-            <h3 class="proof-title">Sem método</h3>
-            <ul class="proof-list">
-              <li>Execução inconsistente</li>
-              <li>Decisão no improviso</li>
-              <li>Aprendizado lento</li>
-              <li>Resultado oscilando</li>
-            </ul>
-          </div>
-
-          <div class="card proof-card proof-card-highlight">
-            <h3 class="proof-title">Com método</h3>
-            <ul class="proof-list">
-              <li>Processo previsível</li>
-              <li>Rotina controlada</li>
-              <li>Melhoria contínua</li>
-              <li>Escala com qualidade</li>
-            </ul>
-          </div>
-
-          <!-- Bloco de autoridade/garantia de estrutura -->
-          <div class="card proof-card">
-            <h3 class="proof-title">Padrão profissional</h3>
-            <p class="proof-text">
-              Estrutura modular, seções objetivas, e um layout feito para conduzir atenção do aluno.
-              Visual premium e leitura limpa em qualquer tela.
-            </p>
-            <a class="proof-link" href="#cta">Aplicar agora →</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5) CTA FINAL -->
-    <!-- Serve para: decisão final + próximo passo claro -->
-    <section id="cta" class="section section-cta" aria-label="Chamada para ação final">
-      <div class="container">
-        <div class="cta-card">
-          <h2 class="cta-title">Pronto para começar com padrão?</h2>
-          <p class="cta-subtitle">
-            Clique para iniciar e seguir o fluxo do treinamento com clareza e execução.
-          </p>
-
-          <div class="cta-actions">
-            <a class="btn btn-primary" href="#modulos">Começar agora</a>
-            <a class="btn btn-ghost" href="#conteudo">Voltar ao topo</a>
+            <a class="btn btn-primary" href="./app/dashboard.html">Ver módulos</a>
+            <a class="btn btn-ghost" href="./login.html">Login</a>
           </div>
         </div>
       </div>
     </section>
   </main>
-
-  <!-- 6) FOOTER -->
-  <!-- Serve para: acabamento profissional simples + créditos -->
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <p class="footer-text">© <span id="year"></span> Treinamento. Todos os direitos reservados.</p>
-      <p class="footer-text footer-muted">Feito para GitHub Pages • HTML + CSS puro</p>
-    </div>
-  </footer>
-
-  <!-- JS mínimo opcional (somente para ano automático). Se quiser 100% sem JS, removemos. -->
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
 </body>
-
 </html>
-
-
-
-
-
-
