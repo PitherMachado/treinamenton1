@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -10,9 +9,6 @@
 </head>
 
 <body>
-  <script src="../assets/js/app.js"></script>
-  <script>window.N1Auth.guardApp();</script>
-
   <!-- Topbar da plataforma -->
   <header class="app-header">
     <div class="container app-header-inner">
@@ -145,7 +141,6 @@
             </ol>
           </article>
 
-    
           <!-- Bloco 5: Campanhas -->
           <article class="card lesson-card">
             <h2 class="lesson-title">5) Campanhas N1</h2>
@@ -166,64 +161,53 @@
               <h3 class="campaign-title">Campanha semanal (operação)</h3>
               <p class="campaign-text">
                 Toda semana que a operação atingir <strong>100% da meta semanal</strong>, ganhará um happy hour na sexta após as <strong>18:00</strong>.
-               
-                Possibilidade de ganhar TODA SEMANA <strong>RANKING SEMANAL</strong>o valor de até<strong>R$500</strong>.
+                Possibilidade de ganhar toda semana no <strong>Ranking Semanal</strong> (valor de até <strong>R$ 500</strong>).
               </p>
             </div>
           </article>
-           </div>
-        
-<!-- 6) REGRAS N1 -->
-<section class="section section-modules">
-  <div class="container">
 
-    <header class="section-header">
-      <h2 class="section-title">6) Regras N1</h2>
-      <p class="section-subtitle">
-        Diretrizes obrigatórias que garantem disciplina, respeito e padrão profissional dentro da operação.
-      </p>
-    </header>
+          <!-- Bloco 6: Regras N1 -->
+          <article class="card lesson-card">
+            <h2 class="lesson-title">6) Regras N1</h2>
+            <p class="lesson-text">
+              Diretrizes obrigatórias que garantem disciplina, respeito e padrão profissional dentro da operação.
+            </p>
 
-    <div class="grid-cards">
+            <div class="split">
+              <div class="split-card">
+                <h3 class="split-title">Disciplina Operacional</h3>
+                <ul class="bullets">
+                  <li>Horas extras somente com autorização prévia e formalizada pela liderança.</li>
+                  <li>Em caso de ausência, comunicar a liderança antecipadamente e/ou imediatamente.</li>
+                  <li>Bater o ponto conforme horário de início/fim e respeitar os intervalos.</li>
+                  <li>Toda ausência deve ser justificada com Declaração ou Atestado Médico.</li>
+                </ul>
+              </div>
 
-      <!-- CARD 1 -->
-      <div class="card">
-        <h3>Disciplina Operacional</h3>
-        <ul>
-          <li>Horas extras somente com autorização prévia e formalizada pela liderança.</li>
-          <li>Ausências devem ser comunicadas antecipadamente e/ou imediatamente à liderança.</li>
-          <li>Registro de ponto conforme horário de entrada, saída e intervalos.</li>
-          <li>Toda ausência deve ser justificada com Declaração ou Atestado Médico.</li>
-        </ul>
-      </div>
+              <div class="split-card">
+                <h3 class="split-title">Conduta e Ambiente Profissional</h3>
+                <ul class="bullets">
+                  <li>Não serão tolerados comentários racistas, homofóbicos ou ofensivos (advertência/suspensão).</li>
+                  <li>Utilize áreas comuns com respeito e higiene, sem deixar desorganizado.</li>
+                  <li>Mantenha seu ambiente individual limpo e organizado, livre de comidas e bebidas.</li>
+                  <li>Zele pelo material de trabalho (mouse, teclado, monitor, CPU e headset).</li>
+                  <li>Dress code: proibido boné, camisa de time, saia/cropped, decotes excessivos, calça com fendas etc.</li>
+                </ul>
+              </div>
 
-      <!-- CARD 2 -->
-      <div class="card">
-        <h3>Conduta e Ambiente Profissional</h3>
-        <ul>
-          <li>Não serão tolerados comentários racistas, homofóbicos ou ofensivos.</li>
-          <li>Uso respeitoso e higiênico das áreas comuns.</li>
-          <li>Ambiente individual limpo e organizado, sem alimentos ou bebidas.</li>
-          <li>Zelar pelo material de trabalho (mouse, teclado, monitor, CPU e headset).</li>
-          <li>Dress code obrigatório: proibido boné, camisas de time, roupas curtas ou com decotes excessivos.</li>
-        </ul>
-      </div>
+              <div class="split-card">
+                <h3 class="split-title">Contrato e Benefícios</h3>
+                <ul class="bullets">
+                  <li>Período de experiência: 14 dias + 46 dias, conforme contrato.</li>
+                  <li>Salário creditado até o 5º dia útil, conforme contrato de trabalho.</li>
+                  <li>VA/VT na experiência: pagamento semanal (toda segunda-feira).</li>
+                  <li>Após a experiência: benefícios passam a ser pagos mensalmente.</li>
+                </ul>
+              </div>
+            </div>
+          </article>
 
-      <!-- CARD 3 -->
-      <div class="card">
-        <h3>Contrato e Benefícios</h3>
-        <ul>
-          <li>Período de experiência: 14 dias + 46 dias, conforme contrato.</li>
-          <li>Salário creditado até o 5º dia útil.</li>
-          <li>Vale alimentação e transporte pagos semanalmente durante experiência.</li>
-          <li>Após experiência, benefícios passam a ser mensais.</li>
-        </ul>
-      </div>
-
-    </div>
-
-  </div>
-</section>
+        </div>
 
         <!-- Navegação do módulo -->
         <div class="module-nav">
@@ -231,6 +215,7 @@
           <a class="btn btn-primary" href="./modulo-02.html">Próximo módulo →</a>
         </div>
       </section>
+
     </div>
   </main>
 
@@ -241,7 +226,11 @@
     </div>
   </footer>
 
+  <!-- Scripts (no fim para performance) -->
+  <script src="../assets/js/app.js"></script>
   <script>
+    window.N1Auth.guardApp();
+
     document.getElementById("year").textContent = new Date().getFullYear();
 
     // Progresso simples (localStorage)
