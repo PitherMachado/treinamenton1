@@ -10,23 +10,21 @@
 
 <body class="auth-page">
 
-  <!-- BACKGROUND / GLOW (seu CSS já controla o visual) -->
   <div class="bg-glow" aria-hidden="true"></div>
 
   <main class="auth-wrap">
     <section class="auth-card" aria-label="Login N1">
-      <p class="auth-kicker">N1 • ÁREA DE TREINAMENTO</p>
 
+      <p class="auth-kicker">N1 • ÁREA DE TREINAMENTO</p>
       <h1 class="auth-title">Acessar Plataforma</h1>
       <p class="auth-subtitle">Entre para continuar seus módulos.</p>
 
-      <!-- FORM -->
       <form id="loginForm" class="auth-form" autocomplete="on" novalidate>
+
         <div class="field">
           <label for="loginUser">Usuário</label>
           <input
             id="loginUser"
-            name="username"
             type="text"
             placeholder="ex: pither"
             autocomplete="username"
@@ -38,7 +36,6 @@
           <label for="loginPass">Senha</label>
           <input
             id="loginPass"
-            name="password"
             type="password"
             placeholder="••••••"
             autocomplete="current-password"
@@ -46,78 +43,61 @@
           />
         </div>
 
-        <p id="loginError" class="form-error" role="alert" aria-live="polite"></p>
+        <p id="loginError" class="form-error" role="alert"></p>
 
         <button class="btn btn-primary btn-full" type="submit">
           Entrar
         </button>
 
-        <p class="auth-footnote">Acesso interno • GitHub Pages (Caminho 1)</p>
+        <p class="auth-footnote">
+          Acesso interno • GitHub Pages (Caminho 1)
+        </p>
+
       </form>
     </section>
   </main>
 
-  <!-- 1) USERS (precisa vir antes) -->
+  <!-- USERS -->
   <script src="./assets/js/users.js"></script>
 
-  <!-- 2) APP (se você usa logout/guard) -->
+  <!-- APP CORE -->
   <script src="./assets/js/app.js"></script>
 
-  <!-- 3) LOGIN HANDLER -->
   <script>
-    // Se já estiver logado, manda direto pro dashboard
-    if (localStorage.getItem("n1_auth") === "true") {
+    // Se já estiver logado, vai direto
+    if (window.N1Auth.isAuthed()) {
       window.location.href = "app/dashboard.html";
     }
 
     const form = document.getElementById("loginForm");
-    const err = document.getElementById("loginError");
+    const err  = document.getElementById("loginError");
 
-    function setError(msg) {
+    function setError(msg){
       err.textContent = msg || "";
-      err.style.display = msg ? "block" : "none";
     }
 
-    form.addEventListener("submit", function (e) {
+    form.addEventListener("submit", function(e){
       e.preventDefault();
       setError("");
 
-      const userInput = document.getElementById("loginUser").value.trim();
-      const passInput = document.getElementById("loginPass").value.trim();
+      const user = document.getElementById("loginUser").value.trim();
+      const pass = document.getElementById("loginPass").value.trim();
 
-      if (!userInput || !passInput) {
+      if(!user || !pass){
         setError("Preencha usuário e senha.");
         return;
       }
 
-      // Segurança real exige backend. Aqui é controle interno.
-      const users = Array.isArray(window.N1_USERS) ? window.N1_USERS : [];
+      const success = window.N1Auth.login(user, pass);
 
-      const userFound = users.find(u =>
-        u.user === userInput &&
-        u.pass === passInput
-      );
-
-      // Usuário não existe ou senha errada
-      if (!userFound) {
+      if(!success){
         setError("Usuário ou senha inválidos.");
         return;
       }
 
-      // Usuário bloqueado
-      if (userFound.active !== true) {
-        setError("Usuário bloqueado. Fale com o administrador.");
-        return;
-      }
-
-      // OK -> cria sessão
-      localStorage.setItem("n1_auth", "true");
-      localStorage.setItem("n1_user", userFound.user);
-      localStorage.setItem("n1_role", userFound.role || "aluno");
-
-      // Redireciona
       window.location.href = "app/dashboard.html";
     });
   </script>
+
 </body>
 </html>
