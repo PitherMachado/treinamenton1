@@ -821,3 +821,85 @@ body{
 .brand:hover .brand-name{
   color: var(--magenta-400);
 }
+/* ===============================
+   DASHBOARD • PREMIUM GLOW (APP)
+   Luz de fundo varrendo
+   =============================== */
+
+/* Garante que o app consiga ter camadas */
+.app{
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glow animado principal (varrendo) */
+.app::before{
+  content:"";
+  position: absolute;
+  inset: -35%;
+  background:
+    radial-gradient(closest-side,
+      rgba(255,47,216,0.20),
+      transparent 65%);
+  filter: blur(16px);
+  transform: translateX(-35%) rotate(12deg);
+  animation: appGlowSweep 10s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .95;
+}
+
+/* Glow secundário (profundidade) */
+.app::after{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background:
+    radial-gradient(circle at 25% 35%, rgba(92,27,143,0.20), transparent 55%),
+    radial-gradient(circle at 75% 70%, rgba(255,47,216,0.12), transparent 60%);
+  filter: blur(20px);
+  animation: appGlowFloat 14s ease-in-out infinite alternate;
+  pointer-events:none;
+  z-index: 0;
+  opacity: .75;
+}
+
+/* Conteúdo sempre acima do glow */
+.app > .container{
+  position: relative;
+  z-index: 1;
+}
+
+/* Animações */
+@keyframes appGlowSweep{
+  0%   { transform: translateX(-35%) rotate(12deg); opacity: .75; }
+  100% { transform: translateX(35%)  rotate(12deg); opacity: 1; }
+}
+
+@keyframes appGlowFloat{
+  0%   { transform: translateY(10px) scale(1); opacity: .65; }
+  100% { transform: translateY(-18px) scale(1.05); opacity: .85; }
+}
+
+/* ===============================
+   Melhorias visuais nos cards
+   =============================== */
+
+.module-card{
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 14px 44px rgba(0,0,0,.45);
+}
+
+.module-card:hover{
+  box-shadow: 0 26px 70px rgba(0,0,0,.65), 0 0 44px rgba(255,47,216,.12);
+}
+
+/* Ajuste de respiro do dashboard */
+.app-hero{
+  margin-bottom: 18px;
+}
+
+.section.section-modules{
+  padding-top: 50px; /* reduz aquele “vazio” exagerado */
+}
