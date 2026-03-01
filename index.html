@@ -5,14 +5,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Treinamento • Página Oficial</title>
-  <meta name="description" content="Treinamento em formato moderno: módulos e acesso à plataforma." />
+  <meta name="description" content="Treinamento em formato moderno: acesso rápido aos módulos e login." />
 
-  <!-- CSS externo -->
+  <!-- CSS -->
   <link rel="stylesheet" href="./style.css" />
 </head>
 
 <body>
-  <!-- Skip link -->
+  <!-- Skip link (acessibilidade) -->
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
   <!-- HEADER -->
@@ -23,18 +23,18 @@
         <span class="brand-name">Treinamento</span>
       </div>
 
+      <!-- Nav reduzida: só Módulos + Login -->
       <nav class="nav" aria-label="Navegação principal">
-        <!-- Corrigido: aponta para #modulos -->
-        <a class="nav-link" href="#modulos">Módulos</a>
-
-        <!-- Mantém Login -->
+        <!-- Se você preferir, posso apontar isso para dashboard.html direto -->
+        <a class="nav-link nav-cta" href="./app/dashboard.html">Módulos</a>
         <a class="nav-link nav-cta" href="./login.html">Login</a>
       </nav>
     </div>
   </header>
 
+  <!-- CONTEÚDO -->
   <main id="conteudo">
-    <!-- 1) HERO (100vh) -->
+    <!-- HERO (100vh) -->
     <section class="hero" aria-label="Seção principal">
       <div class="hero-bg" aria-hidden="true"></div>
 
@@ -49,111 +49,12 @@
           </p>
 
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#modulos">Ver módulos</a>
+            <a class="btn btn-primary" href="./app/dashboard.html">Ver módulos</a>
             <a class="btn btn-ghost" href="./login.html">Login</a>
           </div>
-
-          <div class="hero-badges" aria-label="Destaques rápidos"></div>
         </div>
       </div>
     </section>
-
-    <!-- 2) SEÇÃO DE MÓDULOS -->
-    <!-- Corrigido: id="modulos" para bater com o menu -->
-    <section id="modulos" class="section section-modules section-glow" aria-label="Seção de módulos">
-      <div class="container">
-        <header class="section-header">
-          <h2 class="section-title">Módulos do Treinamento</h2>
-          <p class="section-subtitle">
-            Conteúdo dividido em etapas para manter clareza, progressão e execução prática.
-          </p>
-        </header>
-
-        <!-- Grid -->
-        <div class="grid modules-grid">
-
-          <!-- Módulo 01 -->
-          <article class="card module-card module-card-featured">
-            <div class="module-meta">
-              <span class="module-number">01</span>
-              <span class="module-tag">Cultura & Padrões</span>
-            </div>
-
-            <h3 class="module-title">Quem Somos</h3>
-
-            <p class="module-desc">
-              Entenda a N1 Negócios: missão, visão, valores, código de conduta, regras internas e campanhas que movem a operação.
-            </p>
-
-            <ul class="module-points">
-              <li>Identidade e posicionamento da empresa</li>
-              <li>Valores e comportamento esperado</li>
-              <li>Regras e campanhas vigentes</li>
-            </ul>
-
-            <div class="module-footer">
-              <span class="pill">Obrigatório</span>
-              <a class="btn btn-primary" href="./login.html">Acessar →</a>
-            </div>
-          </article>
-
-          <!-- Módulo 02 -->
-          <article class="card module-card">
-            <div class="module-meta">
-              <span class="module-number">02</span>
-              <span class="module-tag">Produto • CLT</span>
-            </div>
-
-            <h3 class="module-title">Crédito do Trabalhador</h3>
-
-            <p class="module-desc">
-              Entenda elegibilidade, vantagens, regras de desligamento, bancos parceiros e documentos aceitos para operar com segurança.
-            </p>
-
-            <ul class="module-points">
-              <li>Regras de elegibilidade (tempo CLT / empresa / idade)</li>
-              <li>Vantagens: folha, sem SPC/Serasa, até 48x</li>
-              <li>Desligamento: demissão x pedido de demissão</li>
-            </ul>
-
-            <div class="module-footer">
-              <span class="pill">Produto principal</span>
-              <a class="btn btn-primary" href="./login.html">Acessar →</a>
-            </div>
-          </article>
-
-          <!-- Módulo 03 -->
-          <article class="card module-card">
-            <div class="module-meta">
-              <span class="module-number">03</span>
-              <span class="module-tag">Produto • INSS</span>
-            </div>
-
-            <h3 class="module-title">Crédito Pessoal</h3>
-
-            <p class="module-desc">
-              Regras do produto para INSS: elegibilidade, estados bloqueados, espécies aceitas/não aceitas, limites, prazo e contratação.
-            </p>
-
-            <ul class="module-points">
-              <li>Débito em conta (após cair no benefício)</li>
-              <li>Estados/DDB e espécies (aceitas x não aceitas)</li>
-              <li>Valores, prazo, taxa e regras de contratação</li>
-            </ul>
-
-            <div class="module-footer">
-              <span class="pill">Atenção a regras</span>
-              <a class="btn btn-primary" href="./login.html">Acessar →</a>
-            </div>
-          </article>
-
-        </div><!-- /grid -->
-      </div><!-- /container -->
-    </section>
-
-    <!-- REMOVIDO: #aprender, #diferencial, #cta e footer (parte do print) -->
   </main>
-
-  <!-- JS do ano removido porque não tem footer -->
 </body>
 </html>
