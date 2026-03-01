@@ -74,4 +74,13 @@
   refreshUI();
 
   window.DeckUI = { goTo, toggleOverview };
+
+  // Intersection observer para animar entrada do slide
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((en) => {
+    if (en.isIntersecting) en.target.classList.add("is-visible");
+  });
+},{ root: deck, threshold: 0.35 });
+
+slides.forEach(s => obs.observe(s));
 })();
