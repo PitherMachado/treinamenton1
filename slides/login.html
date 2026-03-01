@@ -1,1 +1,82 @@
 
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Login • Slides N1</title>
+  <meta name="description" content="Login extra para acessar o material de treinamento em slides." />
+  <link rel="stylesheet" href="./slides.css" />
+</head>
+
+<body class="deck-auth-page">
+  <div class="deck-bg" aria-hidden="true"></div>
+
+  <main class="deck-auth-wrap">
+    <section class="deck-auth-card" aria-label="Login Slides N1">
+      <p class="deck-kicker">N1 • MATERIAL DE TREINAMENTO</p>
+
+      <h1 class="deck-title">Acessar Slides</h1>
+      <p class="deck-subtitle">Login extra (separado da área de membros).</p>
+
+      <form id="deckLoginForm" class="deck-form" autocomplete="on" novalidate>
+        <div class="deck-field">
+          <label for="deckUser">Usuário</label>
+          <input id="deckUser" type="text" placeholder="ex: pither" autocomplete="username" required />
+        </div>
+
+        <div class="deck-field">
+          <label for="deckPass">Senha</label>
+          <input id="deckPass" type="password" placeholder="••••••" autocomplete="current-password" required />
+        </div>
+
+        <p id="deckErr" class="deck-error" role="alert" aria-live="polite"></p>
+
+        <button class="deck-btn deck-btn-primary deck-btn-full" type="submit">Entrar</button>
+
+        <div class="deck-mini">
+          <a class="deck-link" href="https://pithermachado.github.io/treinamenton1/">Voltar ao portal</a>
+        </div>
+      </form>
+
+      <p class="deck-footnote">Acesso interno • GitHub Pages</p>
+    </section>
+  </main>
+
+  <script src="./assets/users-slides.js"></script>
+  <script src="./assets/deck-auth.js"></script>
+
+  <script>
+    if (window.N1DeckAuth.isDeckAuthed()) {
+      window.location.href = "./index.html";
+    }
+
+    const form = document.getElementById("deckLoginForm");
+    const err = document.getElementById("deckErr");
+
+    function setError(msg){
+      err.textContent = msg || "";
+      err.style.display = msg ? "block" : "none";
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      setError("");
+
+      const u = document.getElementById("deckUser").value.trim();
+      const p = document.getElementById("deckPass").value.trim();
+
+      if (!u || !p) return setError("Preencha usuário e senha.");
+
+      const users = Array.isArray(window.N1_DECK_USERS) ? window.N1_DECK_USERS : [];
+      const found = users.find(x => x.user === u && x.pass === p);
+
+      if (!found) return setError("Usuário ou senha inválidos.");
+      if (found.active !== true) return setError("Usuário bloqueado. Fale com o administrador.");
+
+      window.N1DeckAuth.setDeckAuth(found.user);
+      window.location.href = "./index.html";
+    });
+  </script>
+</body>
+</html>
