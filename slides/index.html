@@ -1,713 +1,1324 @@
-
 <!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Slides • Treinamento N1</title>
-  <meta name="description" content="Material de treinamento em slides fullscreen • N1." />
-  <link rel="stylesheet" href="./slides.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Slides • N1 Treinamento</title>
+  <meta name="description" content="Material de treinamento N1 em formato de apresentação fullscreen." />
+
+  <!-- Usa sua paleta base -->
+  <link rel="stylesheet" href="../style.css" />
+
+  <style>
+    /* ===============================
+       N1 SLIDES — FULLSCREEN DECK
+       =============================== */
+
+    :root{
+      --deck-bg0: #070714;
+      --deck-bg1: #0b0b1c;
+      --deck-stroke: rgba(255,255,255,.08);
+      --deck-glass: rgba(255,255,255,.06);
+      --deck-glass2: rgba(255,255,255,.10);
+      --deck-text: #f4f6ff;
+      --deck-muted: rgba(244,246,255,.74);
+      --deck-muted2: rgba(244,246,255,.58);
+      --deck-shadow: 0 30px 80px rgba(0,0,0,.55);
+
+      /* Se seu style.css já tem esses, perfeito — se não tiver, cai aqui */
+      --magenta-400: #ff2fd8;
+      --gradient-primary: linear-gradient(135deg,#2d0055 0%,#5c1b8f 40%,#b01278 70%,#ff2fd8 100%);
+
+      --r20: 20px;
+      --r28: 28px;
+    }
+
+    /* Reset mínimo para deck */
+    html, body{
+      height: 100%;
+      margin: 0;
+      background: var(--deck-bg0);
+      color: var(--deck-text);
+      overflow: hidden;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    /* Fundo com movimento (luz varrendo) */
+    .deck-bg{
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 18% 26%, rgba(255,47,216,.20), transparent 40%),
+        radial-gradient(circle at 82% 72%, rgba(92,27,143,.25), transparent 52%),
+        linear-gradient(135deg, var(--deck-bg0) 0%, #120024 55%, var(--deck-bg1) 100%);
+      z-index: 0;
+    }
+    .deck-bg::before{
+      content:"";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(closest-side, rgba(255,47,216,.18), transparent 64%);
+      filter: blur(14px);
+      transform: translateX(-35%) rotate(12deg);
+      animation: glowSweep 10s ease-in-out infinite alternate;
+      opacity: .95;
+      pointer-events: none;
+    }
+    .deck-bg::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: var(--gradient-primary);
+      opacity: .06;
+      animation: slowFloat 12s ease-in-out infinite alternate;
+      pointer-events:none;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes glowSweep{
+      0%   { transform: translateX(-35%) rotate(12deg); opacity: .75; }
+      100% { transform: translateX(35%) rotate(12deg);  opacity: 1; }
+    }
+    @keyframes slowFloat{
+      0%{ transform: scale(1) translateY(0); }
+      100%{ transform: scale(1.06) translateY(-18px); }
+    }
+
+    /* Layout */
+    .deck{
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      width: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    /* Topbar minimalista */
+    .deck-top{
+      height: 64px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      padding: 0 22px;
+      backdrop-filter: blur(18px);
+      background: rgba(0,0,0,.25);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+
+    .deck-brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      text-decoration:none;
+      color: inherit;
+      user-select:none;
+    }
+    .deck-dot{
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--magenta-400);
+      box-shadow: 0 0 25px rgba(255,47,216,.35);
+    }
+    .deck-brand strong{
+      font-size: 14px;
+      letter-spacing: .6px;
+      opacity: .95;
+    }
+
+    .deck-actions{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+
+    .deck-btn{
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      color: var(--deck-text);
+      cursor:pointer;
+      transition: .25s ease;
+      font-weight: 600;
+      font-size: 13px;
+      text-decoration: none;
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      user-select:none;
+    }
+    .deck-btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(255,47,216,.35);
+      background: rgba(255,47,216,.10);
+    }
+    .deck-btn.primary{
+      background: var(--gradient-primary);
+      border-color: transparent;
+      box-shadow: 0 12px 30px rgba(255,47,216,.18);
+    }
+
+    /* Área dos slides */
+    .deck-stage{
+      position: relative;
+      height: 100%;
+      width: 100%;
+      display:flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* “Tela do slide” */
+    .slide{
+      width: min(1100px, 92vw);
+      height: min(620px, 74vh);
+      border-radius: var(--r28);
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: var(--deck-shadow);
+      backdrop-filter: blur(18px);
+      position: absolute;
+      inset: auto;
+      opacity: 0;
+      transform: translateY(10px) scale(.992);
+      transition: opacity .35s ease, transform .35s ease;
+      overflow: hidden;
+    }
+    .slide.is-active{
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+    .slide::before{
+      content:"";
+      position:absolute;
+      inset:-35%;
+      background:
+        radial-gradient(circle at 30% 22%, rgba(255,47,216,.18), transparent 55%),
+        radial-gradient(circle at 78% 70%, rgba(92,27,143,.20), transparent 58%);
+      filter: blur(12px);
+      opacity: .95;
+      pointer-events:none;
+    }
+    .slide-inner{
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      padding: 34px 40px;
+      display:flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .kicker{
+      color: var(--magenta-400);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 12px;
+      opacity: .95;
+    }
+
+    .h1{
+      font-size: 44px;
+      line-height: 1.05;
+      margin: 0;
+      background: linear-gradient(90deg,#fff, #ff2fd8);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .h2{
+      font-size: 20px;
+      margin: 0;
+      color: rgba(255,255,255,.92);
+    }
+
+    .lead{
+      font-size: 16px;
+      color: var(--deck-muted);
+      margin: 0;
+      max-width: 860px;
+    }
+
+    .cols{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      margin-top: 6px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .panel{
+      background: rgba(0,0,0,.20);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--r20);
+      padding: 16px 16px;
+      overflow: auto;
+    }
+
+    .panel-title{
+      font-size: 13px;
+      color: rgba(255,255,255,.88);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .bullets{
+      margin: 0;
+      padding-left: 18px;
+      color: var(--deck-muted);
+      display: grid;
+      gap: 8px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .bullets li strong{
+      color: rgba(255,255,255,.92);
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .chip{
+      height: 28px;
+      display:inline-flex;
+      align-items:center;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: var(--deck-muted);
+      font-size: 12px;
+    }
+
+    .callout{
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px dashed rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      color: var(--deck-muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    /* Footer do deck + progresso */
+    .deck-bottom{
+      height: 74px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 22px;
+      backdrop-filter: blur(18px);
+      background: rgba(0,0,0,.18);
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+
+    .deck-meta{
+      display:flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 220px;
+    }
+    .deck-meta .small{
+      font-size: 12px;
+      color: var(--deck-muted2);
+    }
+    .deck-meta .big{
+      font-size: 13px;
+      color: rgba(255,255,255,.92);
+      font-weight: 700;
+    }
+
+    .progress-wrap{
+      flex: 1;
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      max-width: 640px;
+    }
+    .progress{
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+      flex: 1;
+    }
+    .progress > i{
+      display:block;
+      height: 100%;
+      width: 0%;
+      background: var(--gradient-primary);
+      border-radius: 999px;
+      box-shadow: 0 0 22px rgba(255,47,216,.25);
+      transition: width .35s ease;
+    }
+    .progress-num{
+      font-size: 12px;
+      color: var(--deck-muted2);
+      width: 110px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+
+    /* Responsivo */
+    @media (max-width: 920px){
+      .slide{ height: min(680px, 78vh); }
+      .slide-inner{ padding: 26px 22px; }
+      .h1{ font-size: 34px; }
+      .cols{ grid-template-columns: 1fr; }
+      .deck-meta{ min-width: 160px; }
+    }
+
+    /* Acessibilidade */
+    .sr-only{
+      position:absolute!important;
+      width:1px!important;
+      height:1px!important;
+      padding:0!important;
+      margin:-1px!important;
+      overflow:hidden!important;
+      clip:rect(0,0,0,0)!important;
+      white-space:nowrap!important;
+      border:0!important;
+    }
+  </style>
 </head>
 
-<body class="deck-page">
-  <script src="./assets/deck-auth.js"></script>
-  <script>window.N1DeckAuth.guardDeck();</script>
+<body>
+  <!-- Guard do slides -->
+  <script src="./assets/js/slides-auth.js"></script>
+  <script>window.N1SlidesAuth && window.N1SlidesAuth.slidesGuard();</script>
 
   <div class="deck-bg" aria-hidden="true"></div>
 
-  <!-- Topbar do deck -->
-  <header class="deck-topbar">
-    <div class="deck-topbar-inner">
-      <div class="deck-brand">
+  <div class="deck" role="application" aria-label="Apresentação N1 em tela cheia">
+    <!-- TOP -->
+    <header class="deck-top">
+      <a class="deck-brand" href="../index.html" aria-label="Voltar ao portal">
         <span class="deck-dot" aria-hidden="true"></span>
-        <strong>Treinamento N1 • Slides</strong>
-      </div>
+        <strong>N1 Treinamento • Slides</strong>
+      </a>
 
       <div class="deck-actions">
-        <div class="deck-user" id="deckUserLabel" aria-label="Usuário logado"></div>
-        <button class="deck-btn deck-btn-ghost" type="button" id="btnOverview">Visão geral</button>
-        <button class="deck-btn deck-btn-ghost" type="button" id="btnLogout">Sair</button>
+        <button class="deck-btn" type="button" id="btnToc">Sumário</button>
+        <button class="deck-btn" type="button" id="btnHelp">Atalhos</button>
+        <button class="deck-btn" type="button" onclick="window.N1SlidesAuth.slidesLogout()">Sair</button>
       </div>
-    </div>
+    </header>
 
-    <div class="deck-progress" aria-hidden="true">
-      <span class="deck-progress-bar" id="progressBar"></span>
-    </div>
-  </header>
+    <!-- STAGE -->
+    <main class="deck-stage" id="stage" aria-live="polite"></main>
 
-  <!-- Container com scroll-snap (fullscreen) -->
-  <main class="deck" id="deck" aria-label="Slides fullscreen">
-
-    <!-- SLIDE 1 -->
-    <section class="slide is-hero" data-title="Abertura">
-      <div class="slide-inner">
-        <p class="slide-kicker">OPERAÇÃO • PADRÃO • CONVERSÃO</p>
-        <h1 class="slide-h1">Treinamento N1</h1>
-        <p class="slide-lead">
-          Estrutura completa para executar com consistência: cultura, regras, produto e conversa inteligente.
-        </p>
-
-        <div class="slide-row">
-          <div class="slide-chip">⌁ Fullscreen</div>
-          <div class="slide-chip">⌁ Teclado (← →)</div>
-          <div class="slide-chip">⌁ Progresso</div>
-          <div class="slide-chip">⌁ Fundo animado</div>
-        </div>
-
-        <div class="slide-cta">
-          <button class="deck-btn deck-btn-primary" data-next>Começar</button>
-          <button class="deck-btn deck-btn-ghost" data-go="2">Pular para Módulos</button>
-        </div>
+    <!-- BOTTOM -->
+    <footer class="deck-bottom">
+      <div class="deck-meta">
+        <div class="small" id="metaKicker">MÓDULO</div>
+        <div class="big" id="metaTitle">Carregando...</div>
       </div>
-    </section>
 
-    <!-- SLIDE 2 (Agenda) -->
-    <section class="slide" data-title="Mapa do Treinamento">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Mapa do Treinamento</h2>
-        <p class="slide-sub">5 módulos. Uma linha de execução. Zero improviso.</p>
-
-        <div class="grid-2">
-          <div class="glass">
-            <h3>Módulo 01</h3>
-            <p>Cultura & Padrões (identidade, conduta, regras, campanhas).</p>
-          </div>
-          <div class="glass">
-            <h3>Módulo 02</h3>
-            <p>Produto CLT (elegibilidade, vantagens, desligamento, bancos, docs).</p>
-          </div>
-          <div class="glass">
-            <h3>Módulo 03</h3>
-            <p>Produto INSS (regras críticas: estados, DDB, espécies, limites).</p>
-          </div>
-          <div class="glass">
-            <h3>Módulo 04</h3>
-            <p>Vendas & Conversão (book de objeções com intenção e execução).</p>
-          </div>
-          <div class="glass">
-            <h3>Módulo 05</h3>
-            <p>Conversa Inteligente (sondagem + criação de cenários coerentes).</p>
-          </div>
-          <div class="glass highlight">
-            <h3>Regra do jogo</h3>
-            <p><strong>Padrão</strong> vence talento. Quem executa com método, escala.</p>
-          </div>
-        </div>
+      <div class="progress-wrap" aria-label="Progresso da apresentação">
+        <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+        <div class="progress-num" id="counter">0 / 0</div>
       </div>
-    </section>
 
-    <!-- ===== MÓDULO 01 ===== -->
-    <section class="slide section-head" data-title="Módulo 01">
-      <div class="slide-inner">
-        <p class="slide-kicker">MÓDULO 01</p>
-        <h2 class="slide-h2">Cultura & Padrões</h2>
-        <p class="slide-lead">Identidade, comportamento e padrão operacional. Base da consistência.</p>
-        <div class="callout">
-          Você não “faz do seu jeito”. Você executa o padrão — e o padrão entrega resultado.
-        </div>
-      </div>
-    </section>
+      <nav class="nav" aria-label="Navegação de slides">
+        <button class="deck-btn" id="prev" type="button">← Voltar</button>
+        <button class="deck-btn primary" id="next" type="button">Próximo →</button>
+      </nav>
+    </footer>
+  </div>
 
-    <section class="slide" data-title="Quem Somos">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Quem Somos</h2>
-        <p class="slide-sub">
-          Correspondente bancário: conectamos clientes às melhores soluções financeiras com transparência, segurança e agilidade.
-        </p>
-
-        <div class="grid-2">
-          <div class="glass">
-            <h3>Definição N1</h3>
-            <ul class="bullets">
-              <li>Intermediação entre instituições e clientes</li>
-              <li>Plataforma digital de serviços financeiros</li>
-              <li>Foco em clareza, velocidade e padrão</li>
-            </ul>
-          </div>
-          <div class="glass">
-            <h3>Placeholder</h3>
-            <p class="muted">Organograma / estrutura (inserir imagem quando disponível)</p>
-            <div class="placeholder"></div>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="glass">
-            <h3>João Nunes</h3>
-            <p class="muted">Breve descrição pessoal aqui.</p>
-          </div>
-          <div class="glass">
-            <h3>Lucas Curcio</h3>
-            <p class="muted">Breve descrição pessoal aqui.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Missão & Visão">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Missão & Visão</h2>
-        <div class="grid-2">
-          <div class="glass highlight">
-            <h3>Missão</h3>
-            <p>Proporcionar soluções inovadoras e acessíveis para clientes alcançarem objetivos financeiros com confiança e segurança.</p>
-          </div>
-          <div class="glass">
-            <h3>Visão</h3>
-            <p>Ser referência em soluções financeiras integradas, reconhecida por inovação contínua e excelência no atendimento.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Valores N1">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Valores (Padrão N1)</h2>
-        <div class="grid-2">
-          <div class="glass"><strong>Pessoas no centro</strong><p class="muted">Decisões com responsabilidade humana.</p></div>
-          <div class="glass"><strong>Ambiente positivo</strong><p class="muted">Energia molda resultado.</p></div>
-          <div class="glass"><strong>Fanáticos por resultados</strong><p class="muted">Execução e entrega.</p></div>
-          <div class="glass"><strong>Inovar sempre</strong><p class="muted">Construir o amanhã melhor.</p></div>
-          <div class="glass"><strong>Honestidade</strong><p class="muted">Base de toda relação.</p></div>
-          <div class="glass"><strong>Espírito de dono</strong><p class="muted">Assumir responsabilidade real.</p></div>
-          <div class="glass"><strong>Excelência</strong><p class="muted">Padrão em cada entrega.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Conduta">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Código de Conduta</h2>
-        <div class="grid-2">
-          <div class="glass">
-            <ul class="bullets">
-              <li>Respeito mútuo</li>
-              <li>Comunicação clara e amigável</li>
-              <li>Pontualidade e responsabilidade</li>
-              <li>Confidencialidade</li>
-              <li>Trabalho em equipe</li>
-            </ul>
-          </div>
-          <div class="glass">
-            <ul class="bullets">
-              <li>Aparência profissional</li>
-              <li>Atitude positiva</li>
-              <li>Feedback construtivo</li>
-              <li>Cumprimento das regras</li>
-            </ul>
-          </div>
-        </div>
-        <div class="callout">
-          Padrão não é “opinião”. É regra operacional.
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Campanhas">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Campanhas N1</h2>
-        <div class="grid-2">
-          <div class="glass highlight">
-            <h3>Sua indicação vale dinheiro</h3>
-            <ul class="bullets">
-              <li>Contratação: até <strong>R$ 200</strong> por indicado</li>
-              <li>14 dias: <strong>R$ 100</strong></li>
-              <li>60 dias: <strong>R$ 100</strong></li>
-            </ul>
-          </div>
-          <div class="glass">
-            <h3>Campanha semanal (operação)</h3>
-            <ul class="bullets">
-              <li>100% da meta semanal → happy hour (sexta após 18:00)</li>
-              <li>Ranking semanal: prêmio até <strong>R$ 500</strong></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Regras N1">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Regras N1 (Obrigatórias)</h2>
-
-        <div class="grid-2">
-          <div class="glass">
-            <h3>Disciplina Operacional</h3>
-            <ul class="bullets">
-              <li>Hora extra só com autorização prévia</li>
-              <li>Ausência: comunicar liderança + justificar</li>
-              <li>Bater ponto e respeitar intervalos</li>
-              <li>Atestado/declaração quando necessário</li>
-            </ul>
-          </div>
-
-          <div class="glass">
-            <h3>Conduta & Ambiente</h3>
-            <ul class="bullets">
-              <li>Zero tolerância a ofensas (advertência/suspensão)</li>
-              <li>Áreas comuns limpas e organizadas</li>
-              <li>Estação limpa (sem comida/bebida)</li>
-              <li>Zelo com equipamentos e headset</li>
-            </ul>
-          </div>
-
-          <div class="glass">
-            <h3>Dress code</h3>
-            <ul class="bullets">
-              <li>Proibido: boné, camisa de time</li>
-              <li>Proibido: decotes excessivos, cropped</li>
-              <li>Evitar: fendas/roupas inadequadas</li>
-            </ul>
-          </div>
-
-          <div class="glass">
-            <h3>Contrato & Benefícios</h3>
-            <ul class="bullets">
-              <li>Experiência: 14 + 46 dias</li>
-              <li>Salário: até 5º dia útil</li>
-              <li>VA/VT na experiência: semanal (segunda)</li>
-              <li>Após experiência: benefícios mensais</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== MÓDULO 02 ===== -->
-    <section class="slide section-head" data-title="Módulo 02">
-      <div class="slide-inner">
-        <p class="slide-kicker">MÓDULO 02</p>
-        <h2 class="slide-h2">Produto • Crédito do Trabalhador (CLT)</h2>
-        <p class="slide-lead">
-          Desconto em folha, regras claras. Aqui você aprende o que pode e o que não pode prometer.
-        </p>
-        <div class="slide-row">
-          <div class="slide-chip">até 48x</div>
-          <div class="slide-chip">a partir de 2,9% a.m.</div>
-          <div class="slide-chip">desconto antes do salário cair</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="O que é CLT">
-      <div class="slide-inner">
-        <h2 class="slide-h2">O que é Crédito do Trabalhador</h2>
-        <div class="grid-2">
-          <div class="glass highlight">
-            <h3>Definição</h3>
-            <p>Empréstimo para regime CLT com <strong>desconto direto em folha</strong> (antes de cair na conta salário).</p>
-          </div>
-          <div class="glass">
-            <h3>Regra prática</h3>
-            <p>Cliente escolhe conta de recebimento conforme regras do banco.</p>
-            <p class="muted">Sempre validar elegibilidade antes de prometer valor/prazo.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Elegibilidade">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Elegibilidade (Regras gerais)</h2>
-        <div class="glass">
-          <ul class="bullets">
-            <li>Tempo CLT: normalmente <strong>6 meses</strong> na mesma empresa</li>
-            <li>Empresa elegível: eSocial/Dataprev (varia por banco)</li>
-            <li>Idade mínima/máxima conforme banco</li>
-            <li><strong>Operacional:</strong> validar regra do banco antes de prometer</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Vantagens CLT">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Vantagens do CLT</h2>
-        <div class="grid-2">
-          <div class="glass"><h3>Desconto em folha</h3><p class="muted">Pagamento automático.</p></div>
-          <div class="glass"><h3>Sem SPC/SERASA</h3><p class="muted">Conforme regra do produto.</p></div>
-          <div class="glass"><h3>Até 48x</h3><p class="muted">Parcela mais leve.</p></div>
-          <div class="glass highlight"><h3>Juros a partir de 2,9%</h3><p class="muted">Comparativo mais competitivo.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Desligamento">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Regras de desligamento</h2>
-        <div class="grid-2">
-          <div class="glass">
-            <h3>Foi demitido</h3>
-            <ul class="bullets">
-              <li>100% multa rescisória</li>
-              <li>10% do FGTS</li>
-              <li>35% da rescisão</li>
-              <li>Saldo → transfere pro novo emprego via eSocial</li>
-            </ul>
-          </div>
-          <div class="glass highlight">
-            <h3>Pediu demissão</h3>
-            <ul class="bullets">
-              <li>Continua descontando na folha do próximo emprego</li>
-              <li>Transferência via eSocial (automático)</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Bancos e Docs">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Bancos parceiros + Documentos</h2>
-
-        <div class="grid-2">
-          <div class="glass">
-            <h3>Bancos (lista)</h3>
-            <p class="muted">047 Banese • 021 Banestes • 237 Bradesco • 756 Bancoob • 001 BB • 004 BNB • 070 BRB • 041 Banrisul • 104 Caixa • 341 Itaú • 623 Pan • 033 Santander • 318 BMG • 748 Sicredi • 077 Inter • 260 Nubank • 336 C6</p>
-          </div>
-          <div class="glass highlight">
-            <h3>Documentos aceitos</h3>
-            <ul class="bullets">
-              <li>RG (digital/físico)</li>
-              <li>CNH (digital/físico)</li>
-              <li>Carteira de Trabalho (física)</li>
-              <li><strong>Padrão:</strong> conferir legibilidade antes de enviar</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== MÓDULO 03 ===== -->
-    <section class="slide section-head" data-title="Módulo 03">
-      <div class="slide-inner">
-        <p class="slide-kicker">MÓDULO 03</p>
-        <h2 class="slide-h2">Produto • INSS • Crédito Pessoal</h2>
-        <p class="slide-lead">Foco absoluto em regras: estados, DDB, espécies, limites e contratação.</p>
-        <div class="callout">
-          Aqui não tem “jeitinho”: se fugir regra, você perde conversão e cria retrabalho.
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="O que é INSS">
-      <div class="slide-inner">
-        <h2 class="slide-h2">O que é (e para quem é)</h2>
-        <div class="grid-2">
-          <div class="glass highlight">
-            <ul class="bullets">
-              <li>Aposentados e pensionistas do INSS</li>
-              <li>Não usa margem do consignado</li>
-              <li>Débito em conta (desconta depois que cai)</li>
-            </ul>
-          </div>
-          <div class="glass">
-            <h3>Pontos críticos</h3>
-            <ul class="bullets">
-              <li>Restrição por Estado/DDB/Espécie</li>
-              <li>Limites de valor e prazo</li>
-              <li>Regras específicas de contratação</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Estados e DDB">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Estados que não atendemos + DDB</h2>
-
-        <div class="grid-2">
-          <div class="glass">
-            <h3>Não atendemos</h3>
-            <div class="chips">
-              <span class="chip bad">AC</span>
-              <span class="chip bad">AP</span>
-              <span class="chip bad">RO</span>
-              <span class="chip bad">TO</span>
-              <span class="chip bad">PB</span>
-            </div>
-          </div>
-
-          <div class="glass highlight">
-            <h3>Bloqueio por DDB</h3>
-            <p class="muted">DDB entre 2010 e 2014 para:</p>
-            <div class="chips">
-              <span class="chip bad">AP</span>
-              <span class="chip bad">AM</span>
-              <span class="chip bad">RR</span>
-              <span class="chip bad">TO</span>
-              <span class="chip bad">RO</span>
-              <span class="chip bad">AC</span>
-              <span class="chip bad">CE</span>
-              <span class="chip bad">PA</span>
-              <span class="chip bad">MA</span>
-              <span class="chip bad">PI</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Espécies (aceitas)">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Espécies aceitas</h2>
-        <p class="slide-sub">Operar somente dentro da lista.</p>
-
-        <div class="glass">
-          <p class="muted">
-            (Lista completa mantida do seu conteúdo — é longa. Se quiser, eu quebro em 2–3 slides automaticamente)
-          </p>
-          <div class="longlist">
-            <p><strong>1</strong> Pensão por morte de trabalhador rural • <strong>2</strong> Pensão por morte (acidente trabalho) • <strong>3</strong> Pensão por morte de empregador rural • <strong>4</strong> Apos. invalidez trab. rural • <strong>5</strong> Apos. invalidez (acid trab) rural • <strong>6</strong> Apos. invalidez empregador rural • <strong>7</strong> Apos. idade trab. rural • <strong>8</strong> Apos. idade empregador rural • <strong>11</strong> Amparo invalidez rural • <strong>12</strong> Amparo idade rural • <strong>21</strong> Pensão por morte • <strong>22</strong> Pensão por morte servidor público • <strong>23</strong> Pensão por morte ex-combatente • <strong>26</strong> Pensão por morte (CAPESP) • <strong>27</strong> Pensão por morte ferroviário • <strong>28</strong> Pensão por morte RG • <strong>29</strong> Pensão com vantagens • <strong>30</strong> RMV invalidez • <strong>32</strong> Apos. invalidez • <strong>33</strong> Apos. invalidez aeronauta • <strong>34</strong> Apos. invalidez c/ vant • <strong>40</strong> RMV maior 70 • <strong>41</strong> Apos. idade • <strong>42</strong> Apos. tempo contrib. • <strong>43</strong> Apos. ex-combatente • <strong>45</strong> Apos. tempo (jornalista) • <strong>54</strong> Pensão especial vitalícia • <strong>55</strong> Pensão morte (plano básico) • <strong>56</strong> Pensão vítima talidomida • <strong>57</strong> Apos. tempo (professor) • <strong>59</strong> Pensão anistiado • <strong>60</strong> Pensão especial mensal vitalícia • <strong>72</strong> Apos. tempo (ex-combatente) • <strong>82</strong> Apos. tempo (ex-sasse) • <strong>83</strong> Apos. invalidez (ex-sasse) • <strong>84</strong> Pensão morte (ex-sasse) • <strong>92</strong> Apos. invalidez (acid trabalho) • <strong>93</strong> Pensão morte (acid trabalho) • <strong>96</strong> Pensão hanseníase (lei 11520/07)
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Espécies (não aceitas)">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Espécies não aceitas</h2>
-        <div class="glass highlight">
-          <ul class="bullets">
-            <li>37 — Aposentadoria extra numerário da União (ex-sasse)</li>
-            <li>44 — Aposentadoria especial de aeronauta</li>
-            <li>46 — Aposentadoria especial</li>
-            <li>49 — Aposentadoria ordinária</li>
-            <li>58 — Aposentadoria excepcional de anistiado</li>
-            <li>87 — Amparo social (PCD)</li>
-            <li>88 — Amparo social ao idoso</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Parâmetros e Contratação">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Parâmetros do produto + Contratação</h2>
-
-        <div class="grid-2">
-          <div class="glass">
-            <h3>Parâmetros</h3>
-            <ul class="bullets">
-              <li><strong>Valores:</strong> máx ~ R$ 2.050,84 • mín R$ 200</li>
-              <li><strong>Parcelas:</strong> máx R$ 486,30 • 6x a 12x</li>
-              <li><strong>Idade:</strong> 22 a 80 (regra vigente)</li>
-              <li><strong>Taxa:</strong> 19,85%</li>
-            </ul>
-          </div>
-
-          <div class="glass highlight">
-            <h3>Regras de contratação</h3>
-            <ul class="bullets">
-              <li>Não ser cliente Mercantil</li>
-              <li>Fazer portabilidade do benefício pro Mercantil</li>
-              <li>Mercantil cria conta para o cliente</li>
-              <li>Estar dentro de todas as regras acima</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="glass">
-          <h3>Documentos aceitos</h3>
-          <p class="muted">RG/CNH (físico/digital) + CTPS (física). Importante: conter assinatura por escrito.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== MÓDULO 04 ===== -->
-    <section class="slide section-head" data-title="Módulo 04">
-      <div class="slide-inner">
-        <p class="slide-kicker">MÓDULO 04</p>
-        <h2 class="slide-h2">Vendas & Conversão • Book de Objeções</h2>
-        <p class="slide-lead">
-          Contornar resistência sem confronto, manter controle e conduzir para o próximo passo.
-        </p>
-        <div class="callout">
-          Padrão: <strong>Reconhecer → Motivo → Direcionar (1 próximo passo)</strong>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Regra de Ouro">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Como usar este módulo</h2>
-        <div class="grid-2">
-          <div class="glass highlight">
-            <h3>Regra de ouro</h3>
-            <p>Você <strong>não discute</strong> e não “bate de frente”. Você reconhece, reposiciona e direciona.</p>
-          </div>
-          <div class="glass">
-            <h3>Próximo passo</h3>
-            <ul class="bullets">
-              <li>WhatsApp</li>
-              <li>Simulação por escrito</li>
-              <li>Explicação rápida</li>
-              <li>Validação objetiva</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Objeção: Não tenho interesse">
-      <div class="slide-inner">
-        <h2 class="slide-h2">“Não tenho interesse”</h2>
-        <p class="slide-sub">Geralmente é defesa rápida, pressa ou vergonha (nome sujo/cartão).</p>
-
-        <div class="glass highlight">
-          <h3>Resposta (a) — WhatsApp</h3>
-          <p class="quote">“Entendo… nós não consultamos SPC/SERASA… esse telefone é WhatsApp? Me responde com ‘oi’ que te mando a simulação por escrito e te ligo pra explicar.”</p>
-          <p class="muted"><strong>Objetivo:</strong> remover barreira + criar caminho leve (WhatsApp → simulação → ligação curta).</p>
-        </div>
-
-        <div class="glass">
-          <h3>Resposta (b) — Conectar com dor real</h3>
-          <p class="quote">“Entendo… mas se você tiver dívidas no cartão, dá pra aproveitar a liberação e quitar.”</p>
-          <p class="muted"><strong>Objetivo:</strong> visualizar economia e “troca de dívida cara por dívida leve”.</p>
-        </div>
-
-        <div class="glass">
-          <h3>Exemplo prático</h3>
-          <p class="muted">Cartão R$ 2.000 → parcela R$ 300 | Empréstimo R$ 2.000 → parcela R$ 250 | Economia R$ 50/mês (“aumento de salário”) + limite volta como fundo.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Objeção: Juros alto">
-      <div class="slide-inner">
-        <h2 class="slide-h2">“Juros alto”</h2>
-        <div class="glass highlight">
-          <p class="quote">“Na verdade, é um dos mais baixos do mercado… cartão chegou a 37,5% ao mês… aqui é a partir de 2,9%… essa liberação ajuda a adiantar financiamento, aluguel ou quitar cartão.”</p>
-          <p class="muted"><strong>Objetivo:</strong> tirar foco da taxa e colocar no benefício prático (reduzir dívida cara, reduzir prazo/parcela, organizar).</p>
-        </div>
-
-        <div class="grid-2">
-          <div class="glass"><h3>Não fazer</h3><p class="muted">“vender taxa” e entrar em briga técnica.</p></div>
-          <div class="glass"><h3>Fazer</h3><p class="muted">comparativo + ideias de uso inteligente + próximo passo.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Objeção: Muitas parcelas">
-      <div class="slide-inner">
-        <h2 class="slide-h2">“Muitas parcelas”</h2>
-        <div class="glass highlight">
-          <p class="quote">“Entendo que pareça muito, mas não é… consignado INSS vai em 96x… aqui o prazo é uma das melhores vantagens.”</p>
-          <p class="muted"><strong>Objetivo:</strong> reframe: “muitas parcelas” → parcela menor, fôlego e organização.</p>
-        </div>
-
-        <div class="callout">
-          Próximo passo sempre tem que ser <strong>uma ação</strong>. Um clique. Uma resposta.
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== MÓDULO 05 ===== -->
-    <section class="slide section-head" data-title="Módulo 05">
-      <div class="slide-inner">
-        <p class="slide-kicker">MÓDULO 05</p>
-        <h2 class="slide-h2">Vendas & Conversa Inteligente • Criação de Cenários</h2>
-        <p class="slide-lead">
-          Cenário coerente = história + realidade do cliente. A ferramenta é a sondagem.
-        </p>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Linha do tempo">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Linha do tempo para criar cenário</h2>
-        <div class="glass highlight">
-          <ol class="ordered">
-            <li>Descobrir contexto</li>
-            <li>Validar necessidade</li>
-            <li>Construir exemplo coerente</li>
-            <li>Conduzir próximo passo</li>
-          </ol>
-          <p class="muted">Regra: cenário bom parece “óbvio” — porque encaixa na vida do cliente.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="O que é sondagem">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Sondagem</h2>
-        <div class="grid-2">
-          <div class="glass">
-            <h3>Definição</h3>
-            <p class="muted">Arte de descobrir detalhes da vida do cliente para direcionar a conversa.</p>
-          </div>
-          <div class="glass highlight">
-            <h3>Por que funciona?</h3>
-            <p>Você para de “oferecer empréstimo” e passa a <strong>resolver um cenário real</strong>. O cliente baixa a guarda.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Sondagem direta">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Sondagem Direta</h2>
-        <div class="glass">
-          <p class="muted">Perguntas abertas e objetivas para coletar fatos. Fatos viram cenário.</p>
-          <ul class="bullets">
-            <li>Você tem carro ou moto?</li>
-            <li>Tem dívida no cartão hoje?</li>
-            <li>Se esse valor caísse na conta, o que faria primeiro?</li>
-            <li>Tem financiamento/parcelas te apertando?</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Sondagem indireta">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Sondagem Indireta</h2>
-        <div class="glass highlight">
-          <p class="quote">“Se você tem financiamento de carro/moto/casa, esse valor ajuda a pagar parcelas de trás pra frente, reduzindo juros e quantidade, quitando mais rápido.”</p>
-          <p class="muted"><strong>Objetivo:</strong> plantar ideias sem interrogatório. O cliente se encaixa e entrega a informação.</p>
-        </div>
-
-        <div class="callout">
-          Use 2–3 exemplos e pare. Deixe o cliente escolher onde se encaixa.
-        </div>
-      </div>
-    </section>
-
-    <section class="slide" data-title="Checklist final">
-      <div class="slide-inner">
-        <h2 class="slide-h2">Checklist de execução (conversa)</h2>
-        <div class="glass">
-          <ul class="check">
-            <li><input type="checkbox"> Identifiquei 1 contexto real (fato)</li>
-            <li><input type="checkbox"> Escolhi 1 cenário coerente (história simples)</li>
-            <li><input type="checkbox"> Conectei cenário com benefício (alívio/economia/organização)</li>
-            <li><input type="checkbox"> Direcionei 1 próximo passo (Whats/simulação/confirmação)</li>
-            <li><input type="checkbox"> Mantive tom calmo, direto e profissional</li>
-          </ul>
-        </div>
-
-        <div class="slide-cta">
-          <button class="deck-btn deck-btn-ghost" data-go="0">Voltar ao início</button>
-          <button class="deck-btn deck-btn-primary" id="btnFinish">Finalizar</button>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Navegação lateral (dots) -->
-  <nav class="deck-dots" aria-label="Navegação por slides" id="dots"></nav>
-
-  <script src="./assets/deck.js"></script>
   <script>
-    document.getElementById("btnLogout").addEventListener("click", () => window.N1DeckAuth.deckLogout());
-    document.getElementById("btnOverview").addEventListener("click", () => window.DeckUI.toggleOverview());
-    document.getElementById("btnFinish").addEventListener("click", () => alert("Treinamento finalizado. Excelente."));
+    // ===============================
+    // SLIDES DATA (MÓDULOS 01–05)
+    // ===============================
+    const slides = [
+      // CAPA
+      {
+        kicker: "N1 • OPERAÇÃO & PERFORMANCE",
+        title: "Treinamento N1",
+        subtitle: "Apresentação oficial • Módulos 01 a 05",
+        leftTitle: "Como usar",
+        leftBullets: [
+          "<strong>Teclado:</strong> → próximo | ← voltar | Espaço avança",
+          "<strong>Celular:</strong> arraste para o lado (swipe)",
+          "<strong>Objetivo:</strong> padrão, disciplina e conversão com consistência"
+        ],
+        rightTitle: "Estrutura",
+        rightBullets: [
+          "<strong>Módulo 01:</strong> Cultura & Padrões",
+          "<strong>Módulo 02:</strong> Produto • CLT",
+          "<strong>Módulo 03:</strong> Produto • INSS",
+          "<strong>Módulo 04:</strong> Vendas • Objeções",
+          "<strong>Módulo 05:</strong> Sondagem • Cenários"
+        ],
+        chips: ["FULLSCREEN", "N1 Premium", "Execução Simples"]
+      },
 
-    const u = window.N1DeckAuth.deckUser();
-    document.getElementById("deckUserLabel").textContent = u ? `@${u}` : "";
+      // SUMÁRIO
+      {
+        kicker: "SUMÁRIO",
+        title: "Mapa do Treinamento",
+        subtitle: "Visão rápida do que você vai dominar.",
+        leftTitle: "Identidade e padrão",
+        leftBullets: [
+          "<strong>Quem somos</strong>, missão, visão, valores",
+          "Código de conduta",
+          "Campanhas e regras internas"
+        ],
+        rightTitle: "Produto + Conversão",
+        rightBullets: [
+          "<strong>CLT:</strong> regras, elegibilidade, desligamento, bancos, docs",
+          "<strong>INSS:</strong> estados, DDB, espécies, limites, contratação",
+          "<strong>Objeções:</strong> 3 críticas + execução",
+          "<strong>Cenários:</strong> sondagem direta/indireta"
+        ],
+        chips: ["Padrão", "Produto", "Vendas", "Sondagem"]
+      },
 
+      // =======================
+      // MÓDULO 01
+      // =======================
+      {
+        kicker: "MÓDULO 01 • CULTURA & PADRÕES",
+        title: "Quem Somos",
+        subtitle: "Base para executar com consistência dentro da N1.",
+        leftTitle: "O que você vai levar",
+        leftBullets: [
+          "Entender o posicionamento e o papel da N1",
+          "Executar com conduta e postura profissional",
+          "Conhecer regras e campanhas internas"
+        ],
+        rightTitle: "Direção do módulo",
+        rightBullets: [
+          "Identidade → comportamento → padrão",
+          "Consistência gera confiança",
+          "Padrão é o que mantém performance"
+        ],
+        chips: ["Disciplina", "Cultura", "Padrão N1"]
+      },
+      {
+        kicker: "MÓDULO 01 • 1) QUEM SOMOS",
+        title: "N1 Negócios",
+        subtitle: "Correspondente bancária • Plataforma digital de serviços financeiros.",
+        leftTitle: "Definição oficial",
+        leftBullets: [
+          "Conectamos clientes às melhores soluções financeiras do mercado",
+          "Intermediação entre instituições financeiras e clientes",
+          "Foco em <strong>transparência</strong>, <strong>segurança</strong> e <strong>agilidade</strong>"
+        ],
+        rightTitle: "Ponto operacional",
+        rightBullets: [
+          "Você representa a empresa na voz",
+          "Padrão de fala = padrão de marca",
+          "Tudo que você promete precisa estar dentro da regra"
+        ],
+        chips: ["Transparência", "Segurança", "Agilidade"]
+      },
+      {
+        kicker: "MÓDULO 01 • (PLACEHOLDER)",
+        title: "Estrutura & Liderança",
+        subtitle: "Quando você tiver o organograma, entra aqui.",
+        leftTitle: "Organograma",
+        leftBullets: [
+          "Placeholder: inserir imagem/estrutura quando disponível"
+        ],
+        rightTitle: "Liderança",
+        rightBullets: [
+          "<strong>João Nunes</strong> — (breve descrição pessoal)",
+          "<strong>Lucas Curcio</strong> — (breve descrição pessoal)"
+        ],
+        chips: ["Organograma", "Estrutura"]
+      },
+      {
+        kicker: "MÓDULO 01 • 2) MISSÃO & VISÃO",
+        title: "Direção da Empresa",
+        subtitle: "O que nos guia no longo prazo.",
+        leftTitle: "Missão",
+        leftBullets: [
+          "Proporcionar soluções inovadoras e acessíveis",
+          "Permitir que clientes alcancem objetivos financeiros",
+          "Com <strong>confiança</strong> e <strong>segurança</strong>"
+        ],
+        rightTitle: "Visão",
+        rightBullets: [
+          "Ser referência em soluções financeiras integradas",
+          "Reconhecida por inovação contínua",
+          "Excelência no atendimento e acessibilidade financeira"
+        ],
+        chips: ["Missão", "Visão", "Direção"]
+      },
+      {
+        kicker: "MÓDULO 01 • 3) VALORES (PADRÃO N1)",
+        title: "Valores que viram execução",
+        subtitle: "O valor só existe quando aparece no comportamento.",
+        leftTitle: "Valores",
+        leftBullets: [
+          "Pessoas no centro das decisões",
+          "Ambiente positivo molda resultados extraordinários",
+          "Fanáticos por resultados",
+          "Inovar é a chave para construir um amanhã melhor",
+          "Honestidade é a base de toda relação",
+          "Espírito de dono",
+          "Excelência em cada entrega"
+        ],
+        rightTitle: "Aplicação prática",
+        rightBullets: [
+          "Tom de voz profissional",
+          "Promessa = regra",
+          "Postura e disciplina diária",
+          "Entrega consistente (não é pico, é padrão)"
+        ],
+        chips: ["Espírito de dono", "Excelência", "Resultados"]
+      },
+      {
+        kicker: "MÓDULO 01 • 4) CÓDIGO DE CONDUTA",
+        title: "Padrão de convivência",
+        subtitle: "Operação forte exige respeito, clareza e responsabilidade.",
+        leftTitle: "Conduta",
+        leftBullets: [
+          "Respeito mútuo",
+          "Comunicação clara e amigável",
+          "Pontualidade",
+          "Responsabilidade",
+          "Confidencialidade",
+          "Trabalho em equipe",
+          "Aparência profissional",
+          "Atitude positiva",
+          "Feedback construtivo",
+          "Cumprimento das regras"
+        ],
+        rightTitle: "Regra de ouro",
+        rightBullets: [
+          "Você não representa só você",
+          "Você representa o <strong>padrão N1</strong>",
+          "Profissionalismo é repetição diária"
+        ],
+        chips: ["Postura", "Disciplina", "Profissionalismo"]
+      },
+      {
+        kicker: "MÓDULO 01 • 5) CAMPANHAS N1",
+        title: "Campanhas internas",
+        subtitle: "Incentivo + cultura de resultado.",
+        leftTitle: "Indicação vale dinheiro",
+        leftBullets: [
+          "Indique um amigo e se ele for contratado você pode ganhar <strong>R$ 200</strong>",
+          "<strong>14 dias:</strong> R$ 100",
+          "<strong>60 dias:</strong> R$ 100",
+          "<strong>Total:</strong> R$ 200 por indicação contratada"
+        ],
+        rightTitle: "Campanha semanal (operação)",
+        rightBullets: [
+          "Meta semanal batida = happy hour sexta após 18:00",
+          "Ranking semanal: premiação até <strong>R$ 500</strong>"
+        ],
+        chips: ["Campanhas", "Meta", "Ranking"]
+      },
+      {
+        kicker: "MÓDULO 01 • 6) REGRAS N1",
+        title: "Regras & Diretrizes",
+        subtitle: "Disciplina, respeito e padrão profissional.",
+        leftTitle: "Disciplina operacional",
+        leftBullets: [
+          "Horas extras somente com autorização prévia e formalizada",
+          "Ausência: comunicar liderança antecipadamente/imediatamente",
+          "Bater ponto conforme horário e respeitar intervalos",
+          "Ausência: justificar com declaração ou atestado"
+        ],
+        rightTitle: "Conduta + benefícios",
+        rightBullets: [
+          "Sem comentários racistas/homofóbicos/ofensivos (advertência/suspensão)",
+          "Ambiente limpo e organizado (inclusive área individual)",
+          "Zelar por equipamentos (headset, PC, etc.)",
+          "Dress code: proibido boné, time, cropped/decotes excessivos, etc.",
+          "Experiência: 14 + 46 dias; salário até 5º dia útil",
+          "VA/VT na experiência: semanal; após experiência: mensal"
+        ],
+        chips: ["Regras", "Padrão", "Operação"]
+      },
+
+      // =======================
+      // MÓDULO 02 (CLT)
+      // =======================
+      {
+        kicker: "MÓDULO 02 • PRODUTO",
+        title: "Crédito do Trabalhador (CLT)",
+        subtitle: "Desconto em folha • regras claras de elegibilidade e desligamento.",
+        leftTitle: "Resumo rápido",
+        leftBullets: [
+          "Desconto em folha (antes do salário cair)",
+          "Sem consulta SPC/SERASA (conforme regra do produto)",
+          "Até 48x • juros a partir de <strong>2,9% a.m.</strong>"
+        ],
+        rightTitle: "Ponto crítico",
+        rightBullets: [
+          "Nunca prometa antes de validar elegibilidade",
+          "Regra do banco manda",
+          "Operação segura = conversão sustentável"
+        ],
+        chips: ["CLT", "48x", "2,9% a.m."]
+      },
+      {
+        kicker: "MÓDULO 02 • 1) O QUE É",
+        title: "O que é CLT",
+        subtitle: "Empréstimo com desconto direto em folha.",
+        leftTitle: "Definição",
+        leftBullets: [
+          "Modalidade destinada a pessoas no regime CLT",
+          "Desconto acontece antes do salário cair (em folha)",
+          "Cliente escolhe conta de recebimento conforme regra do banco"
+        ],
+        rightTitle: "Como falar (padrão)",
+        rightBullets: [
+          "Explicar simples: desconto em folha",
+          "Deixar claro: regra varia por banco",
+          "Conduzir: validação → simulação → próxima ação"
+        ],
+        chips: ["Produto", "Explicação simples"]
+      },
+      {
+        kicker: "MÓDULO 02 • 2) ELEGIBILIDADE",
+        title: "Regras gerais",
+        subtitle: "Critérios variam por banco — sempre validar.",
+        leftTitle: "Critérios comuns",
+        leftBullets: [
+          "Tempo de CLT: normalmente 6 meses na mesma empresa",
+          "Empresa elegível: eSocial/Dataprev (tempo mínimo varia)",
+          "Idade mínima/máxima conforme banco"
+        ],
+        rightTitle: "Observação operacional",
+        rightBullets: [
+          "<strong>Validar regra do banco</strong> antes de prometer valor/prazo",
+          "Sem validação = retrabalho + queda de conversão"
+        ],
+        chips: ["Elegibilidade", "Validação"]
+      },
+      {
+        kicker: "MÓDULO 02 • 3) VANTAGENS",
+        title: "Vantagens do CLT",
+        subtitle: "Clareza e benefício direto para o cliente.",
+        leftTitle: "Vantagens",
+        leftBullets: [
+          "Desconto em folha",
+          "Não consulta SPC/SERASA",
+          "Parcela em até 48x",
+          "Juros a partir de 2,9% ao mês"
+        ],
+        rightTitle: "Como vender sem prometer",
+        rightBullets: [
+          "Mostre vantagem <strong>do modelo</strong> (folha, prazo)",
+          "Evite promessas absolutas",
+          "Sempre termine com próxima ação"
+        ],
+        chips: ["Benefício", "Padrão"]
+      },
+      {
+        kicker: "MÓDULO 02 • 4) DESLIGAMENTO",
+        title: "Regras de desligamento",
+        subtitle: "O que acontece se for demitido ou pedir demissão.",
+        leftTitle: "Foi demitido",
+        leftBullets: [
+          "Desconta 100% da multa rescisória",
+          "Desconta 10% do FGTS",
+          "Desconta 35% da rescisão",
+          "Se sobrar saldo, transfere para novo emprego via eSocial"
+        ],
+        rightTitle: "Pediu demissão",
+        rightBullets: [
+          "Saldo continua descontando na folha do próximo emprego",
+          "Transferência automática via eSocial"
+        ],
+        chips: ["Desligamento", "eSocial"]
+      },
+      {
+        kicker: "MÓDULO 02 • 5) BANCOS PARCEIROS",
+        title: "Lista de bancos",
+        subtitle: "Referência rápida (códigos).",
+        leftTitle: "Bancos (parte 1)",
+        leftBullets: [
+          "047 — Banese",
+          "021 — Banestes",
+          "237 — Bradesco",
+          "756 — Bancoob",
+          "001 — Banco do Brasil",
+          "004 — BNB",
+          "070 — BRB",
+          "041 — Banrisul",
+          "104 — Caixa / Caixa Tem"
+        ],
+        rightTitle: "Bancos (parte 2)",
+        rightBullets: [
+          "341 — Itaú",
+          "623 — Pan",
+          "033 — Santander",
+          "318 — BMG",
+          "748 — Sicredi",
+          "077 — Inter",
+          "260 — Nubank",
+          "336 — C6"
+        ],
+        chips: ["Bancos", "Referência"]
+      },
+      {
+        kicker: "MÓDULO 02 • 6) DOCUMENTOS",
+        title: "Documentos aceitos",
+        subtitle: "Padrão: legibilidade e dados corretos.",
+        leftTitle: "Aceitos",
+        leftBullets: [
+          "RG (digital e físico)",
+          "CNH (digital e físico)",
+          "Carteira de Trabalho (física)"
+        ],
+        rightTitle: "Padrão operacional",
+        rightBullets: [
+          "Conferir legibilidade e dados antes de enviar",
+          "Evita retrabalho e queda de conversão"
+        ],
+        chips: ["Docs", "Qualidade", "Conversão"]
+      },
+
+      // =======================
+      // MÓDULO 03 (INSS)
+      // =======================
+      {
+        kicker: "MÓDULO 03 • PRODUTO • INSS",
+        title: "Crédito Pessoal (INSS)",
+        subtitle: "Débito em conta • regras por estado/DDB/espécie.",
+        leftTitle: "Pontos críticos",
+        leftBullets: [
+          "Não usa margem de consignado",
+          "Débito em conta (após cair)",
+          "Restrições por Estado / DDB / Espécie"
+        ],
+        rightTitle: "Direção do módulo",
+        rightBullets: [
+          "Operar dentro da regra = segurança + escala",
+          "Regra primeiro, promessa depois",
+          "Validação antes de conduzir"
+        ],
+        chips: ["INSS", "Regra", "Débito em conta"]
+      },
+      {
+        kicker: "MÓDULO 03 • 1) O QUE É",
+        title: "Para quem é",
+        subtitle: "Aposentados e pensionistas do INSS.",
+        leftTitle: "Definição",
+        leftBullets: [
+          "Destinado para aposentados e pensionistas do INSS",
+          "Não utiliza margem do consignado",
+          "Pagamento via débito em conta (desconta depois que cai)"
+        ],
+        rightTitle: "Padrão de fala",
+        rightBullets: [
+          "Deixar claro: não é consignado",
+          "Explicar débito em conta em 1 frase",
+          "Fechar com próxima ação (validação)"
+        ],
+        chips: ["Clareza", "Controle"]
+      },
+      {
+        kicker: "MÓDULO 03 • 2) ESTADOS BLOQUEADOS",
+        title: "Estados que não atendemos",
+        subtitle: "Bloqueio por regra do produto.",
+        leftTitle: "Não atendemos",
+        leftBullets: [
+          "AC • AP • RO • TO • PB"
+        ],
+        rightTitle: "Bloqueio por DDB (2010–2014)",
+        rightBullets: [
+          "Para DDB entre 2010 e 2014: AP • AM • RR • TO • RO • AC • CE • PA • MA • PI"
+        ],
+        chips: ["Estados", "DDB"]
+      },
+      {
+        kicker: "MÓDULO 03 • 3) ESPÉCIES ACEITAS",
+        title: "Lista aceita (operar somente aqui)",
+        subtitle: "Se não estiver na lista, não prosseguir.",
+        leftTitle: "Orientação",
+        leftBullets: [
+          "Somente operar dentro desta lista",
+          "Fora da lista = não segue",
+          "Regra protege a operação"
+        ],
+        rightTitle: "Nota",
+        rightBullets: [
+          "Se você quiser, eu monto a lista em <strong>tela rolável</strong> no próprio slide (layout premium) para ficar “consulta rápida”"
+        ],
+        chips: ["Espécies", "Regra"]
+      },
+      {
+        kicker: "MÓDULO 03 • 4) ESPÉCIES NÃO ACEITAS",
+        title: "Se cair em qualquer uma: parar",
+        subtitle: "Bloqueio imediato.",
+        leftTitle: "Não aceitas",
+        leftBullets: [
+          "ESPÉCIE 37 — Aposentadoria de extra numerário da União (ex SASSE)",
+          "ESPÉCIE 44 — Aposentadoria especial de aeronauta",
+          "ESPÉCIE 46 — Aposentadoria especial",
+          "ESPÉCIE 49 — Aposentadoria ordinária",
+          "ESPÉCIE 58 — Aposentadoria excepcional de anistiado",
+          "ESPÉCIE 87 — Amparo social PCD",
+          "ESPÉCIE 88 — Amparo social ao idoso"
+        ],
+        rightTitle: "Ponto de controle",
+        rightBullets: [
+          "Não insistir",
+          "Não criar expectativa",
+          "Direcionar para alternativa (se existir) com honestidade"
+        ],
+        chips: ["Bloqueio", "Compliance"]
+      },
+      {
+        kicker: "MÓDULO 03 • 5) PARÂMETROS",
+        title: "Parâmetros do produto",
+        subtitle: "Referência para operar sem ruído.",
+        leftTitle: "Valores / parcelas",
+        leftBullets: [
+          "<strong>Máx aprox:</strong> R$ 2.050,84 • <strong>Mín:</strong> R$ 200,00",
+          "<strong>Parcela máx:</strong> R$ 486,30",
+          "<strong>Prazo:</strong> 6x a 12x"
+        ],
+        rightTitle: "Idade / taxa",
+        rightBullets: [
+          "<strong>Idade:</strong> mín 22 • máx 80 (conforme regra vigente)",
+          "<strong>Taxa:</strong> 19,85%"
+        ],
+        chips: ["Parâmetros", "Referência"]
+      },
+      {
+        kicker: "MÓDULO 03 • 6) DOCUMENTOS",
+        title: "Documentos aceitos",
+        subtitle: "Importante: assinatura por escrito.",
+        leftTitle: "Aceitos",
+        leftBullets: [
+          "RG (físico/digital)",
+          "CNH (físico/digital)",
+          "Carteira de Trabalho (físico)"
+        ],
+        rightTitle: "Importante",
+        rightBullets: [
+          "Todos devem conter <strong>assinatura por escrito</strong>",
+          "Sem assinatura = risco de reprovação / retrabalho"
+        ],
+        chips: ["Docs", "Assinatura"]
+      },
+      {
+        kicker: "MÓDULO 03 • 7) CONTRATAÇÃO",
+        title: "Regras para contratar",
+        subtitle: "Checklist obrigatório.",
+        leftTitle: "Obrigatório",
+        leftBullets: [
+          "Não ser cliente Mercantil",
+          "Fazer portabilidade do benefício para o Mercantil",
+          "Mercantil cria uma conta para o cliente",
+          "Estar dentro das regras citadas (estado/DDB/espécie/limites)"
+        ],
+        rightTitle: "Execução",
+        rightBullets: [
+          "Validar → confirmar → conduzir próxima ação",
+          "Sem improviso. Sem promessa fora da regra."
+        ],
+        chips: ["Checklist", "Padrão"]
+      },
+
+      // =======================
+      // MÓDULO 04 (OBJEÇÕES)
+      // =======================
+      {
+        kicker: "MÓDULO 04 • VENDAS & CONVERSÃO",
+        title: "Book de Objeções",
+        subtitle: "Contornar resistência sem confronto e conduzir para o próximo passo.",
+        leftTitle: "O que você vai levar",
+        leftBullets: [
+          "Respostas estruturadas para 3 objeções críticas",
+          "Objetivo por trás de cada frase (por que funciona)",
+          "Exemplos práticos para plantar ideia e fechar"
+        ],
+        rightTitle: "Regra de ouro",
+        rightBullets: [
+          "Você não discute e não bate de frente",
+          "Reconhecer → Motivo → Direcionar (próximo passo)",
+          "Próximo passo tem que ser <strong>uma ação</strong>"
+        ],
+        chips: ["Controle", "Próximo passo", "Conversão"]
+      },
+      {
+        kicker: "MÓDULO 04 • 2) “NÃO TENHO INTERESSE”",
+        title: "Não é rejeição real (na maioria)",
+        subtitle: "Pode ser defesa, pressa ou vergonha de expor situação.",
+        leftTitle: "Resposta (a) — levar pro WhatsApp",
+        leftBullets: [
+          "“Entendo que você não tenha interesse, mas nós não consultamos SPC nem SERASA...”",
+          "“Esse telefone também é WhatsApp? Te mandei uma mensagem automática...”",
+          "“Me responde com um ‘oi’ e eu te mando a simulação por escrito.”"
+        ],
+        rightTitle: "Objetivo",
+        rightBullets: [
+          "Remover barreira psicológica do “nome sujo”",
+          "Criar caminho leve: WhatsApp → simulação escrita → ligação curta",
+          "Conduzir sem pressão"
+        ],
+        chips: ["WhatsApp", "Abertura", "Simulação"]
+      },
+      {
+        kicker: "MÓDULO 04 • “NÃO TENHO INTERESSE” (B)",
+        title: "Conectar com dor real (cartão)",
+        subtitle: "Reposicionar como troca de dívida cara por dívida mais leve.",
+        leftTitle: "Resposta (b)",
+        leftBullets: [
+          "“Entendo que você não tenha interesse, mas se você tiver dívidas no cartão...”",
+          "“Você pode aproveitar essa liberação e quitar.”"
+        ],
+        rightTitle: "Exemplo prático",
+        rightBullets: [
+          "Cartão: dívida R$ 2.000 / parcela R$ 300",
+          "Empréstimo: R$ 2.000 / parcela R$ 250",
+          "<strong>Economia:</strong> R$ 50/mês = “aumento de salário”",
+          "Volta do limite = fundo de emergência"
+        ],
+        chips: ["Cartão", "Economia", "Reframe"]
+      },
+      {
+        kicker: "MÓDULO 04 • 3) “JUROS ALTO”",
+        title: "Aqui você não vende taxa",
+        subtitle: "Você compara com dívida cara e planta usos inteligentes.",
+        leftTitle: "Resposta sugerida",
+        leftBullets: [
+          "“Na verdade, é um dos mais baixos do mercado...”",
+          "“Cartão chegou a 37,5% ao mês em alguns cenários; nosso a partir de 2,9% a.m.”",
+          "“Isso pode ajudar: adiantar financiamento, adiantar aluguel ou quitar cartão.”"
+        ],
+        rightTitle: "Objetivo",
+        rightBullets: [
+          "Tirar foco da taxa",
+          "Colocar foco em benefício prático",
+          "Reduzir dívida cara / reduzir prazo / organizar orçamento"
+        ],
+        chips: ["Comparativo", "Benefício", "Uso inteligente"]
+      },
+      {
+        kicker: "MÓDULO 04 • 4) “MUITAS PARCELAS”",
+        title: "Reframe total",
+        subtitle: "Muitas parcelas vira parcela menor + fôlego no orçamento.",
+        leftTitle: "Resposta sugerida",
+        leftBullets: [
+          "“Entendo que pareça muitas parcelas, mas não é...”",
+          "“Consignado INSS é 96x (5–6 anos a mais).”",
+          "“Aqui o prazo é uma das melhores vantagens.”"
+        ],
+        rightTitle: "Objetivo",
+        rightBullets: [
+          "Mudar a percepção (de peso → de vantagem)",
+          "Parcela menor = organização",
+          "Cliente sente controle"
+        ],
+        chips: ["Parcela menor", "Organização"]
+      },
+      {
+        kicker: "MÓDULO 04 • 5) CHECKLIST",
+        title: "Checklist de execução na ligação",
+        subtitle: "Consistência = conversão.",
+        leftTitle: "Checklist",
+        leftBullets: [
+          "Reconheci a objeção sem discutir",
+          "Reposicionei com motivo claro (SPC/Serasa, cartão, comparativo)",
+          "Dei um próximo passo único (WhatsApp / simulação / explicação curta)",
+          "Mantive tom calmo, direto e profissional"
+        ],
+        rightTitle: "Dica prática",
+        rightBullets: [
+          "Próximo passo sempre tem que ser simples",
+          "Uma ação. Um clique. Uma resposta."
+        ],
+        chips: ["Execução", "Controle", "Próximo passo"]
+      },
+
+      // =======================
+      // MÓDULO 05 (CENÁRIOS)
+      // =======================
+      {
+        kicker: "MÓDULO 05 • VENDAS & CONVERSA INTELIGENTE",
+        title: "Criação de Cenários",
+        subtitle: "Sondagem = descobrir detalhes para construir história coerente.",
+        leftTitle: "O que você vai levar",
+        leftBullets: [
+          "Linha do tempo clara para criar cenário",
+          "Sondagem direta: perguntas que abrem informação",
+          "Sondagem indireta: exemplos que guiam decisão"
+        ],
+        rightTitle: "Por que isso converte",
+        rightBullets: [
+          "Você para de oferecer empréstimo",
+          "E passa a resolver um cenário real",
+          "O cliente sente sentido → baixa a guarda"
+        ],
+        chips: ["Sondagem", "Cenário", "Conversão"]
+      },
+      {
+        kicker: "MÓDULO 05 • 1) LINHA DO TEMPO",
+        title: "Como criar um cenário",
+        subtitle: "Cenário é história + realidade do cliente (sem chute).",
+        leftTitle: "Ordem certa",
+        leftBullets: [
+          "1) Descobrir contexto",
+          "2) Validar necessidade",
+          "3) Construir exemplo coerente",
+          "4) Conduzir próximo passo"
+        ],
+        rightTitle: "Regra",
+        rightBullets: [
+          "Cenário bom parece “óbvio” para o cliente",
+          "Porque encaixa na vida dele"
+        ],
+        chips: ["Ordem", "Coerência"]
+      },
+      {
+        kicker: "MÓDULO 05 • 2) O QUE É SONDAGEM",
+        title: "Sondagem",
+        subtitle: "A arte de descobrir coisas sobre a vida da pessoa.",
+        leftTitle: "Definição",
+        leftBullets: [
+          "Descobrir detalhes para direcionar a conversa",
+          "Quanto melhor a sondagem, mais fácil fica",
+          "Criar valor, reduzir resistência e fechar"
+        ],
+        rightTitle: "Efeito prático",
+        rightBullets: [
+          "Cliente sente personalização",
+          "Você mantém controle com naturalidade",
+          "Conversa deixa de ser “oferta”"
+        ],
+        chips: ["Personalização", "Controle"]
+      },
+      {
+        kicker: "MÓDULO 05 • 3) SONDAGEM DIRETA",
+        title: "Pergunta aberta (objetiva)",
+        subtitle: "Coleta fatos → fatos viram cenário.",
+        leftTitle: "Exemplos de perguntas",
+        leftBullets: [
+          "Você tem carro ou moto?",
+          "Tem alguma dívida no cartão de crédito hoje?",
+          "Se esse valor caísse na sua conta, o que você faria primeiro?",
+          "Tem financiamento/parcelas que estão te apertando?"
+        ],
+        rightTitle: "Objetivo",
+        rightBullets: [
+          "Coletar <strong>variáveis reais</strong>",
+          "Montar cenário coerente",
+          "Conduzir próxima ação com confiança"
+        ],
+        chips: ["Fatos", "Coerência"]
+      },
+      {
+        kicker: "MÓDULO 05 • 4) SONDAGEM INDIRETA",
+        title: "Plantar ideia com exemplos",
+        subtitle: "Você dá opções e observa identificação.",
+        leftTitle: "Modelo de fala",
+        leftBullets: [
+          "“Se você tem financiamento de carro, moto ou casa...”",
+          "“Esse valor ajuda a pagar parcelas de trás pra frente...”",
+          "“Reduz juros e quantidade de parcelas, quitando mais rápido.”"
+        ],
+        rightTitle: "Objetivo",
+        rightBullets: [
+          "Evitar clima de interrogatório",
+          "Cliente se encaixa sozinho no cenário",
+          "Ele mesmo entrega informação"
+        ],
+        chips: ["Exemplos", "Identificação"]
+      },
+      {
+        kicker: "MÓDULO 05 • 5) ADAPTAÇÃO",
+        title: "Adaptar para cada perfil",
+        subtitle: "Mesma linha de raciocínio, histórias diferentes.",
+        leftTitle: "Checklist de adaptação",
+        leftBullets: [
+          "Identifiquei 1 contexto real do cliente (fato)",
+          "Escolhi 1 cenário coerente (história simples)",
+          "Conectei cenário com benefício (economia/organização/alívio)",
+          "Conduzi para próximo passo (WhatsApp/simulação/confirmação)"
+        ],
+        rightTitle: "Regra final",
+        rightBullets: [
+          "Cenário não é teatro",
+          "É clareza com base em realidade"
+        ],
+        chips: ["Perfil", "Benefício", "Próximo passo"]
+      },
+
+      // FECHAMENTO
+      {
+        kicker: "FECHAMENTO",
+        title: "Padrão + Regra + Conversão",
+        subtitle: "Quem executa com consistência vira referência.",
+        leftTitle: "O que sustenta performance",
+        leftBullets: [
+          "<strong>Padrão</strong> (cultura + disciplina)",
+          "<strong>Regra</strong> (produto sem ruído)",
+          "<strong>Controle</strong> (objeções + cenários)",
+          "<strong>Próximo passo</strong> simples em toda conversa"
+        ],
+        rightTitle: "Próxima ação",
+        rightBullets: [
+          "Revisar módulos 02 e 03 até falar sem travar",
+          "Treinar objeções 04 em voz alta",
+          "Aplicar sondagem 05 nas próximas ligações"
+        ],
+        chips: ["Alta performance", "N1", "Execução"]
+      }
+    ];
+
+    // ===============================
+    // RENDER
+    // ===============================
+    const stage = document.getElementById("stage");
+    const metaKicker = document.getElementById("metaKicker");
+    const metaTitle  = document.getElementById("metaTitle");
+    const counter    = document.getElementById("counter");
+    const bar        = document.getElementById("bar");
+
+    let idx = 0;
+    const nodes = [];
+
+    function slideTemplate(s){
+      const chips = (s.chips || []).map(t => `<span class="chip">${t}</span>`).join("");
+      return `
+        <article class="slide" aria-label="Slide">
+          <div class="slide-inner">
+            <div class="kicker">${s.kicker || ""}</div>
+            <h1 class="h1">${s.title || ""}</h1>
+            ${s.subtitle ? `<p class="lead">${s.subtitle}</p>` : ""}
+
+            <div class="cols">
+              <section class="panel">
+                <div class="panel-title">${s.leftTitle || "Conteúdo"}</div>
+                <ul class="bullets">
+                  ${(s.leftBullets || []).map(li => `<li>${li}</li>`).join("")}
+                </ul>
+                ${chips ? `<div class="chips">${chips}</div>` : ""}
+                ${s.callout ? `<div class="callout">${s.callout}</div>` : ""}
+              </section>
+
+              <section class="panel">
+                <div class="panel-title">${s.rightTitle || "Pontos-chave"}</div>
+                <ul class="bullets">
+                  ${(s.rightBullets || []).map(li => `<li>${li}</li>`).join("")}
+                </ul>
+                ${s.rightCallout ? `<div class="callout">${s.rightCallout}</div>` : ""}
+              </section>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function mount(){
+      stage.innerHTML = slides.map(slideTemplate).join("");
+      stage.querySelectorAll(".slide").forEach((n) => nodes.push(n));
+      show(0, true);
+    }
+
+    function clamp(n){ return Math.max(0, Math.min(slides.length - 1, n)); }
+
+    function show(next, instant=false){
+      const newIdx = clamp(next);
+      nodes.forEach((n,i) => {
+        n.classList.toggle("is-active", i === newIdx);
+        n.style.transitionDuration = instant ? "0ms" : "";
+      });
+
+      idx = newIdx;
+
+      const s = slides[idx];
+      metaKicker.textContent = (s.kicker || "SLIDE").split("•")[0].trim();
+      metaTitle.textContent  = s.title || "—";
+
+      counter.textContent = `${idx+1} / ${slides.length}`;
+      bar.style.width = `${((idx+1)/slides.length)*100}%`;
+
+      // Mantém URL com âncora (opcional)
+      history.replaceState(null, "", `#s${idx+1}`);
+    }
+
+    function next(){ show(idx+1); }
+    function prev(){ show(idx-1); }
+
+    document.getElementById("next").addEventListener("click", next);
+    document.getElementById("prev").addEventListener("click", prev);
+
+    // Atalhos
+    window.addEventListener("keydown", (e) => {
+      const k = e.key.toLowerCase();
+
+      if (k === "arrowright" || k === " " || k === "enter") { e.preventDefault(); next(); }
+      if (k === "arrowleft" || k === "backspace") { e.preventDefault(); prev(); }
+      if (k === "home") { e.preventDefault(); show(0); }
+      if (k === "end") { e.preventDefault(); show(slides.length-1); }
+      if (k === "escape") {
+        // volta pro portal
+        window.location.href = "../index.html";
+      }
+    });
+
+    // Swipe (mobile)
+    let startX = 0, startY = 0, locked = false;
+    stage.addEventListener("touchstart", (e) => {
+      const t = e.touches[0];
+      startX = t.clientX; startY = t.clientY;
+      locked = false;
+    }, {passive:true});
+
+    stage.addEventListener("touchmove", (e) => {
+      if (locked) return;
+      const t = e.touches[0];
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+      if (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy)){
+        locked = true;
+        dx < 0 ? next() : prev();
+      }
+    }, {passive:true});
+
+    // Sumário / Atalhos
+    document.getElementById("btnToc").addEventListener("click", () => show(1));
+    document.getElementById("btnHelp").addEventListener("click", () => {
+      alert(
+        "Atalhos:\\n\\n→ Próximo | ← Voltar\\nEspaço/Enter: Próximo\\nHome: Primeiro | End: Último\\nEsc: Voltar ao portal\\n\\nNo celular: swipe para o lado."
+      );
+    });
+
+    // Abrir pelo hash #sN
+    function fromHash(){
+      const m = (location.hash || "").match(/^#s(\\d+)$/);
+      if (m){
+        const n = parseInt(m[1],10);
+        if (!Number.isNaN(n)) show(n-1, true);
+      }
+    }
+
+    mount();
+    fromHash();
+    window.addEventListener("hashchange", fromHash);
   </script>
 </body>
 </html>
