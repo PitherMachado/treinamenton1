@@ -11,5 +11,6 @@ window.N1_USERS = [
 
   // Exemplos (você pode editar depois)
   { user: "Nunes.N1", pass: "N1@2026", role: "aluno", active: true },
+  { user: "Bianca.N1", pass: "N1@2026", role: "aluno", active: true },
   { user: "agente02", pass: "2222", role: "aluno", active: true }
 ];
