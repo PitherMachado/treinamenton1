@@ -1,1298 +1,198 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Slides • N1 Treinamento</title>
-  <meta name="description" content="Material de treinamento N1 em formato de apresentação fullscreen." />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N1 Treinamento • Operação Premium</title>
 
-  <!-- Usa sua paleta base -->
-  <link rel="stylesheet" href="../style.css" />
+<style>
+:root{
+  --bg1:#1a0026;
+  --bg2:#2b0040;
+  --accent:#d946ef;
+  --text:#ffffff;
+  --muted:#c084fc;
+}
 
-  <style>
-    /* ===============================
-       N1 SLIDES — FULLSCREEN DECK
-       =============================== */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
 
-    :root{
-      --deck-bg0: #070714;
-      --deck-bg1: #0b0b1c;
-      --deck-stroke: rgba(255,255,255,.08);
-      --deck-glass: rgba(255,255,255,.06);
-      --deck-glass2: rgba(255,255,255,.10);
-      --deck-text: #f4f6ff;
-      --deck-muted: rgba(244,246,255,.74);
-      --deck-muted2: rgba(244,246,255,.58);
-      --deck-shadow: 0 30px 80px rgba(0,0,0,.55);
+html,body{
+  height:100%;
+  background: radial-gradient(circle at top left, #3b0764, #1a0026 60%);
+  color:var(--text);
+  overflow:hidden;
+}
 
-      /* Se seu style.css já tem esses, perfeito — se não tiver, cai aqui */
-      --magenta-400: #ff2fd8;
-      --gradient-primary: linear-gradient(135deg,#2d0055 0%,#5c1b8f 40%,#b01278 70%,#ff2fd8 100%);
+.slides{
+  display:flex;
+  transition:transform 0.6s ease;
+  height:100vh;
+  width:100vw;
+}
 
-      --r20: 20px;
-      --r28: 28px;
-    }
+.slide{
+  min-width:100vw;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:60px;
+}
 
-    /* Reset mínimo para deck */
-    html, body{
-      height: 100%;
-      margin: 0;
-      background: var(--deck-bg0);
-      color: var(--deck-text);
-      overflow: hidden;
-      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-    }
+.content{
+  max-width:1000px;
+}
 
-    /* Fundo com movimento (luz varrendo) */
-    .deck-bg{
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle at 18% 26%, rgba(255,47,216,.20), transparent 40%),
-        radial-gradient(circle at 82% 72%, rgba(92,27,143,.25), transparent 52%),
-        linear-gradient(135deg, var(--deck-bg0) 0%, #120024 55%, var(--deck-bg1) 100%);
-      z-index: 0;
-    }
-    .deck-bg::before{
-      content:"";
-      position: absolute;
-      inset: -40%;
-      background:
-        radial-gradient(closest-side, rgba(255,47,216,.18), transparent 64%);
-      filter: blur(14px);
-      transform: translateX(-35%) rotate(12deg);
-      animation: glowSweep 10s ease-in-out infinite alternate;
-      opacity: .95;
-      pointer-events: none;
-    }
-    .deck-bg::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background: var(--gradient-primary);
-      opacity: .06;
-      animation: slowFloat 12s ease-in-out infinite alternate;
-      pointer-events:none;
-      mix-blend-mode: screen;
-    }
+h1{
+  font-size:56px;
+  font-weight:700;
+  margin-bottom:30px;
+}
 
-    @keyframes glowSweep{
-      0%   { transform: translateX(-35%) rotate(12deg); opacity: .75; }
-      100% { transform: translateX(35%) rotate(12deg);  opacity: 1; }
-    }
-    @keyframes slowFloat{
-      0%{ transform: scale(1) translateY(0); }
-      100%{ transform: scale(1.06) translateY(-18px); }
-    }
+h2{
+  font-size:40px;
+  margin-bottom:25px;
+  color:var(--muted);
+}
 
-    /* Layout */
-    .deck{
-      position: relative;
-      z-index: 1;
-      height: 100%;
-      width: 100%;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-    }
+p{
+  font-size:22px;
+  line-height:1.6;
+  opacity:0.9;
+}
 
-    /* Topbar minimalista */
-    .deck-top{
-      height: 64px;
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      padding: 0 22px;
-      backdrop-filter: blur(18px);
-      background: rgba(0,0,0,.25);
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
+ul{
+  margin-top:20px;
+}
 
-    .deck-brand{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      text-decoration:none;
-      color: inherit;
-      user-select:none;
-    }
-    .deck-dot{
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--magenta-400);
-      box-shadow: 0 0 25px rgba(255,47,216,.35);
-    }
-    .deck-brand strong{
-      font-size: 14px;
-      letter-spacing: .6px;
-      opacity: .95;
-    }
+li{
+  font-size:22px;
+  margin-bottom:15px;
+  opacity:0.9;
+}
 
-    .deck-actions{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-    }
+.nav{
+  position:fixed;
+  bottom:30px;
+  right:40px;
+  font-size:14px;
+  opacity:0.6;
+}
 
-    .deck-btn{
-      height: 34px;
-      padding: 0 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      color: var(--deck-text);
-      cursor:pointer;
-      transition: .25s ease;
-      font-weight: 600;
-      font-size: 13px;
-      text-decoration: none;
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      user-select:none;
-    }
-    .deck-btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(255,47,216,.35);
-      background: rgba(255,47,216,.10);
-    }
-    .deck-btn.primary{
-      background: var(--gradient-primary);
-      border-color: transparent;
-      box-shadow: 0 12px 30px rgba(255,47,216,.18);
-    }
-
-    /* Área dos slides */
-    .deck-stage{
-      position: relative;
-      height: 100%;
-      width: 100%;
-      display:flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    /* “Tela do slide” */
-    .slide{
-      width: min(1100px, 92vw);
-      height: min(620px, 74vh);
-      border-radius: var(--r28);
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: var(--deck-shadow);
-      backdrop-filter: blur(18px);
-      position: absolute;
-      inset: auto;
-      opacity: 0;
-      transform: translateY(10px) scale(.992);
-      transition: opacity .35s ease, transform .35s ease;
-      overflow: hidden;
-    }
-    .slide.is-active{
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      pointer-events: auto;
-    }
-    .slide::before{
-      content:"";
-      position:absolute;
-      inset:-35%;
-      background:
-        radial-gradient(circle at 30% 22%, rgba(255,47,216,.18), transparent 55%),
-        radial-gradient(circle at 78% 70%, rgba(92,27,143,.20), transparent 58%);
-      filter: blur(12px);
-      opacity: .95;
-      pointer-events:none;
-    }
-    .slide-inner{
-      position: relative;
-      z-index: 1;
-      height: 100%;
-      padding: 34px 40px;
-      display:flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .kicker{
-      color: var(--magenta-400);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      font-size: 12px;
-      opacity: .95;
-    }
-
-    .h1{
-      font-size: 44px;
-      line-height: 1.05;
-      margin: 0;
-      background: linear-gradient(90deg,#fff, #ff2fd8);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .lead{
-      font-size: 16px;
-      color: var(--deck-muted);
-      margin: 0;
-      max-width: 860px;
-    }
-
-    .cols{
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 18px;
-      margin-top: 6px;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .panel{
-      background: rgba(0,0,0,.20);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: var(--r20);
-      padding: 16px 16px;
-      overflow: auto;
-    }
-
-    .panel-title{
-      font-size: 13px;
-      color: rgba(255,255,255,.88);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    .bullets{
-      margin: 0;
-      padding-left: 18px;
-      color: var(--deck-muted);
-      display: grid;
-      gap: 8px;
-      font-size: 14px;
-      line-height: 1.45;
-    }
-
-    .bullets li strong{
-      color: rgba(255,255,255,.92);
-    }
-
-    .chips{
-      display:flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .chip{
-      height: 28px;
-      display:inline-flex;
-      align-items:center;
-      padding: 0 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      color: var(--deck-muted);
-      font-size: 12px;
-    }
-
-    .callout{
-      margin-top: 10px;
-      padding: 12px 14px;
-      border-radius: 16px;
-      border: 1px dashed rgba(255,255,255,.14);
-      background: rgba(255,255,255,.03);
-      color: var(--deck-muted);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    /* Footer do deck + progresso */
-    .deck-bottom{
-      height: 74px;
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 0 22px;
-      backdrop-filter: blur(18px);
-      background: rgba(0,0,0,.18);
-      border-top: 1px solid rgba(255,255,255,.06);
-    }
-
-    .deck-meta{
-      display:flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 220px;
-    }
-    .deck-meta .small{
-      font-size: 12px;
-      color: var(--deck-muted2);
-    }
-    .deck-meta .big{
-      font-size: 13px;
-      color: rgba(255,255,255,.92);
-      font-weight: 700;
-    }
-
-    .progress-wrap{
-      flex: 1;
-      display:flex;
-      align-items:center;
-      gap: 12px;
-      max-width: 640px;
-    }
-    .progress{
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.10);
-      overflow:hidden;
-      flex: 1;
-    }
-    .progress > i{
-      display:block;
-      height: 100%;
-      width: 0%;
-      background: var(--gradient-primary);
-      border-radius: 999px;
-      box-shadow: 0 0 22px rgba(255,47,216,.25);
-      transition: width .35s ease;
-    }
-    .progress-num{
-      font-size: 12px;
-      color: var(--deck-muted2);
-      width: 110px;
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .nav{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-    }
-
-    /* Responsivo */
-    @media (max-width: 920px){
-      .slide{ height: min(680px, 78vh); }
-      .slide-inner{ padding: 26px 22px; }
-      .h1{ font-size: 34px; }
-      .cols{ grid-template-columns: 1fr; }
-      .deck-meta{ min-width: 160px; }
-    }
-
-    /* Acessibilidade */
-    .sr-only{
-      position:absolute!important;
-      width:1px!important;
-      height:1px!important;
-      padding:0!important;
-      margin:-1px!important;
-      overflow:hidden!important;
-      clip:rect(0,0,0,0)!important;
-      white-space:nowrap!important;
-      border:0!important;
-    }
-  </style>
+.progress{
+  position:fixed;
+  bottom:0;
+  left:0;
+  height:4px;
+  background:var(--accent);
+  transition:width 0.6s ease;
+}
+</style>
 </head>
 
 <body>
-  <!-- Guard do slides -->
-  <script src="./assets/js/slides-auth.js"></script>
-  <script>window.N1SlidesAuth && window.N1SlidesAuth.slidesGuard();</script>
 
-  <div class="deck-bg" aria-hidden="true"></div>
+<div class="slides" id="slides">
 
-  <div class="deck" role="application" aria-label="Apresentação N1 em tela cheia">
-    <!-- TOP -->
-    <header class="deck-top">
-      <a class="deck-brand" href="../index.html" aria-label="Voltar ao portal">
-        <span class="deck-dot" aria-hidden="true"></span>
-        <strong>N1 Treinamento • Slides</strong>
-      </a>
+  <!-- SLIDE 1 -->
+  <section class="slide">
+    <div class="content">
+      <h1>Treinamento N1</h1>
+      <h2>Operação & Performance</h2>
+      <p>Crédito CLT e INSS • Padrão de Alta Conversão</p>
+    </div>
+  </section>
 
-      <div class="deck-actions">
-        <button class="deck-btn" type="button" id="btnToc">Sumário</button>
-        <button class="deck-btn" type="button" id="btnHelp">Atalhos</button>
-        <a class="deck-btn" href="https://pithermachado.github.io/treinamenton1/" aria-label="Sair para o portal principal">Sair</a>
-      </div>
-    </header>
+  <!-- SLIDE 2 -->
+  <section class="slide">
+    <div class="content">
+      <h1>Posicionamento Estratégico</h1>
+      <ul>
+        <li>Você não vende empréstimo</li>
+        <li>Você vende organização financeira</li>
+        <li>Você vende reserva estratégica</li>
+        <li>Você vende substituição de dívida cara</li>
+      </ul>
+    </div>
+  </section>
 
-    <!-- STAGE -->
-    <main class="deck-stage" id="stage" aria-live="polite"></main>
+  <!-- SLIDE 3 -->
+  <section class="slide">
+    <div class="content">
+      <h1>Crédito do Trabalhador (CLT)</h1>
+      <ul>
+        <li>Sem consulta SPC / Serasa</li>
+        <li>Desconto direto em folha</li>
+        <li>Parcelas fixas</li>
+        <li>Liberação rápida</li>
+      </ul>
+    </div>
+  </section>
 
-    <!-- BOTTOM -->
-    <footer class="deck-bottom">
-      <div class="deck-meta">
-        <div class="small" id="metaKicker">MÓDULO</div>
-        <div class="big" id="metaTitle">Carregando...</div>
-      </div>
+  <!-- SLIDE 4 -->
+  <section class="slide">
+    <div class="content">
+      <h1>Crédito INSS</h1>
+      <ul>
+        <li>Consignado seguro</li>
+        <li>Parcela fixa</li>
+        <li>Validação facial</li>
+        <li>Não altera score</li>
+      </ul>
+    </div>
+  </section>
 
-      <div class="progress-wrap" aria-label="Progresso da apresentação">
-        <div class="progress" aria-hidden="true"><i id="bar"></i></div>
-        <div class="progress-num" id="counter">0 / 0</div>
-      </div>
+  <!-- SLIDE 5 -->
+  <section class="slide">
+    <div class="content">
+      <h1>Estrutura de Conversão</h1>
+      <ul>
+        <li>Conexão</li>
+        <li>Autoridade</li>
+        <li>Valor</li>
+        <li>Urgência</li>
+        <li>Comando de Fechamento</li>
+      </ul>
+    </div>
+  </section>
 
-      <nav class="nav" aria-label="Navegação de slides">
-        <button class="deck-btn" id="prev" type="button">← Voltar</button>
-        <button class="deck-btn primary" id="next" type="button">Próximo →</button>
-      </nav>
-    </footer>
-  </div>
+</div>
 
-  <script>
-    // ===============================
-    // SLIDES DATA (MÓDULOS 01–05)
-    // ===============================
-    const slides = [
-      // CAPA
-      {
-        kicker: "N1 • OPERAÇÃO & PERFORMANCE",
-        title: "Treinamento N1",
-        subtitle: "Apresentação oficial • Módulos 01 a 05",
-        leftTitle: "Como usar",
-        leftBullets: [
-          "<strong>Teclado:</strong> → próximo | ← voltar | Espaço avança",
-          "<strong>Celular:</strong> arraste para o lado (swipe)",
-          "<strong>Objetivo:</strong> padrão, disciplina e conversão com consistência"
-        ],
-        rightTitle: "Estrutura",
-        rightBullets: [
-          "<strong>Módulo 01:</strong> Cultura & Padrões",
-          "<strong>Módulo 02:</strong> Produto • CLT",
-          "<strong>Módulo 03:</strong> Produto • INSS",
-          "<strong>Módulo 04:</strong> Vendas • Objeções",
-          "<strong>Módulo 05:</strong> Sondagem • Cenários"
-        ],
-        chips: ["FULLSCREEN", "N1 Premium", "Execução Simples"]
-      },
+<div class="progress" id="progress"></div>
 
-      // SUMÁRIO
-      {
-        kicker: "SUMÁRIO",
-        title: "Mapa do Treinamento",
-        subtitle: "Visão rápida do que você vai dominar.",
-        leftTitle: "Identidade e padrão",
-        leftBullets: [
-          "<strong>Quem somos</strong>, missão, visão, valores",
-          "Código de conduta",
-          "Campanhas e regras internas"
-        ],
-        rightTitle: "Produto + Conversão",
-        rightBullets: [
-          "<strong>CLT:</strong> regras, elegibilidade, desligamento, bancos, docs",
-          "<strong>INSS:</strong> estados, DDB, espécies, limites, contratação",
-          "<strong>Objeções:</strong> 3 críticas + execução",
-          "<strong>Cenários:</strong> sondagem direta/indireta"
-        ],
-        chips: ["Padrão", "Produto", "Vendas", "Sondagem"]
-      },
+<script>
+const slides = document.getElementById('slides');
+const totalSlides = document.querySelectorAll('.slide').length;
+const progress = document.getElementById('progress');
+let index = 0;
 
-      // =======================
-      // MÓDULO 01 (ATUALIZADO: SOMENTE O CONTEÚDO DAS IMAGENS)
-      // =======================
-      {
-        kicker: "MÓDULO 01 • CULTURA & PADRÕES",
-        title: "Quem Somos",
-        subtitle: "Base para executar com consistência dentro da N1.",
-        leftTitle: "O que você vai levar",
-        leftBullets: [
-          "Entender o posicionamento e o papel da N1",
-          "Executar com conduta e postura profissional",
-          "Conhecer regras e diretrizes internas"
-        ],
-        rightTitle: "Direção do módulo",
-        rightBullets: [
-          "Identidade → comportamento → padrão",
-          "Consistência gera confiança",
-          "Padrão é o que mantém performance"
-        ],
-        chips: ["Disciplina", "Cultura", "Padrão N1"]
-      },
-      {
-        kicker: "MÓDULO 01 • 1) QUEM SOMOS",
-        title: "N1 Negócios",
-        subtitle: "Correspondente bancária • Plataforma digital de serviços financeiros.",
-        leftTitle: "Texto oficial",
-        leftBullets: [
-          "A N1 Negócios é uma empresa correspondente bancária, especializada em conectar clientes às melhores soluções financeiras disponíveis no mercado.",
-          "Somos uma plataforma digital de serviços financeiros, que realiza a intermediação entre instituições financeiras e clientes, sempre com foco em transparência, segurança e agilidade."
-        ],
-        rightTitle: "Ponto operacional",
-        rightBullets: [
-          "Você representa a empresa na voz",
-          "Padrão de fala = padrão de marca",
-          "Tudo o que você promete precisa estar dentro da regra"
-        ],
-        chips: ["Transparência", "Segurança", "Agilidade"]
-      },
-      {
-        kicker: "MÓDULO 01 • 2) MISSÃO",
-        title: "Missão",
-        subtitle: "O que entregamos para o cliente.",
-        leftTitle: "Missão (oficial)",
-        leftBullets: [
-          "Proporcionar soluções inovadoras e acessíveis que possibilitem nossos clientes a alcançar seus objetivos financeiros com confiança e segurança."
-        ],
-        rightTitle: "Tradução para a operação",
-        rightBullets: [
-          "Explicação simples e clara",
-          "Confiabilidade em cada etapa",
-          "Segurança e postura profissional"
-        ],
-        chips: ["Missão", "Confiança", "Segurança"]
-      },
-      {
-        kicker: "MÓDULO 01 • 3) VISÃO",
-        title: "Visão",
-        subtitle: "Onde a empresa quer chegar.",
-        leftTitle: "Visão (oficial)",
-        leftBullets: [
-          "Ser referência em soluções financeiras integradas, reconhecida por nossa inovação contínua, excelência no atendimento ao cliente e compromisso com a acessibilidade financeira."
-        ],
-        rightTitle: "O que isso exige",
-        rightBullets: [
-          "Padrão de atendimento",
-          "Disciplina diária",
-          "Consistência e excelência"
-        ],
-        chips: ["Visão", "Excelência", "Acessibilidade"]
-      },
-      {
-        kicker: "MÓDULO 01 • 4) VALORES",
-        title: "Valores",
-        subtitle: "O valor só existe quando aparece no comportamento.",
-        leftTitle: "Valores (oficial)",
-        leftBullets: [
-          "Colocamos as pessoas no centro de nossas decisões;",
-          "Um ambiente positivo molda resultados extraordinários;",
-          "Fanáticos por resultados;",
-          "Inovar é a chave para construir um amanhã melhor;",
-          "A honestidade é a base de toda relação;",
-          "Ter espírito de dono no que fazemos;",
-          "Nosso compromisso é a excelência em cada entrega."
-        ],
-        rightTitle: "Aplicação prática",
-        rightBullets: [
-          "Tom de voz profissional",
-          "Promessa = regra",
-          "Postura e disciplina diária",
-          "Entrega consistente (não é pico, é padrão)"
-        ],
-        chips: ["Espírito de dono", "Excelência", "Resultados"]
-      },
-      {
-        kicker: "MÓDULO 01 • 5) CÓDIGO DE CONDUTA",
-        title: "Código de Conduta",
-        subtitle: "Padrão de convivência e profissionalismo.",
-        leftTitle: "Código (oficial)",
-        leftBullets: [
-          "Respeito mútuo;",
-          "Comunicação clara e amigável;",
-          "Pontualidade;",
-          "Responsabilidade;",
-          "Confidencialidade;",
-          "Trabalho em equipe;",
-          "Aparência profissional;",
-          "Atitude positiva;",
-          "Feedback construtivo;",
-          "Cumprimento das regras."
-        ],
-        rightTitle: "Regra de ouro",
-        rightBullets: [
-          "Você não representa só você",
-          "Você representa o <strong>padrão N1</strong>",
-          "Profissionalismo é repetição diária"
-        ],
-        chips: ["Postura", "Disciplina", "Profissionalismo"]
-      },
-      {
-        kicker: "MÓDULO 01 • 6) REGRAS N1",
-        title: "Regras N1",
-        subtitle: "Disciplina, respeito e padrão profissional.",
-        leftTitle: "Regras (parte 1)",
-        leftBullets: [
-          "Horas extras devem ter autorização prévia e formalizada pela liderança;",
-          "Em caso de ausência, sua liderança deve ser comunicada antecipadamente e/ou imediatamente;",
-          "Bater o ponto conforme seu horário de início e fim dos turnos, de forma correta, respeitando os intervalos;",
-          "Toda e qualquer ausência deve ser justificada com declaração ou atestado médico;",
-          "Não utilize boné, camisas de time (independentemente do esporte, seja time ou seleção), roupas curtas como saia, cropped, blusas com decotes grandes, calça com fendas, entre outros."
-        ],
-        rightTitle: "Regras (parte 2)",
-        rightBullets: [
-          "Não serão tolerados comentários racistas, homofóbicos ou de origem depreciativa/ofensiva a nenhum colaborador da empresa, independentemente do seu nível hierárquico, com consequência de advertência ou até suspensão do contrato de trabalho;",
-          "Utilize as áreas comuns de forma respeitosa e higiênica, não deixando desorganizada ou suja para o próximo utilizar;",
-          "Mantenha seu ambiente individual de trabalho limpo e organizado, livre de comidas e bebidas;",
-          "Zele pelo seu material de trabalho (mouse, teclados, monitor, CPU e headset); ele é de sua responsabilidade;",
-          "O período de experiência ocorre de forma 14 dias + 46 dias, conforme consta em contrato de trabalho;",
-          "Seu salário será creditado em sua conta até o 5º dia útil, conforme contrato de trabalho;",
-          "Seu vale-alimentação e vale-transporte, no período de experiência, será pago semanalmente e ficará disponível toda segunda-feira para utilização durante a semana. Após completar o período de experiência, seus benefícios passam a ser efetuados mensalmente."
-        ],
-        chips: ["Regras", "Padrão", "Responsabilidade"]
-      },
+function updateSlide(){
+  slides.style.transform = `translateX(-${index * 100}vw)`;
+  progress.style.width = ((index + 1) / totalSlides) * 100 + "%";
+}
 
-      // =======================
-      // MÓDULO 02 (CLT)
-      // =======================
-      {
-        kicker: "MÓDULO 02 • PRODUTO",
-        title: "Crédito do Trabalhador (CLT)",
-        subtitle: "Desconto em folha • regras claras de elegibilidade e desligamento.",
-        leftTitle: "Resumo rápido",
-        leftBullets: [
-          "Desconto em folha (antes do salário cair)",
-          "Sem consulta SPC/SERASA (conforme regra do produto)",
-          "Até 48x • juros a partir de <strong>2,9% a.m.</strong>"
-        ],
-        rightTitle: "Ponto crítico",
-        rightBullets: [
-          "Nunca prometa antes de validar elegibilidade",
-          "Regra do banco manda",
-          "Operação segura = conversão sustentável"
-        ],
-        chips: ["CLT", "48x", "2,9% a.m."]
-      },
-      {
-        kicker: "MÓDULO 02 • 1) O QUE É",
-        title: "O que é CLT",
-        subtitle: "Empréstimo com desconto direto em folha.",
-        leftTitle: "Definição",
-        leftBullets: [
-          "Modalidade destinada a pessoas no regime CLT",
-          "Desconto acontece antes do salário cair (em folha)",
-          "Cliente escolhe conta de recebimento conforme regra do banco"
-        ],
-        rightTitle: "Como falar (padrão)",
-        rightBullets: [
-          "Explicar simples: desconto em folha",
-          "Deixar claro: regra varia por banco",
-          "Conduzir: validação → simulação → próxima ação"
-        ],
-        chips: ["Produto", "Explicação simples"]
-      },
-      {
-        kicker: "MÓDULO 02 • 2) ELEGIBILIDADE",
-        title: "Regras gerais",
-        subtitle: "Critérios variam por banco — sempre validar.",
-        leftTitle: "Critérios comuns",
-        leftBullets: [
-          "Tempo de CLT: normalmente 6 meses na mesma empresa",
-          "Empresa elegível: eSocial/Dataprev (tempo mínimo varia)",
-          "Idade mínima/máxima conforme banco"
-        ],
-        rightTitle: "Observação operacional",
-        rightBullets: [
-          "<strong>Validar regra do banco</strong> antes de prometer valor/prazo",
-          "Sem validação = retrabalho + queda de conversão"
-        ],
-        chips: ["Elegibilidade", "Validação"]
-      },
-      {
-        kicker: "MÓDULO 02 • 3) VANTAGENS",
-        title: "Vantagens do CLT",
-        subtitle: "Clareza e benefício direto para o cliente.",
-        leftTitle: "Vantagens",
-        leftBullets: [
-          "Desconto em folha",
-          "Não consulta SPC/SERASA",
-          "Parcela em até 48x",
-          "Juros a partir de 2,9% ao mês"
-        ],
-        rightTitle: "Como vender sem prometer",
-        rightBullets: [
-          "Mostre vantagem <strong>do modelo</strong> (folha, prazo)",
-          "Evite promessas absolutas",
-          "Sempre termine com próxima ação"
-        ],
-        chips: ["Benefício", "Padrão"]
-      },
-      {
-        kicker: "MÓDULO 02 • 4) DESLIGAMENTO",
-        title: "Regras de desligamento",
-        subtitle: "O que acontece se for demitido ou pedir demissão.",
-        leftTitle: "Foi demitido",
-        leftBullets: [
-          "Desconta 100% da multa rescisória",
-          "Desconta 10% do FGTS",
-          "Desconta 35% da rescisão",
-          "Se sobrar saldo, transfere para novo emprego via eSocial"
-        ],
-        rightTitle: "Pediu demissão",
-        rightBullets: [
-          "Saldo continua descontando na folha do próximo emprego",
-          "Transferência automática via eSocial"
-        ],
-        chips: ["Desligamento", "eSocial"]
-      },
-      {
-        kicker: "MÓDULO 02 • 5) BANCOS PARCEIROS",
-        title: "Lista de bancos",
-        subtitle: "Referência rápida (códigos).",
-        leftTitle: "Bancos (parte 1)",
-        leftBullets: [
-          "047 — Banese",
-          "021 — Banestes",
-          "237 — Bradesco",
-          "756 — Bancoob",
-          "001 — Banco do Brasil",
-          "004 — BNB",
-          "070 — BRB",
-          "041 — Banrisul",
-          "104 — Caixa / Caixa Tem"
-        ],
-        rightTitle: "Bancos (parte 2)",
-        rightBullets: [
-          "341 — Itaú",
-          "623 — Pan",
-          "033 — Santander",
-          "318 — BMG",
-          "748 — Sicredi",
-          "077 — Inter",
-          "260 — Nubank",
-          "336 — C6"
-        ],
-        chips: ["Bancos", "Referência"]
-      },
-      {
-        kicker: "MÓDULO 02 • 6) DOCUMENTOS",
-        title: "Documentos aceitos",
-        subtitle: "Padrão: legibilidade e dados corretos.",
-        leftTitle: "Aceitos",
-        leftBullets: [
-          "RG (digital e físico)",
-          "CNH (digital e físico)",
-          "Carteira de Trabalho (física)"
-        ],
-        rightTitle: "Padrão operacional",
-        rightBullets: [
-          "Conferir legibilidade e dados antes de enviar",
-          "Evita retrabalho e queda de conversão"
-        ],
-        chips: ["Docs", "Qualidade", "Conversão"]
-      },
-
-      // =======================
-      // MÓDULO 03 (INSS)
-      // =======================
-      {
-        kicker: "MÓDULO 03 • PRODUTO • INSS",
-        title: "Crédito Pessoal (INSS)",
-        subtitle: "Débito em conta • regras por estado/DDB/espécie.",
-        leftTitle: "Pontos críticos",
-        leftBullets: [
-          "Não usa margem de consignado",
-          "Débito em conta (após cair)",
-          "Restrições por Estado / DDB / Espécie"
-        ],
-        rightTitle: "Direção do módulo",
-        rightBullets: [
-          "Operar dentro da regra = segurança + escala",
-          "Regra primeiro, promessa depois",
-          "Validação antes de conduzir"
-        ],
-        chips: ["INSS", "Regra", "Débito em conta"]
-      },
-      {
-        kicker: "MÓDULO 03 • 1) O QUE É",
-        title: "Para quem é",
-        subtitle: "Aposentados e pensionistas do INSS.",
-        leftTitle: "Definição",
-        leftBullets: [
-          "Destinado para aposentados e pensionistas do INSS",
-          "Não utiliza margem do consignado",
-          "Pagamento via débito em conta (desconta depois que cai)"
-        ],
-        rightTitle: "Padrão de fala",
-        rightBullets: [
-          "Deixar claro: não é consignado",
-          "Explicar débito em conta em 1 frase",
-          "Fechar com próxima ação (validação)"
-        ],
-        chips: ["Clareza", "Controle"]
-      },
-      {
-        kicker: "MÓDULO 03 • 2) ESTADOS BLOQUEADOS",
-        title: "Estados que não atendemos",
-        subtitle: "Bloqueio por regra do produto.",
-        leftTitle: "Não atendemos",
-        leftBullets: [
-          "AC • AP • RO • TO • PB"
-        ],
-        rightTitle: "Bloqueio por DDB (2010–2014)",
-        rightBullets: [
-          "Para DDB entre 2010 e 2014: AP • AM • RR • TO • RO • AC • CE • PA • MA • PI"
-        ],
-        chips: ["Estados", "DDB"]
-      },
-      {
-        kicker: "MÓDULO 03 • 3) ESPÉCIES ACEITAS",
-        title: "Lista aceita (operar somente aqui)",
-        subtitle: "Se não estiver na lista, não prosseguir.",
-        leftTitle: "Orientação",
-        leftBullets: [
-          "Somente operar dentro desta lista",
-          "Fora da lista = não segue",
-          "Regra protege a operação"
-        ],
-        rightTitle: "Nota",
-        rightBullets: [
-          "Se você quiser, eu monto a lista em <strong>tela rolável</strong> no próprio slide (layout premium) para ficar “consulta rápida”"
-        ],
-        chips: ["Espécies", "Regra"]
-      },
-      {
-        kicker: "MÓDULO 03 • 4) ESPÉCIES NÃO ACEITAS",
-        title: "Se cair em qualquer uma: parar",
-        subtitle: "Bloqueio imediato.",
-        leftTitle: "Não aceitas",
-        leftBullets: [
-          "ESPÉCIE 37 — Aposentadoria de extra numerário da União (ex SASSE)",
-          "ESPÉCIE 44 — Aposentadoria especial de aeronauta",
-          "ESPÉCIE 46 — Aposentadoria especial",
-          "ESPÉCIE 49 — Aposentadoria ordinária",
-          "ESPÉCIE 58 — Aposentadoria excepcional de anistiado",
-          "ESPÉCIE 87 — Amparo social PCD",
-          "ESPÉCIE 88 — Amparo social ao idoso"
-        ],
-        rightTitle: "Ponto de controle",
-        rightBullets: [
-          "Não insistir",
-          "Não criar expectativa",
-          "Direcionar para alternativa (se existir) com honestidade"
-        ],
-        chips: ["Bloqueio", "Compliance"]
-      },
-      {
-        kicker: "MÓDULO 03 • 5) PARÂMETROS",
-        title: "Parâmetros do produto",
-        subtitle: "Referência para operar sem ruído.",
-        leftTitle: "Valores / parcelas",
-        leftBullets: [
-          "<strong>Máx aprox:</strong> R$ 2.050,84 • <strong>Mín:</strong> R$ 200,00",
-          "<strong>Parcela máx:</strong> R$ 486,30",
-          "<strong>Prazo:</strong> 6x a 12x"
-        ],
-        rightTitle: "Idade / taxa",
-        rightBullets: [
-          "<strong>Idade:</strong> mín 22 • máx 80 (conforme regra vigente)",
-          "<strong>Taxa:</strong> 19,85%"
-        ],
-        chips: ["Parâmetros", "Referência"]
-      },
-      {
-        kicker: "MÓDULO 03 • 6) DOCUMENTOS",
-        title: "Documentos aceitos",
-        subtitle: "Importante: assinatura por escrito.",
-        leftTitle: "Aceitos",
-        leftBullets: [
-          "RG (físico/digital)",
-          "CNH (físico/digital)",
-          "Carteira de Trabalho (físico)"
-        ],
-        rightTitle: "Importante",
-        rightBullets: [
-          "Todos devem conter <strong>assinatura por escrito</strong>",
-          "Sem assinatura = risco de reprovação / retrabalho"
-        ],
-        chips: ["Docs", "Assinatura"]
-      },
-      {
-        kicker: "MÓDULO 03 • 7) CONTRATAÇÃO",
-        title: "Regras para contratar",
-        subtitle: "Checklist obrigatório.",
-        leftTitle: "Obrigatório",
-        leftBullets: [
-          "Não ser cliente Mercantil",
-          "Fazer portabilidade do benefício para o Mercantil",
-          "Mercantil cria uma conta para o cliente",
-          "Estar dentro das regras citadas (estado/DDB/espécie/limites)"
-        ],
-        rightTitle: "Execução",
-        rightBullets: [
-          "Validar → confirmar → conduzir próxima ação",
-          "Sem improviso. Sem promessa fora da regra."
-        ],
-        chips: ["Checklist", "Padrão"]
-      },
-
-      // =======================
-      // MÓDULO 04 (OBJEÇÕES)
-      // =======================
-      {
-        kicker: "MÓDULO 04 • VENDAS & CONVERSÃO",
-        title: "Book de Objeções",
-        subtitle: "Contornar resistência sem confronto e conduzir para o próximo passo.",
-        leftTitle: "O que você vai levar",
-        leftBullets: [
-          "Respostas estruturadas para 3 objeções críticas",
-          "Objetivo por trás de cada frase (por que funciona)",
-          "Exemplos práticos para plantar ideia e fechar"
-        ],
-        rightTitle: "Regra de ouro",
-        rightBullets: [
-          "Você não discute e não bate de frente",
-          "Reconhecer → Motivo → Direcionar (próximo passo)",
-          "Próximo passo tem que ser <strong>uma ação</strong>"
-        ],
-        chips: ["Controle", "Próximo passo", "Conversão"]
-      },
-      {
-        kicker: "MÓDULO 04 • 2) “NÃO TENHO INTERESSE”",
-        title: "Não é rejeição real (na maioria)",
-        subtitle: "Pode ser defesa, pressa ou vergonha de expor situação.",
-        leftTitle: "Resposta (a) — levar pro WhatsApp",
-        leftBullets: [
-          "“Entendo que você não tenha interesse, mas nós não consultamos SPC nem SERASA...”",
-          "“Esse telefone também é WhatsApp? Te mandei uma mensagem automática...”",
-          "“Me responde com um ‘oi’ e eu te mando a simulação por escrito.”"
-        ],
-        rightTitle: "Objetivo",
-        rightBullets: [
-          "Remover barreira psicológica do “nome sujo”",
-          "Criar caminho leve: WhatsApp → simulação escrita → ligação curta",
-          "Conduzir sem pressão"
-        ],
-        chips: ["WhatsApp", "Abertura", "Simulação"]
-      },
-      {
-        kicker: "MÓDULO 04 • “NÃO TENHO INTERESSE” (B)",
-        title: "Conectar com dor real (cartão)",
-        subtitle: "Reposicionar como troca de dívida cara por dívida mais leve.",
-        leftTitle: "Resposta (b)",
-        leftBullets: [
-          "“Entendo que você não tenha interesse, mas se você tiver dívidas no cartão...”",
-          "“Você pode aproveitar essa liberação e quitar.”"
-        ],
-        rightTitle: "Exemplo prático",
-        rightBullets: [
-          "Cartão: dívida R$ 2.000 / parcela R$ 300",
-          "Empréstimo: R$ 2.000 / parcela R$ 250",
-          "<strong>Economia:</strong> R$ 50/mês = “aumento de salário”",
-          "Volta do limite = fundo de emergência"
-        ],
-        chips: ["Cartão", "Economia", "Reframe"]
-      },
-      {
-        kicker: "MÓDULO 04 • 3) “JUROS ALTO”",
-        title: "Aqui você não vende taxa",
-        subtitle: "Você compara com dívida cara e planta usos inteligentes.",
-        leftTitle: "Resposta sugerida",
-        leftBullets: [
-          "“Na verdade, é um dos mais baixos do mercado...”",
-          "“Cartão chegou a 37,5% ao mês em alguns cenários; nosso a partir de 2,9% a.m.”",
-          "“Isso pode ajudar: adiantar financiamento, adiantar aluguel ou quitar cartão.”"
-        ],
-        rightTitle: "Objetivo",
-        rightBullets: [
-          "Tirar foco da taxa",
-          "Colocar foco em benefício prático",
-          "Reduzir dívida cara / reduzir prazo / organizar orçamento"
-        ],
-        chips: ["Comparativo", "Benefício", "Uso inteligente"]
-      },
-      {
-        kicker: "MÓDULO 04 • 4) “MUITAS PARCELAS”",
-        title: "Reframe total",
-        subtitle: "Muitas parcelas vira parcela menor + fôlego no orçamento.",
-        leftTitle: "Resposta sugerida",
-        leftBullets: [
-          "“Entendo que pareça muitas parcelas, mas não é...”",
-          "“Consignado INSS é 96x (5–6 anos a mais).”",
-          "“Aqui o prazo é uma das melhores vantagens.”"
-        ],
-        rightTitle: "Objetivo",
-        rightBullets: [
-          "Mudar a percepção (de peso → de vantagem)",
-          "Parcela menor = organização",
-          "Cliente sente controle"
-        ],
-        chips: ["Parcela menor", "Organização"]
-      },
-      {
-        kicker: "MÓDULO 04 • 5) CHECKLIST",
-        title: "Checklist de execução na ligação",
-        subtitle: "Consistência = conversão.",
-        leftTitle: "Checklist",
-        leftBullets: [
-          "Reconheci a objeção sem discutir",
-          "Reposicionei com motivo claro (SPC/Serasa, cartão, comparativo)",
-          "Dei um próximo passo único (WhatsApp / simulação / explicação curta)",
-          "Mantive tom calmo, direto e profissional"
-        ],
-        rightTitle: "Dica prática",
-        rightBullets: [
-          "Próximo passo sempre tem que ser simples",
-          "Uma ação. Um clique. Uma resposta."
-        ],
-        chips: ["Execução", "Controle", "Próximo passo"]
-      },
-
-      // =======================
-      // MÓDULO 05 (CENÁRIOS)
-      // =======================
-      {
-        kicker: "MÓDULO 05 • VENDAS & CONVERSA INTELIGENTE",
-        title: "Criação de Cenários",
-        subtitle: "Sondagem = descobrir detalhes para construir história coerente.",
-        leftTitle: "O que você vai levar",
-        leftBullets: [
-          "Linha do tempo clara para criar cenário",
-          "Sondagem direta: perguntas que abrem informação",
-          "Sondagem indireta: exemplos que guiam decisão"
-        ],
-        rightTitle: "Por que isso converte",
-        rightBullets: [
-          "Você para de oferecer empréstimo",
-          "E passa a resolver um cenário real",
-          "O cliente sente sentido → baixa a guarda"
-        ],
-        chips: ["Sondagem", "Cenário", "Conversão"]
-      },
-      {
-        kicker: "MÓDULO 05 • 1) LINHA DO TEMPO",
-        title: "Como criar um cenário",
-        subtitle: "Cenário é história + realidade do cliente (sem chute).",
-        leftTitle: "Ordem certa",
-        leftBullets: [
-          "1) Descobrir contexto",
-          "2) Validar necessidade",
-          "3) Construir exemplo coerente",
-          "4) Conduzir próximo passo"
-        ],
-        rightTitle: "Regra",
-        rightBullets: [
-          "Cenário bom parece “óbvio” para o cliente",
-          "Porque encaixa na vida dele"
-        ],
-        chips: ["Ordem", "Coerência"]
-      },
-      {
-        kicker: "MÓDULO 05 • 2) O QUE É SONDAGEM",
-        title: "Sondagem",
-        subtitle: "A arte de descobrir coisas sobre a vida da pessoa.",
-        leftTitle: "Definição",
-        leftBullets: [
-          "Descobrir detalhes para direcionar a conversa",
-          "Quanto melhor a sondagem, mais fácil fica",
-          "Criar valor, reduzir resistência e fechar"
-        ],
-        rightTitle: "Efeito prático",
-        rightBullets: [
-          "Cliente sente personalização",
-          "Você mantém controle com naturalidade",
-          "Conversa deixa de ser “oferta”"
-        ],
-        chips: ["Personalização", "Controle"]
-      },
-      {
-        kicker: "MÓDULO 05 • 3) SONDAGEM DIRETA",
-        title: "Pergunta aberta (objetiva)",
-        subtitle: "Coleta fatos → fatos viram cenário.",
-        leftTitle: "Exemplos de perguntas",
-        leftBullets: [
-          "Você tem carro ou moto?",
-          "Tem alguma dívida no cartão de crédito hoje?",
-          "Se esse valor caísse na sua conta, o que você faria primeiro?",
-          "Tem financiamento/parcelas que estão te apertando?"
-        ],
-        rightTitle: "Objetivo",
-        rightBullets: [
-          "Coletar <strong>variáveis reais</strong>",
-          "Montar cenário coerente",
-          "Conduzir próxima ação com confiança"
-        ],
-        chips: ["Fatos", "Coerência"]
-      },
-      {
-        kicker: "MÓDULO 05 • 4) SONDAGEM INDIRETA",
-        title: "Plantar ideia com exemplos",
-        subtitle: "Você dá opções e observa identificação.",
-        leftTitle: "Modelo de fala",
-        leftBullets: [
-          "“Se você tem financiamento de carro, moto ou casa...”",
-          "“Esse valor ajuda a pagar parcelas de trás pra frente...”",
-          "“Reduz juros e quantidade de parcelas, quitando mais rápido.”"
-        ],
-        rightTitle: "Objetivo",
-        rightBullets: [
-          "Evitar clima de interrogatório",
-          "Cliente se encaixa sozinho no cenário",
-          "Ele mesmo entrega informação"
-        ],
-        chips: ["Exemplos", "Identificação"]
-      },
-      {
-        kicker: "MÓDULO 05 • 5) ADAPTAÇÃO",
-        title: "Adaptar para cada perfil",
-        subtitle: "Mesma linha de raciocínio, histórias diferentes.",
-        leftTitle: "Checklist de adaptação",
-        leftBullets: [
-          "Identifiquei 1 contexto real do cliente (fato)",
-          "Escolhi 1 cenário coerente (história simples)",
-          "Conectei cenário com benefício (economia/organização/alívio)",
-          "Conduzi para próximo passo (WhatsApp/simulação/confirmação)"
-        ],
-        rightTitle: "Regra final",
-        rightBullets: [
-          "Cenário não é teatro",
-          "É clareza com base em realidade"
-        ],
-        chips: ["Perfil", "Benefício", "Próximo passo"]
-      },
-
-      // FECHAMENTO
-      {
-        kicker: "FECHAMENTO",
-        title: "Padrão + Regra + Conversão",
-        subtitle: "Quem executa com consistência vira referência.",
-        leftTitle: "O que sustenta performance",
-        leftBullets: [
-          "<strong>Padrão</strong> (cultura + disciplina)",
-          "<strong>Regra</strong> (produto sem ruído)",
-          "<strong>Controle</strong> (objeções + cenários)",
-          "<strong>Próximo passo</strong> simples em toda conversa"
-        ],
-        rightTitle: "Próxima ação",
-        rightBullets: [
-          "Revisar módulos 02 e 03 até falar sem travar",
-          "Treinar objeções 04 em voz alta",
-          "Aplicar sondagem 05 nas próximas ligações"
-        ],
-        chips: ["Alta performance", "N1", "Execução"]
-      }
-    ];
-
-    // ===============================
-    // RENDER
-    // ===============================
-    const stage = document.getElementById("stage");
-    const metaKicker = document.getElementById("metaKicker");
-    const metaTitle  = document.getElementById("metaTitle");
-    const counter    = document.getElementById("counter");
-    const bar        = document.getElementById("bar");
-
-    let idx = 0;
-    const nodes = [];
-
-    function slideTemplate(s){
-      const chips = (s.chips || []).map(t => `<span class="chip">${t}</span>`).join("");
-      return `
-        <article class="slide" aria-label="Slide">
-          <div class="slide-inner">
-            <div class="kicker">${s.kicker || ""}</div>
-            <h1 class="h1">${s.title || ""}</h1>
-            ${s.subtitle ? `<p class="lead">${s.subtitle}</p>` : ""}
-
-            <div class="cols">
-              <section class="panel">
-                <div class="panel-title">${s.leftTitle || "Conteúdo"}</div>
-                <ul class="bullets">
-                  ${(s.leftBullets || []).map(li => `<li>${li}</li>`).join("")}
-                </ul>
-                ${chips ? `<div class="chips">${chips}</div>` : ""}
-                ${s.callout ? `<div class="callout">${s.callout}</div>` : ""}
-              </section>
-
-              <section class="panel">
-                <div class="panel-title">${s.rightTitle || "Pontos-chave"}</div>
-                <ul class="bullets">
-                  ${(s.rightBullets || []).map(li => `<li>${li}</li>`).join("")}
-                </ul>
-                ${s.rightCallout ? `<div class="callout">${s.rightCallout}</div>` : ""}
-              </section>
-            </div>
-          </div>
-        </article>
-      `;
+document.addEventListener('keydown', e => {
+  if(e.key === "ArrowRight"){
+    if(index < totalSlides - 1){
+      index++;
+      updateSlide();
     }
-
-    function mount(){
-      stage.innerHTML = slides.map(slideTemplate).join("");
-      stage.querySelectorAll(".slide").forEach((n) => nodes.push(n));
-      show(0, true);
+  }
+  if(e.key === "ArrowLeft"){
+    if(index > 0){
+      index--;
+      updateSlide();
     }
+  }
+});
 
-    function clamp(n){ return Math.max(0, Math.min(slides.length - 1, n)); }
+updateSlide();
+</script>
 
-    function show(next, instant=false){
-      const newIdx = clamp(next);
-      nodes.forEach((n,i) => {
-        n.classList.toggle("is-active", i === newIdx);
-        n.style.transitionDuration = instant ? "0ms" : "";
-      });
-
-      idx = newIdx;
-
-      const s = slides[idx];
-      metaKicker.textContent = (s.kicker || "SLIDE").split("•")[0].trim();
-      metaTitle.textContent  = s.title || "—";
-
-      counter.textContent = `${idx+1} / ${slides.length}`;
-      bar.style.width = `${((idx+1)/slides.length)*100}%`;
-
-      history.replaceState(null, "", `#s${idx+1}`);
-    }
-
-    function next(){ show(idx+1); }
-    function prev(){ show(idx-1); }
-
-    document.getElementById("next").addEventListener("click", next);
-    document.getElementById("prev").addEventListener("click", prev);
-
-    // Atalhos
-    window.addEventListener("keydown", (e) => {
-      const k = e.key.toLowerCase();
-
-      if (k === "arrowright" || k === " " || k === "enter") { e.preventDefault(); next(); }
-      if (k === "arrowleft" || k === "backspace") { e.preventDefault(); prev(); }
-      if (k === "home") { e.preventDefault(); show(0); }
-      if (k === "end") { e.preventDefault(); show(slides.length-1); }
-      if (k === "escape") {
-        window.location.href = "../index.html";
-      }
-    });
-
-    // Swipe (mobile)
-    let startX = 0, startY = 0, locked = false;
-    stage.addEventListener("touchstart", (e) => {
-      const t = e.touches[0];
-      startX = t.clientX; startY = t.clientY;
-      locked = false;
-    }, {passive:true});
-
-    stage.addEventListener("touchmove", (e) => {
-      if (locked) return;
-      const t = e.touches[0];
-      const dx = t.clientX - startX;
-      const dy = t.clientY - startY;
-      if (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy)){
-        locked = true;
-        dx < 0 ? next() : prev();
-      }
-    }, {passive:true});
-
-    // Sumário / Atalhos
-    document.getElementById("btnToc").addEventListener("click", () => show(1));
-    document.getElementById("btnHelp").addEventListener("click", () => {
-      alert(
-        "Atalhos:\n\n→ Próximo | ← Voltar\nEspaço/Enter: Próximo\nHome: Primeiro | End: Último\nEsc: Voltar ao portal\n\nNo celular: swipe para o lado."
-      );
-    });
-
-    // Abrir pelo hash #sN
-    function fromHash(){
-      const m = (location.hash || "").match(/^#s(\d+)$/);
-      if (m){
-        const n = parseInt(m[1],10);
-        if (!Number.isNaN(n)) show(n-1, true);
-      }
-    }
-
-    mount();
-    fromHash();
-    window.addEventListener("hashchange", fromHash);
-  </script>
 </body>
 </html>
