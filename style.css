@@ -193,7 +193,7 @@ body{
   background-repeat: no-repeat;
   background-position: right 10% center;
   background-size: min(54vw, 720px);
-  opacity: 0.10;
+  opacity: 0.05;
   filter: saturate(.9) contrast(1.05);
 }
 
@@ -955,7 +955,7 @@ body{
   background-position: 75% center;
   background-size: min(65vw, 900px);
 
-  opacity: 0.05;
+  opacity: 0.12;
 
   /* fade suave nas bordas */
   -webkit-mask-image: radial-gradient(circle at center,
