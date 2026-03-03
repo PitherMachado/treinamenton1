@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>N1 Treinamento • Vendas Crédito (CLT + INSS)</title>
+  <title>N1 Treinamento • Dashboard</title>
   <meta name="theme-color" content="#12001d" />
 
   <style>
@@ -13,380 +13,244 @@
       --bg2:#24003a;
 
       --glass: rgba(255,255,255,.06);
-      --glass2: rgba(255,255,255,.10);
       --stroke: rgba(255,255,255,.14);
 
       --text:#f4f1ff;
       --muted:#c8b8ff;
-      --muted2:#a78bfa;
 
-      --accent:#d946ef;   /* magenta */
-      --accent2:#a855f7;  /* roxo */
-      --good:#5eead4;
+      --accent:#d946ef;
+      --accent2:#a855f7;
 
       --shadow: 0 24px 80px rgba(0,0,0,.60);
       --shadow2: 0 12px 40px rgba(0,0,0,.45);
 
       --r20: 20px;
       --r24: 24px;
-
       --maxw: 1120px;
     }
 
-    *{ box-sizing: border-box; margin:0; padding:0; }
-    html, body{
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    html,body{
       height:100%;
-      width:100%;
       overflow:hidden;
-      background: radial-gradient(1100px 700px at 30% 20%, rgba(217,70,239,.22), transparent 60%),
-                  radial-gradient(900px 600px at 70% 80%, rgba(168,85,247,.18), transparent 55%),
-                  linear-gradient(180deg, var(--bg1), var(--bg0));
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Helvetica Neue", sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      background:
+        radial-gradient(1100px 700px at 30% 20%, rgba(217,70,239,.22), transparent 60%),
+        radial-gradient(900px 600px at 70% 80%, rgba(168,85,247,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
     }
 
-    /* Partículas (canvas) */
     #particles{
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      opacity: .9;
-      filter: saturate(115%);
-    }
-
-    /* Subtle vignette + film grain */
-    .overlay{
       position:fixed;
       inset:0;
-      z-index:1;
+      z-index:0;
       pointer-events:none;
+      opacity:.95;
+    }
+
+    .overlay{
+      position:fixed; inset:0; z-index:1; pointer-events:none;
       background:
         radial-gradient(1200px 900px at 50% 45%, transparent 30%, rgba(0,0,0,.35) 78%, rgba(0,0,0,.52) 100%),
         linear-gradient(180deg, rgba(255,255,255,.05), transparent 22%);
-      mix-blend-mode: normal;
-    }
-    .grain{
-      position:fixed;
-      inset:-30%;
-      z-index:2;
-      pointer-events:none;
-      opacity:.06;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
-      transform: rotate(10deg);
-      animation: grainMove 6s steps(8) infinite;
-    }
-    @keyframes grainMove{
-      0%{ transform: translate3d(0,0,0) rotate(10deg); }
-      100%{ transform: translate3d(-8%, 6%, 0) rotate(10deg); }
     }
 
-    /* Deck */
-    .deck{
+    .wrap{
       position:relative;
-      z-index:3;
-      height:100vh;
-      width:100vw;
-      display:flex;
-      align-items:stretch;
-      justify-content:stretch;
-    }
-
-    .slides{
-      height:100%;
-      width:100%;
-      display:flex;
-      will-change: transform;
-      transform: translate3d(0,0,0);
-      transition: transform .85s cubic-bezier(.2,.9,.2,1);
-    }
-
-    .slide{
-      min-width:100vw;
+      z-index:2;
       height:100vh;
       display:flex;
       align-items:center;
       justify-content:center;
       padding: clamp(18px, 4vw, 72px);
-      position:relative;
     }
 
-    /* Cinematic card */
     .card{
       width:min(var(--maxw), 92vw);
       border-radius: var(--r24);
       background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
       border: 1px solid var(--stroke);
       box-shadow: var(--shadow);
-      padding: clamp(20px, 3.2vw, 44px);
-      position:relative;
+      padding: clamp(22px, 3.2vw, 44px);
       overflow:hidden;
-      transform: translate3d(0, 18px, 0) scale(.985);
-      opacity: 0;
-      filter: blur(10px);
-      transition: opacity .7s ease, transform .8s cubic-bezier(.2,.9,.2,1), filter .8s ease;
+      position:relative;
+      animation: in .7s cubic-bezier(.2,.9,.2,1) both;
     }
-
-    .slide.active .card{
-      opacity: 1;
-      transform: translate3d(0,0,0) scale(1);
-      filter: blur(0);
+    @keyframes in{
+      from{ opacity:0; transform: translateY(18px) scale(.985); filter: blur(10px); }
+      to{ opacity:1; transform:none; filter:none; }
     }
-
-    /* Accent light streak */
     .card:before{
       content:"";
       position:absolute;
       inset:-40% -40% auto -40%;
       height: 260px;
-      background: radial-gradient(closest-side, rgba(217,70,239,.25), transparent 65%),
-                  radial-gradient(closest-side, rgba(168,85,247,.18), transparent 60%);
+      background:
+        radial-gradient(closest-side, rgba(217,70,239,.25), transparent 65%),
+        radial-gradient(closest-side, rgba(168,85,247,.18), transparent 60%);
       transform: rotate(-10deg);
       pointer-events:none;
       opacity:.9;
     }
 
-    .topline{
-      font-size: 12px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.72);
-      display:flex;
-      gap:10px;
-      align-items:center;
-      margin-bottom: 14px;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      color: rgba(255,255,255,.84);
-    }
-    .dot{
-      width:8px; height:8px; border-radius:99px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      box-shadow: 0 0 18px rgba(217,70,239,.45);
-    }
-
-    h1{
-      font-size: clamp(34px, 4.6vw, 62px);
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      margin-bottom: 14px;
-    }
-    h2{
-      font-size: clamp(20px, 2.2vw, 30px);
-      color: rgba(200,184,255,.95);
-      font-weight: 600;
-      margin-bottom: 18px;
-    }
-    p{
-      font-size: clamp(16px, 1.6vw, 22px);
-      line-height: 1.55;
-      color: rgba(244,241,255,.92);
-      margin-bottom: 14px;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1.25fr .75fr;
-      gap: 18px;
-      margin-top: 18px;
-    }
-    .box{
-      border-radius: var(--r20);
-      background: rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: var(--shadow2);
-      padding: 18px;
-    }
-    .box h3{
-      font-size: 14px;
-      letter-spacing:.12em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.80);
-      margin-bottom: 10px;
-    }
-    .list{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .li{
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      font-size: clamp(15px, 1.45vw, 20px);
-      line-height:1.35;
-      color: rgba(244,241,255,.92);
-    }
-    .check{
-      width:18px; height:18px;
-      border-radius: 6px;
-      background: rgba(94,234,212,.16);
-      border:1px solid rgba(94,234,212,.35);
-      margin-top:2px;
-      box-shadow: 0 0 18px rgba(94,234,212,.18);
-      position:relative;
-      flex: 0 0 18px;
-    }
-    .check:after{
-      content:"";
-      position:absolute;
-      inset:4px 5px 6px 5px;
-      border-right: 2px solid rgba(94,234,212,.95);
-      border-bottom: 2px solid rgba(94,234,212,.95);
-      transform: rotate(35deg);
-    }
-
-    .tagline{
-      margin-top: 10px;
-      color: rgba(255,255,255,.82);
-      font-size: clamp(14px, 1.2vw, 18px);
-      opacity: .92;
-    }
-
-    /* Chart */
-    .chart{
-      display:flex;
-      flex-direction:column;
-      gap: 12px;
-      margin-top: 10px;
-    }
-    .row{
-      display:grid;
-      grid-template-columns: 1.1fr 2fr;
-      gap: 14px;
-      align-items:center;
-    }
-    .row .lbl{
-      font-size: clamp(13px, 1.1vw, 16px);
-      color: rgba(255,255,255,.86);
-      white-space: nowrap;
-    }
-    .barWrap{
-      height: 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.12);
-      overflow:hidden;
-      position:relative;
-    }
-    .bar{
-      height:100%;
-      width:0%;
-      border-radius:999px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      box-shadow: 0 0 22px rgba(217,70,239,.26);
-      transition: width 1.2s cubic-bezier(.2,.9,.2,1);
-    }
-    .bar.good{
-      background: linear-gradient(90deg, rgba(94,234,212,.95), rgba(168,85,247,.75));
-      box-shadow: 0 0 22px rgba(94,234,212,.22);
-    }
-    .num{
-      font-variant-numeric: tabular-nums;
-      font-weight: 700;
-      color: rgba(255,255,255,.92);
-    }
-    .small{
-      font-size: 13px;
-      color: rgba(255,255,255,.72);
-      margin-top: 10px;
-      line-height: 1.4;
-    }
-
-    /* Minimal HUD */
-    .hud{
-      position: fixed;
-      top: 18px;
-      left: 18px;
-      right: 18px;
+    .top{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      z-index: 4;
-      pointer-events:none;
+      gap:12px;
+      margin-bottom: 18px;
     }
+
     .brand{
       display:flex;
       align-items:center;
       gap:10px;
-      opacity: .92;
+      opacity:.95;
     }
-    .logoMark{
+    .mark{
       width: 34px; height: 34px;
       border-radius: 12px;
       background: linear-gradient(135deg, rgba(217,70,239,.95), rgba(168,85,247,.85));
       box-shadow: 0 12px 28px rgba(217,70,239,.22);
     }
     .brandTxt{
-      display:flex;
-      flex-direction:column;
       line-height:1.1;
     }
-    .brandTxt b{ font-size: 13px; letter-spacing:.08em; text-transform: uppercase; }
-    .brandTxt span{ font-size: 12px; color: rgba(255,255,255,.70); }
-
-    .counter{
-      font-size: 12px;
-      color: rgba(255,255,255,.70);
-      letter-spacing: .12em;
+    .brandTxt b{
+      font-size: 13px;
+      letter-spacing:.10em;
       text-transform: uppercase;
     }
-
-    .progress{
-      position: fixed;
-      left: 0;
-      bottom: 0;
-      height: 4px;
-      width: 0%;
-      z-index: 5;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      transition: width .6s ease;
-      box-shadow: 0 -2px 22px rgba(217,70,239,.25);
+    .brandTxt span{
+      display:block;
+      font-size: 12px;
+      color: rgba(255,255,255,.70);
+      margin-top:3px;
     }
 
-    .controls{
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 6;
-      display:flex;
-      gap:10px;
-    }
-    .btn{
-      pointer-events:auto;
-      appearance:none;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.24);
-      color: rgba(255,255,255,.90);
+    .badge{
+      font-size: 12px;
+      letter-spacing:.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.78);
+      padding: 9px 12px;
       border-radius: 999px;
-      padding: 10px 14px;
-      cursor:pointer;
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.12);
       box-shadow: var(--shadow2);
       backdrop-filter: blur(10px);
-      transition: transform .12s ease, background .2s ease, border-color .2s ease;
-      font-weight: 600;
+      white-space: nowrap;
     }
-    .btn:hover{ background: rgba(0,0,0,.32); border-color: rgba(255,255,255,.22); }
+
+    h1{
+      font-size: clamp(30px, 3.6vw, 52px);
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      margin-bottom: 10px;
+    }
+    p{
+      font-size: clamp(15px, 1.35vw, 18px);
+      line-height: 1.55;
+      color: rgba(244,241,255,.88);
+      margin-bottom: 22px;
+      max-width: 72ch;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .tile{
+      border-radius: var(--r20);
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow2);
+      padding: 18px;
+      position:relative;
+      overflow:hidden;
+      transition: transform .15s ease, border-color .2s ease, background .2s ease;
+      cursor:pointer;
+      user-select:none;
+    }
+    .tile:hover{
+      transform: translateY(-2px);
+      background: rgba(0,0,0,.24);
+      border-color: rgba(255,255,255,.20);
+    }
+    .tile:active{ transform: translateY(0); }
+
+    .tile h2{
+      font-size: clamp(18px, 1.6vw, 22px);
+      margin-bottom: 8px;
+      color: rgba(255,255,255,.95);
+    }
+    .tile .sub{
+      color: rgba(200,184,255,.92);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin: 10px 0 16px;
+    }
+    .li{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      color: rgba(244,241,255,.90);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .dot{
+      width:9px; height:9px; border-radius: 99px;
+      margin-top: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 18px rgba(217,70,239,.45);
+      flex:0 0 9px;
+    }
+
+    .ctaRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top: 8px;
+    }
+    .btn{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.22);
+      color: rgba(255,255,255,.92);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .12s ease, background .2s ease, border-color .2s ease;
+      white-space: nowrap;
+    }
+    .btn:hover{ background: rgba(0,0,0,.30); border-color: rgba(255,255,255,.22); }
     .btn:active{ transform: translateY(1px); }
     .btn.primary{
       background: linear-gradient(90deg, rgba(217,70,239,.92), rgba(168,85,247,.86));
       border-color: rgba(255,255,255,.18);
     }
 
-    /* Responsivo */
+    .hint{
+      margin-top: 14px;
+      font-size: 12px;
+      color: rgba(255,255,255,.72);
+      letter-spacing: .10em;
+      text-transform: uppercase;
+    }
+
     @media (max-width: 860px){
       .grid{ grid-template-columns: 1fr; }
-      .controls{ left: 18px; right: 18px; justify-content: space-between; }
-      .btn{ flex: 1; text-align:center; }
     }
   </style>
 </head>
@@ -394,826 +258,114 @@
 <body>
   <canvas id="particles"></canvas>
   <div class="overlay"></div>
-  <div class="grain"></div>
 
-  <header class="hud" aria-hidden="true">
-    <div class="brand">
-      <div class="logoMark"></div>
-      <div class="brandTxt">
-        <b>N1 • Operação & Performance</b>
-        <span>Apresentação • CLT + INSS</span>
+  <main class="wrap">
+    <section class="card">
+      <div class="top">
+        <div class="brand">
+          <div class="mark"></div>
+          <div class="brandTxt">
+            <b>N1 • Operação & Performance</b>
+            <span>Dashboard de Treinamentos</span>
+          </div>
+        </div>
+        <div class="badge">Escolha o módulo</div>
       </div>
-    </div>
-    <div class="counter" id="counter">01 / 40</div>
-  </header>
 
-  <div class="deck" role="application" aria-label="Slides N1">
-    <div class="slides" id="slides">
+      <h1>Treinamento N1</h1>
+      <p>
+        Selecione abaixo qual produto você vai aplicar com o time.
+        Cada módulo abre uma apresentação fullscreen (estilo evento).
+      </p>
 
-      <!-- 01 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> N1 • Vendas de Crédito</span><span class="pill">Full Screen Deck</span></div>
-          <h1>Treinamento N1</h1>
-          <h2>CLT + INSS • Conversão • Objeções • Sondagens</h2>
-          <p class="tagline">Padrão de execução para operação de alta performance em ligação e WhatsApp.</p>
-        </div>
-      </section>
-
-      <!-- 02 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Mentalidade</span></div>
-          <h1>Vendedor comum vs Vendedor N1</h1>
-          <div class="grid">
-            <div class="box">
-              <h3>O que muda</h3>
-              <div class="list">
-                <div class="li"><span class="check"></span> Comum “explica” — N1 conduz</div>
-                <div class="li"><span class="check"></span> Comum reage — N1 controla ritmo</div>
-                <div class="li"><span class="check"></span> Comum pede — N1 comanda o próximo passo</div>
-                <div class="li"><span class="check"></span> Comum negocia demais — N1 enquadra com lógica</div>
-              </div>
-            </div>
-            <div class="box">
-              <h3>Regra de ouro</h3>
-              <p><span class="num">Sem comando, sem venda.</span><br/>A conversa precisa sempre ter um próximo passo claro.</p>
-            </div>
+      <div class="grid">
+        <!-- CLT -->
+        <div class="tile" role="button" tabindex="0" onclick="go('modulo-01-clt.html')" onkeydown="keyGo(event,'modulo-01-clt.html')">
+          <h2>Módulo 1 • CLT</h2>
+          <div class="sub">Crédito do Trabalhador</div>
+          <div class="list">
+            <div class="li"><span class="dot"></span> Posicionamento + Script + Fechamento</div>
+            <div class="li"><span class="dot"></span> Objeções CLT + Sondagens</div>
+            <div class="li"><span class="dot"></span> Frases assertivas (troca do “vamos dar continuidade?”)</div>
+          </div>
+          <div class="ctaRow">
+            <button class="btn primary" type="button" onclick="go('modulo-01-clt.html')">Abrir CLT →</button>
+            <button class="btn" type="button" onclick="openNew('modulo-01-clt.html')">Nova aba</button>
           </div>
         </div>
-      </section>
 
-      <!-- 03 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Posicionamento</span></div>
-          <h1>Você não vende “empréstimo”.</h1>
-          <h2>Você vende decisão financeira inteligente.</h2>
-          <div class="box">
-            <div class="list">
-              <div class="li"><span class="check"></span> Troca de dívida cara por parcela sustentável</div>
-              <div class="li"><span class="check"></span> Reserva estratégica para imprevisto</div>
-              <div class="li"><span class="check"></span> Previsibilidade no orçamento</div>
-              <div class="li"><span class="check"></span> Velocidade e segurança de contratação</div>
-            </div>
+        <!-- CP -->
+        <div class="tile" role="button" tabindex="0" onclick="go('modulo-02-cp.html')" onkeydown="keyGo(event,'modulo-02-cp.html')">
+          <h2>Módulo 2 • CP</h2>
+          <div class="sub">Crédito Pessoal (INSS: aposentados e pensionistas)</div>
+          <div class="list">
+            <div class="li"><span class="dot"></span> Comunicação + segurança + confiança</div>
+            <div class="li"><span class="dot"></span> Objeções CP + Sondagens</div>
+            <div class="li"><span class="dot"></span> Frases assertivas (sem pedir permissão)</div>
+          </div>
+          <div class="ctaRow">
+            <button class="btn primary" type="button" onclick="go('modulo-02-cp.html')">Abrir CP →</button>
+            <button class="btn" type="button" onclick="openNew('modulo-02-cp.html')">Nova aba</button>
           </div>
         </div>
-      </section>
+      </div>
 
-      <!-- 04 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Psicologia</span></div>
-          <h1>Como o cliente decide</h1>
-          <div class="grid">
-            <div class="box">
-              <h3>Emoção primeiro</h3>
-              <div class="list">
-                <div class="li"><span class="check"></span> Medo de golpe</div>
-                <div class="li"><span class="check"></span> Medo de “parcela”</div>
-                <div class="li"><span class="check"></span> Medo de perder controle</div>
-              </div>
-            </div>
-            <div class="box">
-              <h3>Razão depois</h3>
-              <div class="list">
-                <div class="li"><span class="check"></span> Comparação de juros</div>
-                <div class="li"><span class="check"></span> Regras do produto</div>
-                <div class="li"><span class="check"></span> Segurança do fluxo (validação)</div>
-              </div>
-            </div>
-          </div>
-          <p class="small">Sua missão: reduzir medo com segurança + aumentar desejo com benefício claro.</p>
-        </div>
-      </section>
-
-      <!-- 05 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Método</span></div>
-          <h1>Estrutura de Alta Conversão (5 passos)</h1>
-          <div class="box">
-            <div class="list">
-              <div class="li"><span class="check"></span> 1) Conexão (tom/ritmo)</div>
-              <div class="li"><span class="check"></span> 2) Autoridade (por que você/por que agora)</div>
-              <div class="li"><span class="check"></span> 3) Valor (benefício prático)</div>
-              <div class="li"><span class="check"></span> 4) Urgência real (varia por política/limite)</div>
-              <div class="li"><span class="check"></span> 5) Comando de fechamento (próximo passo)</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 06 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Produto • CLT</span></div>
-          <h1>Crédito do Trabalhador (CLT)</h1>
-          <h2>Modalidade com desconto em folha</h2>
-          <div class="box">
-            <div class="list">
-              <div class="li"><span class="check"></span> Sem consulta SPC/Serasa (na aprovação)</div>
-              <div class="li"><span class="check"></span> Mais segurança para quem preserva CPF</div>
-              <div class="li"><span class="check"></span> Prático, rápido e online</div>
-              <div class="li"><span class="check"></span> Parcelas leves com prazo definido</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 07 (Gráfico 1) -->
-      <section class="slide chartSlide" data-chart="juros1">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Comparativo</span><span class="pill">Gráfico animado</span></div>
-          <h1>Comparação de juros (referência)</h1>
-          <h2>O cliente entende quando vê.</h2>
-
-          <div class="box">
-            <div class="chart">
-              <div class="row">
-                <div class="lbl">Cartão de crédito <span class="num" data-count="37.5">0.0</span>% a.m</div>
-                <div class="barWrap"><div class="bar" data-width="92"></div></div>
-              </div>
-              <div class="row">
-                <div class="lbl">Crédito pessoal <span class="num" data-count="12">0.0</span>% a.m</div>
-                <div class="barWrap"><div class="bar" data-width="55"></div></div>
-              </div>
-              <div class="row">
-                <div class="lbl">Cheque especial <span class="num" data-count="8">0.0</span>% a.m</div>
-                <div class="barWrap"><div class="bar" data-width="42"></div></div>
-              </div>
-              <div class="row">
-                <div class="lbl">CLT (consignado) <span class="num" data-count="4.99">0.0</span>% a.m</div>
-                <div class="barWrap"><div class="bar good" data-width="26"></div></div>
-              </div>
-            </div>
-            <p class="small">Use como argumento: “alto comparado a quê?”. Mostre a diferença e retome o fechamento.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 08 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> CLT • Segurança</span></div>
-          <h1>Segurança operacional</h1>
-          <div class="grid">
-            <div class="box">
-              <h3>O que tranquiliza</h3>
-              <div class="list">
-                <div class="li"><span class="check"></span> Processo formalizado (validação do titular)</div>
-                <div class="li"><span class="check"></span> Desconto em folha (previsível)</div>
-                <div class="li"><span class="check"></span> Contratação online e rastreável</div>
-              </div>
-            </div>
-            <div class="box">
-              <h3>Frase-chave</h3>
-              <p><span class="num">“Eu te explico e você decide.”</span><br/>Tira o peso e aumenta controle.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 09 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> CLT • Valor</span></div>
-          <h1>Propostas que mais convertem</h1>
-          <div class="box">
-            <div class="list">
-              <div class="li"><span class="check"></span> Quitar dívida de cartão / rotativo</div>
-              <div class="li"><span class="check"></span> Unificar boletos em 1 parcela</div>
-              <div class="li"><span class="check"></span> Reserva para imprevistos</div>
-              <div class="li"><span class="check"></span> Resolver urgência sem “estourar” limite</div>
-            </div>
-          </div>
-          <p class="small">Evite “pegar dinheiro”. Foque em “trocar custo por controle”.</p>
-        </div>
-      </section>
-
-      <!-- 10 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> CLT • Script</span></div>
-          <h1>Script CLT (conversão rápida)</h1>
-          <div class="box">
-            <p><b>“Oi [Nome], tudo bem? Aqui é [Seu Nome] da N1.</b><br/>
-              Apareceu uma liberação pré-aprovada no seu CPF dentro do Crédito do Trabalhador, com desconto em folha e sem consulta SPC/Serasa.
-              Eu te explico em 30 segundos e você decide se vale a pena olhar, pode ser?”</p>
-            <p><b>Fechamento:</b> “Qual conta da sua titularidade você prefere receber?”</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 11 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> CLT • Controle</span></div>
-          <h1>Regra de condução</h1>
-          <div class="grid">
-            <div class="box">
-              <h3>Não negocie cedo</h3>
-              <div class="list">
-                <div class="li"><span class="check"></span> Primeiro: segurança</div>
-                <div class="li"><span class="check"></span> Depois: benefício</div>
-                <div class="li"><span class="check"></span> Por último: detalhes (prazo/valor)</div>
-              </div>
-            </div>
-            <div class="box">
-              <h3>Comando</h3>
-              <p>Troque “se quiser” por <span class="num">“vamos fazer assim”</span>.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 12 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> CLT • Fechamento</span></div>
-          <h1>Fechamento CLT (modelo)</h1>
-          <div class="box">
-            <p><b>“Perfeito.</b> Para garantir essa condição de hoje, eu só preciso confirmar a conta da sua titularidade.”</p>
-            <p><b>“Me diz: banco, agência (4 números antes do dígito) e conta.”</b></p>
-            <p class="small">Sempre feche com pergunta objetiva. Sem explicação longa no final.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 13 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Transição</span></div>
-          <h1>Agora muda o jogo.</h1>
-          <h2>INSS exige outra comunicação.</h2>
-          <p>Mesmo produto “crédito” — mas a psicologia do público é diferente.</p>
-        </div>
-      </section>
-
-      <!-- 14 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Produto • INSS</span></div>
-          <h1>Crédito Pessoal (INSS)</h1>
-          <h2>Aposentados e pensionistas</h2>
-          <div class="box">
-            <div class="list">
-              <div class="li"><span class="check"></span> Público sensível a risco e golpe</div>
-              <div class="li"><span class="check"></span> Precisa de calma + clareza</div>
-              <div class="li"><span class="check"></span> Segurança e previsibilidade são “a venda”</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 15 (Gráfico 2) -->
-      <section class="slide chartSlide" data-chart="juros2">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> INSS • Comparativo</span><span class="pill">Gráfico animado</span></div>
-          <h1>Juros: o que importa pro INSS</h1>
-          <h2>Previsibilidade + parcela que cabe.</h2>
-          <div class="box">
-            <div class="chart">
-              <div class="row">
-                <div class="lbl">Cartão / rotativo <span class="num" data-count="37.5">0.0</span>% a.m</div>
-                <div class="barWrap"><div class="bar" data-width="92"></div></div>
-              </div>
-              <div class="row">
-                <div class="lbl">Crédito pessoal <span class="num" data-count="12">0.0</span>% a.m</div>
-                <div class="barWrap"><div class="bar" data-width="55"></div></div>
-              </div>
-              <div class="row">
-                <div class="lbl">Consignado <span class="num" data-count="2.2">0.0</span>% a.m</div>
-                <div class="barWrap"><div class="bar good" data-width="18"></div></div>
-              </div>
-            </div>
-            <p class="small">No INSS, use menos “urgência” e mais “segurança + controle”.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 16 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> INSS • Tom</span></div>
-          <h1>Tom correto para INSS</h1>
-          <div class="box">
-            <div class="list">
-              <div class="li"><span class="check"></span> Ritmo mais calmo</div>
-              <div class="li"><span class="check"></span> Linguagem simples (sem gíria / sem pressão)</div>
-              <div class="li"><span class="check"></span> Reforço de segurança (validação/registro)</div>
-              <div class="li"><span class="check"></span> Perguntas curtas</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 17 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> INSS • Script</span></div>
-          <h1>Script INSS (segurança primeiro)</h1>
-          <div class="box">
-            <p><b>“Bom dia dona [Nome], tudo bem? Aqui é [Seu Nome] da N1.</b><br/>
-              Estou ligando porque apareceu um valor pré-aprovado para aposentado/pensionista e eu quero te passar as informações com calma.
-              A ligação é gravada e a senhora só confirma se quiser. Posso te explicar rapidinho?”</p>
-            <p><b>Fechamento:</b> “Qual banco a senhora prefere receber, na sua conta?”</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 18 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> INSS • Segurança</span></div>
-          <h1>O que reduz medo</h1>
-          <div class="grid">
-            <div class="box">
-              <h3>Provas de segurança</h3>
-              <div class="list">
-                <div class="li"><span class="check"></span> Conversa gravada</div>
-                <div class="li"><span class="check"></span> Validação facial / confirmação do titular</div>
-                <div class="li"><span class="check"></span> Depósito em conta da titularidade</div>
-              </div>
-            </div>
-            <div class="box">
-              <h3>Frase-chave</h3>
-              <p><span class="num">“A senhora decide no seu tempo.”</span></p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 19 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Ponte</span></div>
-          <h1>Agora: Objeções.</h1>
-          <h2>Objeção não é “não”. É pedido de segurança.</h2>
-          <p>Seu objetivo: ouvir, enquadrar, responder e voltar pro fechamento.</p>
-        </div>
-      </section>
-
-      <!-- 20 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Técnica</span></div>
-          <h1>O que é “fechamento”</h1>
-          <div class="box">
-            <p><b>Fechamento</b> é quando o cliente interrompe com dúvida/negativa.</p>
-            <p>Você responde com segurança e <b>volta ao ponto</b> onde estava: <span class="num">“Qual conta você prefere?”</span></p>
-            <p class="small">Se você responde e não volta, você vira atendimento — não venda.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 21 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Objeção</span></div>
-          <h1>“Não quero”</h1>
-          <div class="box">
-            <p><b>Resposta:</b> “Perfeito, eu respeito. Só pra eu entender: você não quer porque não precisa agora ou porque quer entender melhor primeiro?”</p>
-            <p><b>Volta pro comando:</b> “Eu te falo o valor liberado e você decide. Qual conta prefere?”</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 22 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Objeção</span></div>
-          <h1>“Já fiz”</h1>
-          <div class="box">
-            <p><b>Resposta:</b> “Perfeito. Essa liberação não anula o que você já tem — é uma linha separada. Posso conferir o valor atualizado no seu perfil?”</p>
-            <p><b>Comando:</b> “Me confirma a conta da titularidade para recebimento.”</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 23 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Objeção</span></div>
-          <h1>“Juros é alto”</h1>
-          <div class="box">
-            <p><b>Resposta:</b> “Entendo. Alto comparado a quê? Cartão e crédito pessoal são muito mais caros. Aqui você troca custo por controle e previsibilidade.”</p>
-            <p><b>Volta:</b> “Qual conta da sua titularidade você prefere receber?”</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 24 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Objeção</span></div>
-          <h1>“Vou pensar”</h1>
-          <div class="box">
-            <p><b>Resposta:</b> “Claro. Você vai pensar por dúvida de segurança ou por querer analisar o valor com calma?”</p>
-            <p><b>Se for dúvida:</b> “Qual parte te deixou inseguro: prazo, parcela ou o processo?”</p>
-            <p><b>Volta:</b> “Me diz o banco e agência pra eu deixar pronto.”</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 25 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Objeção</span></div>
-          <h1>“Não preciso”</h1>
-          <div class="box">
-            <p><b>Resposta:</b> “Ótimo — isso é sinal de controle financeiro. Mesmo assim, a maioria usa como reserva ou para trocar uma dívida cara e economizar todo mês.”</p>
-            <p><b>Volta:</b> “Qual conta você prefere para depósito?”</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 26 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Objeção</span></div>
-          <h1>“Quero menos valor”</h1>
-          <div class="box">
-            <p><b>Resposta:</b> “O banco libera valores padronizados pelo perfil. Eu não consigo reduzir na simulação, mas você pode usar parte e deixar o restante rendendo ou amortizar depois.”</p>
-            <p><b>Volta:</b> “Qual banco você usa na sua conta?”</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 27 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Sondagem</span></div>
-          <h1>Sondagem de prioridade</h1>
-          <div class="box">
-            <p><b>Pergunta:</b> “Hoje não é prioridade ou as condições não ficaram atrativas?”</p>
-            <p><b>Objetivo:</b> descobrir se é timing ou proposta (pra ajustar o ataque).</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 28 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Sondagem</span></div>
-          <h1>Sondagem do momento financeiro</h1>
-          <div class="box">
-            <p><b>Pergunta:</b> “Hoje está tudo organizado ou existe algo que você quer realizar nos próximos meses?”</p>
-            <p><b>Objetivo:</b> puxar desejo e abrir justificativa de uso.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 29 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Sondagem</span></div>
-          <h1>Sondagem estratégica</h1>
-          <div class="box">
-            <p><b>Pergunta:</b> “O que faria essa proposta ficar interessante pra você hoje?”</p>
-            <p><b>Objetivo:</b> o cliente entrega o “botão” (prazo, parcela, valor, segurança).</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 30 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Sondagem</span></div>
-          <h1>Sondagem da dor</h1>
-          <div class="box">
-            <p><b>Pergunta:</b> “Se acontecesse um imprevisto hoje, você teria reserva na mão ou esse crédito seria solução?”</p>
-            <p><b>Objetivo:</b> urgência real sem pressão.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 31 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Sondagem</span></div>
-          <h1>Sondagem suave de valor</h1>
-          <div class="box">
-            <p><b>Pergunta:</b> “O que pesou mais agora: prazo, parcela ou valor liberado?”</p>
-            <p><b>Objetivo:</b> direcionar a argumentação em 1 ponto (sem dispersão).</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 32 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Execução</span></div>
-          <h1>Ligação perfeita (roteiro de controle)</h1>
-          <div class="box">
-            <div class="list">
-              <div class="li"><span class="check"></span> Abertura forte (segurança + porquê)</div>
-              <div class="li"><span class="check"></span> Valor em 1 frase (benefício prático)</div>
-              <div class="li"><span class="check"></span> Sondagem curta (descobrir botão)</div>
-              <div class="li"><span class="check"></span> Resposta objetiva</div>
-              <div class="li"><span class="check"></span> Volta pro fechamento</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 33 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Performance</span></div>
-          <h1>Controle emocional</h1>
-          <div class="grid">
-            <div class="box">
-              <h3>Você manda no ritmo</h3>
-              <div class="list">
-                <div class="li"><span class="check"></span> Não acelere quando o cliente trava</div>
-                <div class="li"><span class="check"></span> Respire e repita o comando</div>
-                <div class="li"><span class="check"></span> Seja curto e seguro</div>
-              </div>
-            </div>
-            <div class="box">
-              <h3>Padrão N1</h3>
-              <p><span class="num">“Eu resolvo com você agora.”</span></p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 34 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Linguagem</span></div>
-          <h1>Palavras proibidas</h1>
-          <div class="box">
-            <div class="list">
-              <div class="li"><span class="check"></span> Remover: “se quiser”, “talvez”, “acho”, “pode ser?”</div>
-              <div class="li"><span class="check"></span> Trocar por: “vamos fazer assim”, “confirma pra mim”, “me informa”, “agora me diz”</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 35 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Follow-up</span></div>
-          <h1>Follow-up inteligente</h1>
-          <div class="box">
-            <div class="list">
-              <div class="li"><span class="check"></span> D0: ligação + WhatsApp com valor/parcela</div>
-              <div class="li"><span class="check"></span> D1: reforço de segurança (processo)</div>
-              <div class="li"><span class="check"></span> D3: comparativo de juros (gráfico)</div>
-              <div class="li"><span class="check"></span> D7: último contato (decisão)</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 36 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Meta</span></div>
-          <h1>Meta diária N1 (exemplo)</h1>
-          <div class="box">
-            <div class="list">
-              <div class="li"><span class="check"></span> X contatos úteis</div>
-              <div class="li"><span class="check"></span> X propostas enviadas</div>
-              <div class="li"><span class="check"></span> X formalizações</div>
-              <div class="li"><span class="check"></span> X aprovações</div>
-            </div>
-          </div>
-          <p class="small">Sem métrica diária, vira “opinião”. Com métrica, vira crescimento.</p>
-        </div>
-      </section>
-
-      <!-- 37 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Qualidade</span></div>
-          <h1>Checklist do atendente (5 pontos)</h1>
-          <div class="box">
-            <div class="list">
-              <div class="li"><span class="check"></span> Entrou chamada? fala “alô” rápido e assume controle</div>
-              <div class="li"><span class="check"></span> Tom firme, frase curta, objetivo claro</div>
-              <div class="li"><span class="check"></span> Sondagem 1 pergunta — não interrogatório</div>
-              <div class="li"><span class="check"></span> Objeção respondida? volta pro fechamento</div>
-              <div class="li"><span class="check"></span> WhatsApp? sempre com comando (ex: “responde OI”)</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 38 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Fechamento</span></div>
-          <h1>O comando que fecha</h1>
-          <div class="box">
-            <p><b>“Perfeito. Para seguir, me confirma agora:</b><br/>banco, agência e conta da sua titularidade.”</p>
-            <p class="small">Fechamento é simples. O difícil é você ter coragem de conduzir.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 39 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Padrão</span></div>
-          <h1>O que não pode acontecer</h1>
-          <div class="box">
-            <div class="list">
-              <div class="li"><span class="check"></span> Explicar demais e perder controle</div>
-              <div class="li"><span class="check"></span> Jogar tudo pro Whats sem comando</div>
-              <div class="li"><span class="check"></span> Não tabular / não registrar motivo real</div>
-              <div class="li"><span class="check"></span> Encerrar sem próximo passo</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 40 -->
-      <section class="slide">
-        <div class="card">
-          <div class="topline"><span class="pill"><span class="dot"></span> Final</span></div>
-          <h1>Execução N1</h1>
-          <h2>Consistência vence “talento”.</h2>
-          <div class="box">
-            <p><b>Seu padrão:</b> segurança + valor + comando.</p>
-            <p><b>Sua regra:</b> objeção respondida → volta pro fechamento.</p>
-            <p class="tagline">Fim da apresentação.</p>
-          </div>
-        </div>
-      </section>
-
-    </div>
-  </div>
-
-  <div class="progress" id="progress"></div>
-
-  <div class="controls">
-    <button class="btn" id="prev" type="button">← Voltar</button>
-    <button class="btn primary" id="next" type="button">Próximo →</button>
-  </div>
+      <div class="hint">Dica: Enter abre / Esc volta (se você quiser, eu coloco Esc para voltar aqui)</div>
+    </section>
+  </main>
 
   <script>
-    /* =========================
-       SLIDES • NAV • CINEMATIC
-       ========================= */
-
-    const slidesEl = document.getElementById('slides');
-    const slides = Array.from(document.querySelectorAll('.slide'));
-    const counterEl = document.getElementById('counter');
-    const progressEl = document.getElementById('progress');
-    const btnPrev = document.getElementById('prev');
-    const btnNext = document.getElementById('next');
-
-    let idx = 0;
-    const total = slides.length;
-
-    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
-
-    function setActive(){
-      slides.forEach((s,i)=> s.classList.toggle('active', i===idx));
-      slidesEl.style.transform = `translate3d(-${idx * 100}vw, 0, 0)`;
-
-      const a = String(idx+1).padStart(2,'0');
-      counterEl.textContent = `${a} / ${total}`;
-      progressEl.style.width = `${((idx+1)/total)*100}%`;
-
-      // animar gráficos quando entrar no slide
-      animateChartsInSlide(slides[idx]);
+    function go(path){ window.location.href = path; }
+    function openNew(path){ window.open(path, '_blank', 'noopener'); }
+    function keyGo(e, path){
+      if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(path); }
     }
 
-    function go(n){
-      idx = clamp(n, 0, total-1);
-      setActive();
-    }
-
-    function next(){ if(idx < total-1) go(idx+1); }
-    function prev(){ if(idx > 0) go(idx-1); }
-
-    btnNext.addEventListener('click', next);
-    btnPrev.addEventListener('click', prev);
-
-    // teclado
-    document.addEventListener('keydown', (e)=>{
-      if(e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' '){ e.preventDefault(); next(); }
-      if(e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); prev(); }
-      if(e.key === 'Home'){ e.preventDefault(); go(0); }
-      if(e.key === 'End'){ e.preventDefault(); go(total-1); }
-    }, {passive:false});
-
-    // swipe (mobile)
-    let sx=0, sy=0, st=0;
-    document.addEventListener('touchstart', (e)=>{
-      const t = e.touches[0];
-      sx = t.clientX; sy = t.clientY; st = Date.now();
-    }, {passive:true});
-    document.addEventListener('touchend', (e)=>{
-      const t = e.changedTouches[0];
-      const dx = t.clientX - sx;
-      const dy = t.clientY - sy;
-      const dt = Date.now() - st;
-
-      if(dt < 400 && Math.abs(dx) > 60 && Math.abs(dy) < 60){
-        if(dx < 0) next(); else prev();
-      }
-    }, {passive:true});
-
-    /* =========================
-       CHARTS (bars + counters)
-       ========================= */
-    const animatedOnce = new WeakSet();
-
-    function animateNumber(el, to){
-      const start = 0;
-      const duration = 900;
-      const t0 = performance.now();
-
-      function step(t){
-        const p = Math.min(1, (t - t0) / duration);
-        const eased = 1 - Math.pow(1-p, 3);
-        const val = start + (to - start) * eased;
-        el.textContent = (to % 1 === 0) ? String(Math.round(val)) : val.toFixed(2).replace(/\.00$/,'');
-        if(p < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }
-
-    function animateChartsInSlide(slide){
-      if(animatedOnce.has(slide)) return;
-
-      const bars = slide.querySelectorAll('.bar[data-width]');
-      const nums = slide.querySelectorAll('.num[data-count]');
-      if(!bars.length && !nums.length) return;
-
-      // delay pequeno para ficar cinematográfico
-      setTimeout(()=>{
-        bars.forEach(b=>{
-          const w = b.getAttribute('data-width');
-          b.style.width = `${w}%`;
-        });
-        nums.forEach(n=>{
-          const v = parseFloat(n.getAttribute('data-count'));
-          animateNumber(n, v);
-        });
-        animatedOnce.add(slide);
-      }, 180);
-    }
-
-    // init
-    go(0);
-
-    /* =========================
-       PARTICLES BACKGROUND
-       ========================= */
+    // Partículas mais intensas (dashboard)
     const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d', { alpha: true });
-
+    const ctx = canvas.getContext('2d', { alpha:true });
     function resize(){
       const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = window.innerHeight + 'px';
+      canvas.width = Math.floor(innerWidth * dpr);
+      canvas.height = Math.floor(innerHeight * dpr);
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
       ctx.setTransform(dpr,0,0,dpr,0,0);
     }
-    window.addEventListener('resize', resize);
+    addEventListener('resize', resize);
     resize();
 
     const P = [];
-    const COUNT = Math.round(Math.sqrt(window.innerWidth * window.innerHeight) / 1.55); // densidade
-    const maxR = 2.1;
-
     function rand(a,b){ return a + Math.random()*(b-a); }
 
-    function initParticles(){
+    function init(){
       P.length = 0;
+      // mais intenso que antes
+      const COUNT = Math.round(Math.sqrt(innerWidth*innerHeight)/1.10);
       for(let i=0;i<COUNT;i++){
         P.push({
-          x: rand(0, window.innerWidth),
-          y: rand(0, window.innerHeight),
-          r: rand(0.8, maxR),
-          vx: rand(-0.25, 0.25),
-          vy: rand(-0.20, 0.20),
-          a: rand(0.12, 0.42)
+          x: rand(0, innerWidth),
+          y: rand(0, innerHeight),
+          r: rand(0.9, 2.4),
+          vx: rand(-0.42, 0.42),
+          vy: rand(-0.34, 0.34),
+          a: rand(0.14, 0.50)
         });
       }
     }
-    initParticles();
-    window.addEventListener('resize', ()=>{ initParticles(); });
+    init();
+    addEventListener('resize', init);
 
     function draw(){
-      ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+      ctx.clearRect(0,0,innerWidth,innerHeight);
 
-      // partículas
+      // dots
       for(const p of P){
         p.x += p.vx; p.y += p.vy;
-
-        if(p.x < -20) p.x = window.innerWidth + 20;
-        if(p.x > window.innerWidth + 20) p.x = -20;
-        if(p.y < -20) p.y = window.innerHeight + 20;
-        if(p.y > window.innerHeight + 20) p.y = -20;
+        if(p.x < -20) p.x = innerWidth + 20;
+        if(p.x > innerWidth + 20) p.x = -20;
+        if(p.y < -20) p.y = innerHeight + 20;
+        if(p.y > innerHeight + 20) p.y = -20;
 
         ctx.beginPath();
         ctx.fillStyle = `rgba(217,70,239,${p.a})`;
@@ -1221,14 +373,14 @@
         ctx.fill();
       }
 
-      // conexões
+      // connections (mais visível)
       for(let i=0;i<P.length;i++){
         for(let j=i+1;j<P.length;j++){
           const a = P[i], b = P[j];
           const dx = a.x - b.x, dy = a.y - b.y;
           const d = Math.sqrt(dx*dx + dy*dy);
-          if(d < 140){
-            const alpha = (1 - d/140) * 0.18;
+          if(d < 165){
+            const alpha = (1 - d/165) * 0.26;
             ctx.strokeStyle = `rgba(168,85,247,${alpha})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
