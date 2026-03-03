@@ -955,7 +955,7 @@ body{
   background-position: 75% center;
   background-size: min(65vw, 900px);
 
-  opacity: 0.12;
+  opacity: 0.02;
 
   /* fade suave nas bordas */
   -webkit-mask-image: radial-gradient(circle at center,
