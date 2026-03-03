@@ -933,3 +933,45 @@ body{
   opacity: .95;
   filter: drop-shadow(0 10px 28px rgba(0,0,0,.45));
 }
+/* ==========================================
+   DASHBOARD WATERMARK (igual hero)
+   ========================================== */
+
+.app{
+  position: relative;
+  overflow: hidden;
+}
+
+/* Logo gigante no fundo do dashboard */
+.app::before{
+  content:"";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  background-image: url("assets/img/logo.png");
+  background-repeat: no-repeat;
+  background-position: 75% center;
+  background-size: min(65vw, 900px);
+
+  opacity: 0.12;
+
+  /* fade suave nas bordas */
+  -webkit-mask-image: radial-gradient(circle at center,
+      rgba(0,0,0,1) 55%,
+      rgba(0,0,0,0.85) 65%,
+      rgba(0,0,0,0.4) 75%,
+      rgba(0,0,0,0) 92%);
+  mask-image: radial-gradient(circle at center,
+      rgba(0,0,0,1) 55%,
+      rgba(0,0,0,0.85) 65%,
+      rgba(0,0,0,0.4) 75%,
+      rgba(0,0,0,0) 92%);
+}
+
+/* Garante que conteúdo fique acima */
+.app > .container{
+  position: relative;
+  z-index: 1;
+}
