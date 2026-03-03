@@ -193,7 +193,7 @@ body{
   background-repeat: no-repeat;
   background-position: right 10% center;
   background-size: min(54vw, 720px);
-  opacity: 0.10;
+  opacity: 0.05;
   filter: saturate(.9) contrast(1.05);
 }
 
