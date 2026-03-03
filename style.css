@@ -191,22 +191,10 @@ body{
 
   background-image: url("assets/img/logo.png");
   background-repeat: no-repeat;
-  background-position: 70% center;
-  background-size: min(65vw, 900px);
-
-  opacity: 0.16;
-
-  /* máscara de fade lateral */
-  -webkit-mask-image: radial-gradient(circle at center,
-      rgba(0,0,0,1) 55%,
-      rgba(0,0,0,0.85) 65%,
-      rgba(0,0,0,0.4) 75%,
-      rgba(0,0,0,0) 90%);
-  mask-image: radial-gradient(circle at center,
-      rgba(0,0,0,1) 55%,
-      rgba(0,0,0,0.85) 65%,
-      rgba(0,0,0,0.4) 75%,
-      rgba(0,0,0,0) 90%);
+  background-position: center right 5%;
+  background-size: min(65vw, 900px); /* maior */
+  opacity: 0.14; /* mais visível */
+  filter: saturate(.95) contrast(1.05);
 }
 
 /* varredura de luz (moving glow) no HERO */
