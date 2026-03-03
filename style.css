@@ -21,6 +21,24 @@ body{
   text-rendering: optimizeLegibility;
 }
 
+/* Skip link (acessibilidade) */
+.skip-link{
+  position: absolute;
+  left: -999px;
+  top: 10px;
+  z-index: 99999;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
+  color: #fff;
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+}
+.skip-link:focus{
+  left: 12px;
+}
+
 /* ===============================
    2) SISTEMA DE CORES (PALETA N1)
    =============================== */
@@ -59,11 +77,6 @@ body{
 
   --shadow-deep: 0 25px 60px rgba(0,0,0,.60);
   --shadow-glow: 0 0 40px rgba(255,47,216,.30);
-
-  /* Watermark defaults */
-  --wm-opacity: .10;     /* <- OPACIDADE PADRÃO (INDEX / LANDING) */
-  --wm-size: min(54vw, 720px);
-  --wm-x: right 10% center;
 }
 
 /* ===============================
@@ -158,14 +171,30 @@ body{
     linear-gradient(135deg, #0a0a12 0%, #1b0033 100%);
 }
 
-/* camada extra para profundidade */
+/* camada extra para profundidade (fica no FUNDO real) */
 .hero-bg{
   position: absolute;
   inset: 0;
   background: var(--gradient-primary);
   opacity: 0.08;
   animation: heroMove 12s ease-in-out infinite alternate;
-  z-index: 1;
+  z-index: 0; /* <-- era 1, agora fica atrás do watermark e do conteúdo */
+  pointer-events: none;
+}
+
+/* watermark somente no HERO (igual ao print) */
+.hero-watermark{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1; /* acima do fundo, abaixo do conteúdo */
+
+  background-image: url("assets/img/logo.png");
+  background-repeat: no-repeat;
+  background-position: right 10% center;
+  background-size: min(54vw, 720px);
+  opacity: 0.10;
+  filter: saturate(.9) contrast(1.05);
 }
 
 /* varredura de luz (moving glow) no HERO */
@@ -178,7 +207,7 @@ body{
   transform: translateX(-35%) rotate(12deg);
   animation: glowSweep 9s ease-in-out infinite alternate;
   pointer-events:none;
-  z-index: 0;
+  z-index: 0; /* mantém atrás do watermark e do conteúdo */
 }
 
 /* garante conteúdo acima das camadas */
@@ -265,7 +294,7 @@ body{
 }
 
 /* ===============================
-   7) SEÇÕES / CARDS (LANDING/DASH)
+   7) SEÇÕES / CARDS (LANDING)
    =============================== */
 
 .section{ padding: 120px 0; }
@@ -305,21 +334,13 @@ body{
   margin-top: 40px;
 }
 
-/* === CARDS MAIS ESCUROS (melhora leitura com watermark por baixo) === */
 .module-card{
   padding: 30px;
   border-radius: 20px;
-
-  /* antes era muito claro; agora fica levemente mais escuro */
-  background: linear-gradient(
-    180deg,
-    rgba(20,15,35,0.58) 0%,
-    rgba(15,10,28,0.66) 100%
-  );
-
+  background: rgba(255,255,255,0.035);
   border: 1px solid rgba(255,255,255,0.07);
-  box-shadow: 0 14px 44px rgba(0,0,0,.45);
   transition: .35s ease;
+  box-shadow: 0 14px 44px rgba(0,0,0,.45);
 }
 
 .module-card:hover{
@@ -512,55 +533,6 @@ body{
   overflow: hidden;
 }
 
-/* Glow animado principal (varrendo) */
-.app::before{
-  content:"";
-  position: absolute;
-  inset: -35%;
-  background:
-    radial-gradient(closest-side,
-      rgba(255,47,216,0.20),
-      transparent 65%);
-  filter: blur(16px);
-  transform: translateX(-35%) rotate(12deg);
-  animation: appGlowSweep 10s ease-in-out infinite alternate;
-  pointer-events: none;
-  z-index: 0;
-  opacity: .95;
-}
-
-/* Glow secundário (profundidade) */
-.app::after{
-  content:"";
-  position:absolute;
-  inset:-40%;
-  background:
-    radial-gradient(circle at 25% 35%, rgba(92,27,143,0.20), transparent 55%),
-    radial-gradient(circle at 75% 70%, rgba(255,47,216,0.12), transparent 60%);
-  filter: blur(20px);
-  animation: appGlowFloat 14s ease-in-out infinite alternate;
-  pointer-events:none;
-  z-index: 0;
-  opacity: .75;
-}
-
-/* Conteúdo sempre acima do glow */
-.app > .container{
-  position: relative;
-  z-index: 2;
-}
-
-/* Animações */
-@keyframes appGlowSweep{
-  0%   { transform: translateX(-35%) rotate(12deg); opacity: .75; }
-  100% { transform: translateX(35%)  rotate(12deg); opacity: 1; }
-}
-
-@keyframes appGlowFloat{
-  0%   { transform: translateY(10px) scale(1); opacity: .65; }
-  100% { transform: translateY(-18px) scale(1.05); opacity: .85; }
-}
-
 .app-header{
   position: fixed;
   top: 0;
@@ -603,6 +575,332 @@ body{
   box-shadow: 0 0 0 3px rgba(255,47,216,0.14);
 }
 
+/* Glow animado principal (varrendo) */
+.app::before{
+  content:"";
+  position: absolute;
+  inset: -35%;
+  background:
+    radial-gradient(closest-side,
+      rgba(255,47,216,0.20),
+      transparent 65%);
+  filter: blur(16px);
+  transform: translateX(-35%) rotate(12deg);
+  animation: appGlowSweep 10s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .95;
+}
+
+/* Glow secundário (profundidade) */
+.app::after{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background:
+    radial-gradient(circle at 25% 35%, rgba(92,27,143,0.20), transparent 55%),
+    radial-gradient(circle at 75% 70%, rgba(255,47,216,0.12), transparent 60%);
+  filter: blur(20px);
+  animation: appGlowFloat 14s ease-in-out infinite alternate;
+  pointer-events:none;
+  z-index: 0;
+  opacity: .75;
+}
+
+/* Conteúdo sempre acima do glow */
+.app > .container{
+  position: relative;
+  z-index: 1;
+}
+
+/* Animações */
+@keyframes appGlowSweep{
+  0%   { transform: translateX(-35%) rotate(12deg); opacity: .75; }
+  100% { transform: translateX(35%)  rotate(12deg); opacity: 1; }
+}
+
+@keyframes appGlowFloat{
+  0%   { transform: translateY(10px) scale(1); opacity: .65; }
+  100% { transform: translateY(-18px) scale(1.05); opacity: .85; }
+}
+
+/* hero do módulo */
+.module-hero{
+  display: grid;
+  grid-template-columns: 1.35fr .65fr;
+  gap: 28px;
+  align-items: start;
+  margin-bottom: 22px;
+}
+
+.module-kicker{
+  color: var(--magenta-400);
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.module-h1{
+  font-size: 40px;
+  line-height: 1.08;
+  margin-bottom: 12px;
+}
+
+.module-lead{
+  color: var(--text-muted);
+  max-width: 720px;
+}
+
+.module-hero-actions{
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.module-status{
+  margin-top: 10px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* cards de conteúdo */
+.module-grid{
+  display: grid;
+  gap: 18px;
+}
+
+.lesson-card{
+  padding: 26px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+  180deg,
+  rgba(20,15,35,0.88) 0%,
+  rgba(15,10,28,0.92) 100%
+);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 18px 60px rgba(0,0,0,.45);
+}
+
+.lesson-title{
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.lesson-text{
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* blocos internos */
+.callout{
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed rgba(255,255,255,0.12);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.split{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.split-card{
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.split-title{ font-size: 14px; margin-bottom: 6px; }
+.split-text{ font-size: 13px; color: var(--text-muted); }
+
+.kv{
+  display: grid;
+  gap: 12px;
+}
+
+.kv-item{
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.kv-label{
+  color: var(--magenta-400);
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.kv-value{
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* listas */
+.checklist{
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.checklist input{
+  accent-color: var(--magenta-400);
+  transform: translateY(1px);
+}
+
+.ordered{
+  padding-left: 18px;
+  color: var(--text-muted);
+  display: grid;
+  gap: 6px;
+}
+
+.bullets{
+  padding-left: 18px;
+  color: var(--text-muted);
+  display: grid;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.campaign{
+  margin-top: 14px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.campaign-title{
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.campaign-text{
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* navegação */
+.module-nav{
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+/* ===============================
+   11) COMPONENTES EXTRAS (chips/bancos/espécies)
+   =============================== */
+
+/* Grade de bancos */
+.banks-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.bank-item{
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* Chips (Estados / Flags) */
+.chip-group{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.chip{
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: .5px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.03);
+  color: var(--text-muted);
+}
+
+.chip-bad{
+  border-color: rgba(255, 90, 122, 0.35);
+  background: rgba(255, 90, 122, 0.08);
+  color: #ff8aa1;
+}
+
+.lesson-subtitle{
+  margin-top: 14px;
+  font-size: 14px;
+  color: #fff;
+  opacity: .92;
+}
+
+/* Lista premium de espécies */
+.species-grid{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.species-item{
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.species-item strong{ color: #fff; }
+
+.species-bad{
+  border-color: rgba(255, 90, 122, 0.30);
+  background: rgba(255, 90, 122, 0.06);
+}
+
+/* ===============================
+   12) RESPONSIVO
+   =============================== */
+
+@media (max-width: 900px){
+  .modules-grid{ grid-template-columns: 1fr; }
+  .module-hero{ grid-template-columns: 1fr; }
+  .split{ grid-template-columns: 1fr; }
+  .module-nav{ flex-direction: column; }
+  .banks-grid{ grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px){
+  .hero-watermark{
+    background-position: 85% 55%;
+    background-size: 78vw;
+    opacity: 0.08;
+  }
+}
+
 /* ===============================
    BRAND LINK (Header clicável)
    =============================== */
@@ -623,93 +921,61 @@ body{
   color: var(--magenta-400);
 }
 
-/* ===============================
-   Logo flutuante (canto superior)
-   =============================== */
-
+/* Logo flutuante (não ocupa espaço no layout) */
 .logo-site{
   position: fixed;
   top: 14px;
   right: 18px;
   z-index: 9999;
-  pointer-events: none;
+  pointer-events: none; /* não atrapalha clicar nos botões do topo */
 }
 
 .logo-site img{
   display: block;
-  height: 44px;
+  height: 44px;     /* ajuste fino */
   width: auto;
   opacity: .95;
   filter: drop-shadow(0 10px 28px rgba(0,0,0,.45));
 }
+/* ==========================================
+   DASHBOARD WATERMARK (igual hero)
+   ========================================== */
 
-/* ===============================
-   Watermark (logo gigante no fundo)
-   - com borda esfumaçada (mask) para sumir o quadrado
-   =============================== */
+.app{
+  position: relative;
+  overflow: hidden;
+}
 
-.bg-watermark{
-  position: fixed;
+/* Logo gigante no fundo do dashboard */
+.app::before{
+  content:"";
+  position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 0;
 
   background-image: url("assets/img/logo.png");
   background-repeat: no-repeat;
-  background-position: var(--wm-x);
-  background-size: var(--wm-size);
+  background-position: 75% center;
+  background-size: min(65vw, 900px);
 
-  opacity: var(--wm-opacity);
-  filter: saturate(.9) contrast(1.05);
+  opacity: 0.01;
 
-  /* ESFUMAÇADO: apaga as bordas retas do PNG quadrado */
-  -webkit-mask-image: radial-gradient(circle at 70% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 58%, rgba(0,0,0,0) 78%);
-  mask-image: radial-gradient(circle at 70% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 58%, rgba(0,0,0,0) 78%);
+  /* fade suave nas bordas */
+  -webkit-mask-image: radial-gradient(circle at center,
+      rgba(0,0,0,1) 55%,
+      rgba(0,0,0,0.85) 65%,
+      rgba(0,0,0,0.4) 75%,
+      rgba(0,0,0,0) 92%);
+  mask-image: radial-gradient(circle at center,
+      rgba(0,0,0,1) 55%,
+      rgba(0,0,0,0.85) 65%,
+      rgba(0,0,0,0.4) 75%,
+      rgba(0,0,0,0) 92%);
 }
 
-/* variação para APP (dashboard/módulos) */
-.bg-watermark--app{
-  /* <- OPACIDADE DO DASHBOARD AQUI */
-  opacity: 0.13;
-
-  /* posição/tamanho no app (igual teu print) */
-  background-position: center 62%;
-  background-size: min(72vw, 980px);
-
-  /* máscara ajustada para centralizar o “esfumaçado” no app */
-  -webkit-mask-image: radial-gradient(circle at 50% 58%, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 56%, rgba(0,0,0,0) 78%);
-  mask-image: radial-gradient(circle at 50% 58%, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 56%, rgba(0,0,0,0) 78%);
-}
-
-/* Conteúdo acima de tudo */
-.site-header,
-.app-header,
-main,
-.logo-site,
-.skip-link,
-.hero-inner{
+/* Garante que conteúdo fique acima */
+.app > .container{
   position: relative;
-  z-index: 2;
-}
-
-/* Mobile */
-@media (max-width: 640px){
-  .bg-watermark{
-    background-position: 85% 55%;
-    background-size: 78vw;
-    opacity: 0.08;
-  }
-  .bg-watermark--app{
-    background-position: 50% 62%;
-    background-size: 88vw;
-    opacity: 0.10;
-  }
-}
-
-/* ===============================
-   12) RESPONSIVO (restante)
-   =============================== */
-
-@media (max-width: 900px){
-  .modules-grid{ grid-template-columns: 1fr; }
+  z-index: 1;
 }
