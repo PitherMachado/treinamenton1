@@ -12,9 +12,14 @@
 </head>
 
 <body>
-    <div class="logo-site">
-  <img src="assets/img/logo.png" alt="Logo">
-    </div>
+  <!-- Watermark (logo gigante no fundo) -->
+  <div class="bg-watermark" aria-hidden="true"></div>
+
+  <!-- Logo fixa no canto superior direito -->
+  <div class="logo-site">
+    <img src="assets/img/logo.png" alt="Logo">
+  </div>
+
   <!-- Skip link (acessibilidade) -->
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
@@ -28,7 +33,6 @@
 
       <!-- Nav reduzida: só Módulos + Login -->
       <nav class="nav" aria-label="Navegação principal">
-        <!-- Se você preferir, posso apontar isso para dashboard.html direto -->
         <a class="nav-link nav-cta" href="./slides/login.html">Treinamento</a>
         <a class="nav-link nav-cta" href="./app/dashboard.html">Módulos</a>
         <a class="nav-link nav-cta" href="./login.html">Login</a>
@@ -60,15 +64,12 @@
       </div>
     </section>
   </main>
+
+  <!--
+    IMPORTANTE:
+    - Não coloque CSS do watermark aqui.
+    - O efeito (tamanho/posição/opacidade) vai no style.css.
+    - Assim a gente replica em todas as páginas sem quebrar nada.
+  -->
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
