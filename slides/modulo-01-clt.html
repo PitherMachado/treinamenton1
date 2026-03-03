@@ -159,17 +159,55 @@
       position: fixed; top: 18px; left: 18px; right: 18px;
       display:flex; align-items:center; justify-content:space-between;
       z-index: 4; pointer-events:none;
+      gap: 12px;
     }
-    .brand{ display:flex; align-items:center; gap:10px; opacity: .92; }
+    .brand{ display:flex; align-items:center; gap:10px; opacity: .92; min-width: 240px; }
     .logoMark{
       width: 34px; height: 34px; border-radius: 12px;
       background: linear-gradient(135deg, rgba(217,70,239,.95), rgba(168,85,247,.85));
       box-shadow: 0 12px 28px rgba(217,70,239,.22);
+      flex: 0 0 34px;
     }
     .brandTxt{ display:flex; flex-direction:column; line-height:1.1; }
     .brandTxt b{ font-size: 13px; letter-spacing:.08em; text-transform: uppercase; }
     .brandTxt span{ font-size: 12px; color: rgba(255,255,255,.70); }
-    .counter{ font-size: 12px; color: rgba(255,255,255,.70); letter-spacing: .12em; text-transform: uppercase; }
+
+    /* ====== NOVO: AÇÕES DO HUD (PAINEL) ====== */
+    .hudRight{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      pointer-events:auto;
+    }
+    .hudBtn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.24);
+      color: rgba(255,255,255,.92);
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor:pointer;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      transition: transform .12s ease, background .2s ease, border-color .2s ease;
+      white-space: nowrap;
+    }
+    .hudBtn:hover{ background: rgba(0,0,0,.32); border-color: rgba(255,255,255,.22); }
+    .hudBtn:active{ transform: translateY(1px); }
+    .counter{
+      font-size: 12px; color: rgba(255,255,255,.70);
+      letter-spacing: .12em; text-transform: uppercase;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      white-space: nowrap;
+    }
 
     .progress{
       position: fixed; left: 0; bottom: 0; height: 4px; width: 0%;
@@ -193,6 +231,7 @@
       box-shadow: var(--shadow2);
       backdrop-filter: blur(10px);
       transition: transform .12s ease, background .2s ease, border-color .2s ease;
+      white-space: nowrap;
     }
     .btn:hover{ background: rgba(0,0,0,.32); border-color: rgba(255,255,255,.22); }
     .btn:active{ transform: translateY(1px); }
@@ -205,6 +244,10 @@
       .btn{ flex: 1; text-align:center; }
       .row{ grid-template-columns: 1fr; gap:10px; }
       .lbl{ white-space: normal; }
+
+      .brand{ min-width: 0; }
+      .brandTxt span{ display:none; }
+      .hudBtn{ padding: 10px 12px; }
     }
   </style>
 </head>
@@ -214,15 +257,20 @@
   <div class="overlay"></div>
   <div class="grain"></div>
 
-  <header class="hud" aria-hidden="true">
-    <div class="brand">
+  <header class="hud" aria-label="HUD do módulo">
+    <div class="brand" aria-hidden="true">
       <div class="logoMark"></div>
       <div class="brandTxt">
         <b>N1 • Módulo 1 • CLT</b>
         <span>Crédito do Trabalhador • Operação & Performance</span>
       </div>
     </div>
-    <div class="counter" id="counter">01 / 40</div>
+
+    <!-- NOVO: botão Painel + contador -->
+    <div class="hudRight">
+      <button class="hudBtn" type="button" onclick="goPanel()">PAINEL DE TREINAMENTO</button>
+      <div class="counter" id="counter">01 / 40</div>
+    </div>
   </header>
 
   <div class="deck" role="application" aria-label="Slides N1 - CLT">
@@ -237,6 +285,12 @@
   </div>
 
   <script>
+    // ====== NAV PARA O PAINEL (slides/index.html) ======
+    function goPanel(){
+      // este arquivo está dentro de /slides/
+      window.location.href = 'index.html';
+    }
+
     // =========================
     // SLIDES DATA (CLT ONLY)
     // =========================
@@ -264,7 +318,7 @@
       {k:"Valor", t:"Onde CLT mais converte", s:"Você vende uso inteligente.", b:[
         "Quitar cartão/rotativo",
         "Unificar boletos em 1 parcela",
-        "Reservar para imprevisto",
+        "Reservar para imprevistos",
         "Resolver urgência sem “estourar” limite"
       ]},
       {k:"Script", t:"Abertura CLT (30s)", s:"Objetivo: controle + permissão rápida.", b:[
@@ -351,7 +405,6 @@
       {k:"Condução", t:"Fechamento em 1 linha", s:"Repita sem medo.", b:[
         "“Perfeito. Pra seguir agora: banco, agência e conta da titularidade.”"
       ]},
-      // 24–40 (para completar 40): variações práticas e reforços
       {k:"Prática", t:"Mini-roteiro (30s)", s:"Modelo de execução.", b:[
         "Abertura → 1 benefício → 1 segurança → comando",
         "Sem história. Sem palestra. Sem pedir permissão."
@@ -394,8 +447,7 @@
       {k:"Final", t:"Encerramento", s:"CLT: segurança + valor + comando.", b:[
         "Objeção respondida → volta pro fechamento",
         "Sem comando, sem venda"
-      ]},
-      // completar até 40 (hoje já estamos em 40? vamos garantir tamanho exato)
+      ]}
     ].slice(0,40);
 
     // =========================
@@ -498,7 +550,7 @@
       if(e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); prev(); }
       if(e.key === 'Home'){ e.preventDefault(); go(0); }
       if(e.key === 'End'){ e.preventDefault(); go(total-1); }
-      if(e.key === 'Escape'){ e.preventDefault(); window.location.href = 'index.html'; } // volta dashboard
+      if(e.key === 'Escape'){ e.preventDefault(); goPanel(); } // volta painel
     }, {passive:false});
 
     // swipe mobile
@@ -533,13 +585,14 @@
     resize();
 
     const P = [];
-    const COUNT = Math.round(Math.sqrt(innerWidth * innerHeight) / 1.05); // mais denso
-    const LINK_DIST = 175; // mais conexão
+    const COUNT = Math.round(Math.sqrt(innerWidth * innerHeight) / 1.05);
+    const LINK_DIST = 175;
     function rand(a,b){ return a + Math.random()*(b-a); }
 
     function initParticles(){
       P.length=0;
-      for(let i=0;i<COUNT;i++){
+      const c = Math.round(Math.sqrt(innerWidth * innerHeight) / 1.05);
+      for(let i=0;i<c;i++){
         P.push({ x:rand(0,innerWidth), y:rand(0,innerHeight), r:rand(0.9,2.6), vx:rand(-0.50,0.50), vy:rand(-0.42,0.42), a:rand(0.14,0.52) });
       }
     }
