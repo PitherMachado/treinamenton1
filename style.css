@@ -21,6 +21,24 @@ body{
   text-rendering: optimizeLegibility;
 }
 
+/* Skip link (acessibilidade) */
+.skip-link{
+  position: absolute;
+  left: -999px;
+  top: 10px;
+  z-index: 99999;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
+  color: #fff;
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+}
+.skip-link:focus{
+  left: 12px;
+}
+
 /* ===============================
    2) SISTEMA DE CORES (PALETA N1)
    =============================== */
@@ -153,14 +171,30 @@ body{
     linear-gradient(135deg, #0a0a12 0%, #1b0033 100%);
 }
 
-/* camada extra para profundidade */
+/* camada extra para profundidade (fica no FUNDO real) */
 .hero-bg{
   position: absolute;
   inset: 0;
   background: var(--gradient-primary);
   opacity: 0.08;
   animation: heroMove 12s ease-in-out infinite alternate;
-  z-index: 1;
+  z-index: 0; /* <-- era 1, agora fica atrás do watermark e do conteúdo */
+  pointer-events: none;
+}
+
+/* watermark somente no HERO (igual ao print) */
+.hero-watermark{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1; /* acima do fundo, abaixo do conteúdo */
+
+  background-image: url("assets/img/logo.png");
+  background-repeat: no-repeat;
+  background-position: right 10% center;
+  background-size: min(54vw, 720px);
+  opacity: 0.10;
+  filter: saturate(.9) contrast(1.05);
 }
 
 /* varredura de luz (moving glow) no HERO */
@@ -173,7 +207,7 @@ body{
   transform: translateX(-35%) rotate(12deg);
   animation: glowSweep 9s ease-in-out infinite alternate;
   pointer-events:none;
-  z-index: 0;
+  z-index: 0; /* mantém atrás do watermark e do conteúdo */
 }
 
 /* garante conteúdo acima das camadas */
@@ -303,14 +337,15 @@ body{
 .module-card{
   padding: 30px;
   border-radius: 20px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.07);
   transition: .35s ease;
+  box-shadow: 0 14px 44px rgba(0,0,0,.45);
 }
 
 .module-card:hover{
   transform: translateY(-8px);
-  box-shadow: 0 30px 60px rgba(0,0,0,.60);
+  box-shadow: 0 26px 70px rgba(0,0,0,.65), 0 0 44px rgba(255,47,216,.12);
   border-color: rgba(255,47,216,0.40);
 }
 
@@ -494,6 +529,8 @@ body{
 .app{
   padding-top: 90px; /* espaço do header app */
   padding-bottom: 80px;
+  position: relative;
+  overflow: hidden;
 }
 
 .app-header{
@@ -536,6 +573,55 @@ body{
   outline: none;
   border-color: rgba(255,47,216,0.35);
   box-shadow: 0 0 0 3px rgba(255,47,216,0.14);
+}
+
+/* Glow animado principal (varrendo) */
+.app::before{
+  content:"";
+  position: absolute;
+  inset: -35%;
+  background:
+    radial-gradient(closest-side,
+      rgba(255,47,216,0.20),
+      transparent 65%);
+  filter: blur(16px);
+  transform: translateX(-35%) rotate(12deg);
+  animation: appGlowSweep 10s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .95;
+}
+
+/* Glow secundário (profundidade) */
+.app::after{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background:
+    radial-gradient(circle at 25% 35%, rgba(92,27,143,0.20), transparent 55%),
+    radial-gradient(circle at 75% 70%, rgba(255,47,216,0.12), transparent 60%);
+  filter: blur(20px);
+  animation: appGlowFloat 14s ease-in-out infinite alternate;
+  pointer-events:none;
+  z-index: 0;
+  opacity: .75;
+}
+
+/* Conteúdo sempre acima do glow */
+.app > .container{
+  position: relative;
+  z-index: 1;
+}
+
+/* Animações */
+@keyframes appGlowSweep{
+  0%   { transform: translateX(-35%) rotate(12deg); opacity: .75; }
+  100% { transform: translateX(35%)  rotate(12deg); opacity: 1; }
+}
+
+@keyframes appGlowFloat{
+  0%   { transform: translateY(10px) scale(1); opacity: .65; }
+  100% { transform: translateY(-18px) scale(1.05); opacity: .85; }
 }
 
 /* hero do módulo */
@@ -802,6 +888,15 @@ body{
   .module-nav{ flex-direction: column; }
   .banks-grid{ grid-template-columns: 1fr; }
 }
+
+@media (max-width: 640px){
+  .hero-watermark{
+    background-position: 85% 55%;
+    background-size: 78vw;
+    opacity: 0.08;
+  }
+}
+
 /* ===============================
    BRAND LINK (Header clicável)
    =============================== */
@@ -821,88 +916,7 @@ body{
 .brand:hover .brand-name{
   color: var(--magenta-400);
 }
-/* ===============================
-   DASHBOARD • PREMIUM GLOW (APP)
-   Luz de fundo varrendo
-   =============================== */
 
-/* Garante que o app consiga ter camadas */
-.app{
-  position: relative;
-  overflow: hidden;
-}
-
-/* Glow animado principal (varrendo) */
-.app::before{
-  content:"";
-  position: absolute;
-  inset: -35%;
-  background:
-    radial-gradient(closest-side,
-      rgba(255,47,216,0.20),
-      transparent 65%);
-  filter: blur(16px);
-  transform: translateX(-35%) rotate(12deg);
-  animation: appGlowSweep 10s ease-in-out infinite alternate;
-  pointer-events: none;
-  z-index: 0;
-  opacity: .95;
-}
-
-/* Glow secundário (profundidade) */
-.app::after{
-  content:"";
-  position:absolute;
-  inset:-40%;
-  background:
-    radial-gradient(circle at 25% 35%, rgba(92,27,143,0.20), transparent 55%),
-    radial-gradient(circle at 75% 70%, rgba(255,47,216,0.12), transparent 60%);
-  filter: blur(20px);
-  animation: appGlowFloat 14s ease-in-out infinite alternate;
-  pointer-events:none;
-  z-index: 0;
-  opacity: .75;
-}
-
-/* Conteúdo sempre acima do glow */
-.app > .container{
-  position: relative;
-  z-index: 1;
-}
-
-/* Animações */
-@keyframes appGlowSweep{
-  0%   { transform: translateX(-35%) rotate(12deg); opacity: .75; }
-  100% { transform: translateX(35%)  rotate(12deg); opacity: 1; }
-}
-
-@keyframes appGlowFloat{
-  0%   { transform: translateY(10px) scale(1); opacity: .65; }
-  100% { transform: translateY(-18px) scale(1.05); opacity: .85; }
-}
-
-/* ===============================
-   Melhorias visuais nos cards
-   =============================== */
-
-.module-card{
-  background: rgba(255,255,255,0.035);
-  border: 1px solid rgba(255,255,255,0.07);
-  box-shadow: 0 14px 44px rgba(0,0,0,.45);
-}
-
-.module-card:hover{
-  box-shadow: 0 26px 70px rgba(0,0,0,.65), 0 0 44px rgba(255,47,216,.12);
-}
-
-/* Ajuste de respiro do dashboard */
-.app-hero{
-  margin-bottom: 18px;
-}
-
-.section.section-modules{
-  padding-top: 50px; /* reduz aquele “vazio” exagerado */
-}
 /* Logo flutuante (não ocupa espaço no layout) */
 .logo-site{
   position: fixed;
@@ -918,46 +932,4 @@ body{
   width: auto;
   opacity: .95;
   filter: drop-shadow(0 10px 28px rgba(0,0,0,.45));
-}
-/* ===== Watermark (logo gigante no fundo) ===== */
-.bg-watermark{
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1; /* <-- era 0, por isso sumia */
-
-  background-image: url("assets/img/logo.png");
-  background-repeat: no-repeat;
-  background-position: right 10% center;
-  background-size: min(54vw, 720px);
-  opacity: 0.10;
-  filter: saturate(.9) contrast(1.05);
-}
-
-/* Garante que o fundo roxo (hero-bg) não cubra o watermark */
-.hero{ position: relative; }
-.hero-bg{
-  position: absolute;
-  inset: 0;
-  z-index: 1;        /* fica acima do watermark */
-  pointer-events: none;
-}
-
-/* Conteúdo acima de tudo */
-.site-header,
-main,
-.logo-site,
-.skip-link,
-.hero-inner{
-  position: relative;
-  z-index: 2;
-}
-
-/* Mobile */
-@media (max-width: 640px){
-  .bg-watermark{
-    background-position: 85% 55%;
-    background-size: 78vw;
-    opacity: 0.08;
-  }
 }
