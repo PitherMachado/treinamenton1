@@ -674,7 +674,11 @@ body{
 .lesson-card{
   padding: 26px;
   border-radius: var(--radius-lg);
-  background: rgba(255,255,255,0.03);
+  background: linear-gradient(
+  180deg,
+  rgba(20,15,35,0.88) 0%,
+  rgba(15,10,28,0.92) 100%
+);
   border: 1px solid rgba(255,255,255,0.06);
   box-shadow: 0 18px 60px rgba(0,0,0,.45);
 }
