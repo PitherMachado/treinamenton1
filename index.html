@@ -12,10 +12,7 @@
 </head>
 
 <body>
-  <!-- Watermark (logo gigante no fundo) -->
-  <div class="bg-watermark" aria-hidden="true"></div>
-
-  <!-- Logo fixa no canto superior direito -->
+  <!-- Logo fixa no canto superior direito (mantém) -->
   <div class="logo-site">
     <img src="assets/img/logo.png" alt="Logo">
   </div>
@@ -44,7 +41,11 @@
   <main id="conteudo">
     <!-- HERO (100vh) -->
     <section class="hero" aria-label="Seção principal">
+      <!-- fundo/gradiente já existente -->
       <div class="hero-bg" aria-hidden="true"></div>
+
+      <!-- watermark: SOMENTE dentro do hero (igual ao print) -->
+      <div class="hero-watermark" aria-hidden="true"></div>
 
       <div class="container hero-inner">
         <div class="hero-content">
@@ -64,12 +65,5 @@
       </div>
     </section>
   </main>
-
-  <!--
-    IMPORTANTE:
-    - Não coloque CSS do watermark aqui.
-    - O efeito (tamanho/posição/opacidade) vai no style.css.
-    - Assim a gente replica em todas as páginas sem quebrar nada.
-  -->
 </body>
 </html>
