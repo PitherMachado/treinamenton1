@@ -903,3 +903,19 @@ body{
 .section.section-modules{
   padding-top: 50px; /* reduz aquele “vazio” exagerado */
 }
+/* Logo flutuante (não ocupa espaço no layout) */
+.logo-site{
+  position: fixed;
+  top: 14px;
+  right: 18px;
+  z-index: 9999;
+  pointer-events: none; /* não atrapalha clicar nos botões do topo */
+}
+
+.logo-site img{
+  display: block;
+  height: 44px;     /* ajuste fino */
+  width: auto;
+  opacity: .95;
+  filter: drop-shadow(0 10px 28px rgba(0,0,0,.45));
+}
