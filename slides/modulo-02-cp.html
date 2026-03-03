@@ -1,1 +1,569 @@
 
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Módulo 2 • CP • N1</title>
+  <meta name="theme-color" content="#12001d" />
+
+  <style>
+    :root{
+      --bg0:#12001d; --bg1:#1a0028;
+      --glass: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.14);
+      --text:#f4f1ff; --muted:#c8b8ff;
+      --accent:#d946ef; --accent2:#a855f7; --good:#5eead4;
+      --shadow: 0 24px 80px rgba(0,0,0,.60);
+      --shadow2: 0 12px 40px rgba(0,0,0,.45);
+      --r20: 20px; --r24: 24px; --maxw: 1120px;
+    }
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    html,body{
+      height:100%; overflow:hidden;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1100px 700px at 30% 20%, rgba(217,70,239,.22), transparent 60%),
+        radial-gradient(900px 600px at 70% 80%, rgba(168,85,247,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+    }
+    #particles{ position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.98; }
+    .overlay{
+      position:fixed; inset:0; z-index:1; pointer-events:none;
+      background:
+        radial-gradient(1200px 900px at 50% 45%, transparent 30%, rgba(0,0,0,.35) 78%, rgba(0,0,0,.52) 100%),
+        linear-gradient(180deg, rgba(255,255,255,.05), transparent 22%);
+    }
+    .grain{
+      position:fixed; inset:-30%; z-index:2; pointer-events:none; opacity:.06;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+      transform: rotate(10deg);
+      animation: grainMove 6s steps(8) infinite;
+    }
+    @keyframes grainMove{
+      0%{ transform: translate3d(0,0,0) rotate(10deg); }
+      100%{ transform: translate3d(-8%, 6%, 0) rotate(10deg); }
+    }
+
+    .deck{ position:relative; z-index:3; height:100vh; width:100vw; }
+    .slides{
+      height:100%; width:100%;
+      display:flex; will-change: transform;
+      transform: translate3d(0,0,0);
+      transition: transform .85s cubic-bezier(.2,.9,.2,1);
+    }
+    .slide{
+      min-width:100vw; height:100vh;
+      display:flex; align-items:center; justify-content:center;
+      padding: clamp(18px, 4vw, 72px);
+    }
+    .card{
+      width:min(var(--maxw), 92vw);
+      border-radius: var(--r24);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 3.2vw, 44px);
+      position:relative; overflow:hidden;
+      transform: translate3d(0, 18px, 0) scale(.985);
+      opacity: 0; filter: blur(10px);
+      transition: opacity .7s ease, transform .8s cubic-bezier(.2,.9,.2,1), filter .8s ease;
+    }
+    .slide.active .card{ opacity:1; transform:none; filter:none; }
+    .card:before{
+      content:""; position:absolute; inset:-40% -40% auto -40%; height: 260px;
+      background:
+        radial-gradient(closest-side, rgba(217,70,239,.25), transparent 65%),
+        radial-gradient(closest-side, rgba(168,85,247,.18), transparent 60%);
+      transform: rotate(-10deg);
+      pointer-events:none; opacity:.9;
+    }
+
+    .topline{
+      font-size: 12px; letter-spacing: .18em; text-transform: uppercase;
+      color: rgba(255,255,255,.72);
+      display:flex; gap:10px; align-items:center; margin-bottom: 14px;
+      flex-wrap:wrap;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 7px 10px; border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.84);
+    }
+    .dot{
+      width:8px; height:8px; border-radius:99px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 18px rgba(217,70,239,.45);
+    }
+
+    h1{ font-size: clamp(34px, 4.6vw, 62px); line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 14px; }
+    h2{ font-size: clamp(20px, 2.2vw, 30px); color: rgba(200,184,255,.95); font-weight: 600; margin-bottom: 18px; }
+    p{ font-size: clamp(16px, 1.6vw, 22px); line-height: 1.55; color: rgba(244,241,255,.92); margin-bottom: 14px; }
+
+    .box{
+      border-radius: var(--r20);
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow2);
+      padding: 18px;
+      margin-top: 14px;
+    }
+    .list{ display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+    .li{
+      display:flex; gap:10px; align-items:flex-start;
+      font-size: clamp(15px, 1.45vw, 20px);
+      line-height:1.35; color: rgba(244,241,255,.92);
+    }
+    .check{
+      width:18px; height:18px; border-radius: 6px;
+      background: rgba(94,234,212,.16);
+      border:1px solid rgba(94,234,212,.35);
+      margin-top:2px; box-shadow: 0 0 18px rgba(94,234,212,.18);
+      position:relative; flex: 0 0 18px;
+    }
+    .check:after{
+      content:""; position:absolute; inset:4px 5px 6px 5px;
+      border-right: 2px solid rgba(94,234,212,.95);
+      border-bottom: 2px solid rgba(94,234,212,.95);
+      transform: rotate(35deg);
+    }
+
+    .chart{ display:flex; flex-direction:column; gap: 12px; margin-top: 8px; }
+    .row{ display:grid; grid-template-columns: 1.1fr 2fr; gap: 14px; align-items:center; }
+    .lbl{ font-size: clamp(13px, 1.1vw, 16px); color: rgba(255,255,255,.86); white-space: nowrap; }
+    .barWrap{
+      height: 14px; border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      overflow:hidden;
+    }
+    .bar{
+      height:100%; width:0%;
+      border-radius:999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 22px rgba(217,70,239,.26);
+      transition: width 1.2s cubic-bezier(.2,.9,.2,1);
+    }
+    .bar.good{
+      background: linear-gradient(90deg, rgba(94,234,212,.95), rgba(168,85,247,.75));
+      box-shadow: 0 0 22px rgba(94,234,212,.22);
+    }
+    .num{ font-variant-numeric: tabular-nums; font-weight: 800; color: rgba(255,255,255,.92); }
+
+    .hud{
+      position: fixed; top: 18px; left: 18px; right: 18px;
+      display:flex; align-items:center; justify-content:space-between;
+      z-index: 4; pointer-events:none;
+    }
+    .brand{ display:flex; align-items:center; gap:10px; opacity: .92; }
+    .logoMark{
+      width: 34px; height: 34px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(217,70,239,.95), rgba(168,85,247,.85));
+      box-shadow: 0 12px 28px rgba(217,70,239,.22);
+    }
+    .brandTxt{ display:flex; flex-direction:column; line-height:1.1; }
+    .brandTxt b{ font-size: 13px; letter-spacing:.08em; text-transform: uppercase; }
+    .brandTxt span{ font-size: 12px; color: rgba(255,255,255,.70); }
+    .counter{ font-size: 12px; color: rgba(255,255,255,.70); letter-spacing: .12em; text-transform: uppercase; }
+
+    .progress{
+      position: fixed; left: 0; bottom: 0; height: 4px; width: 0%;
+      z-index: 5;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width .6s ease;
+      box-shadow: 0 -2px 22px rgba(217,70,239,.25);
+    }
+    .controls{
+      position: fixed; right: 18px; bottom: 18px; z-index: 6;
+      display:flex; gap:10px;
+    }
+    .btn{
+      pointer-events:auto;
+      appearance:none; border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.24);
+      color: rgba(255,255,255,.90);
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor:pointer; font-weight: 700;
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      transition: transform .12s ease, background .2s ease, border-color .2s ease;
+    }
+    .btn:hover{ background: rgba(0,0,0,.32); border-color: rgba(255,255,255,.22); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{
+      background: linear-gradient(90deg, rgba(217,70,239,.92), rgba(168,85,247,.86));
+      border-color: rgba(255,255,255,.18);
+    }
+    @media (max-width: 860px){
+      .controls{ left: 18px; right: 18px; justify-content: space-between; }
+      .btn{ flex: 1; text-align:center; }
+      .row{ grid-template-columns: 1fr; gap:10px; }
+      .lbl{ white-space: normal; }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="particles"></canvas>
+  <div class="overlay"></div>
+  <div class="grain"></div>
+
+  <header class="hud" aria-hidden="true">
+    <div class="brand">
+      <div class="logoMark"></div>
+      <div class="brandTxt">
+        <b>N1 • Módulo 2 • CP</b>
+        <span>Crédito Pessoal • Aposentados & Pensionistas</span>
+      </div>
+    </div>
+    <div class="counter" id="counter">01 / 40</div>
+  </header>
+
+  <div class="deck" role="application" aria-label="Slides N1 - CP">
+    <div class="slides" id="slides"></div>
+  </div>
+
+  <div class="progress" id="progress"></div>
+
+  <div class="controls">
+    <button class="btn" id="prev" type="button">← Voltar</button>
+    <button class="btn primary" id="next" type="button">Próximo →</button>
+  </div>
+
+  <script>
+    // =========================
+    // SLIDES DATA (CP ONLY)
+    // =========================
+    const SLIDES = [
+      {k:"Capa", t:"Treinamento N1 — CP", s:"Crédito Pessoal • Conversão • Objeções • Sondagens", b:[
+        "Público: aposentados e pensionistas.",
+        "Produto: Crédito Pessoal (não é consignado)."
+      ]},
+      {k:"Conceito", t:"CP não é consignado.", s:"Alinhamento para a operação.", b:[
+        "CP: pagamento via boleto ou débito em conta (depende do banco/contrato)",
+        "Não é desconto automático no benefício",
+        "Venda exige: confiança + clareza + segurança"
+      ]},
+      {k:"Psicologia", t:"Como esse público decide", s:"Segurança vem antes do valor.", b:[
+        "Medo de golpe e desconfiança inicial",
+        "Precisa de calma, clareza e processo",
+        "Pouca tolerância a pressão"
+      ]},
+      {k:"N1 Padrão", t:"Regra N1 no CP", s:"Curto, respeitoso e firme.", b:[
+        "Você conduz sem atropelar",
+        "Você explica o mínimo necessário",
+        "Você comanda o próximo passo com respeito"
+      ]},
+      {k:"Valor", t:"Por que o CP faz sentido", s:"Benefício prático.", b:[
+        "Resolver urgências sem depender de terceiros",
+        "Organizar dívidas (reduzir estresse)",
+        "Ter fôlego para o mês"
+      ]},
+      {k:"Script", t:"Abertura CP (segurança)", s:"Tom calmo + autoridade.", b:[
+        "“Bom dia dona [Nome], aqui é [Seu Nome] da N1.”",
+        "“Existe uma possibilidade de crédito pessoal no seu CPF.”",
+        "“Eu explico com calma e a senhora decide se quer seguir, tudo bem?”"
+      ]},
+      {k:"Segurança", t:"Frases que reduzem medo", s:"Sem enrolação.", b:[
+        "“A senhora só confirma se quiser.”",
+        "“Tudo é feito em nome do titular.”",
+        "“Eu vou te orientar passo a passo.”"
+      ]},
+      {k:"Troca Frase", t:"Pare de dizer “vamos dar continuidade?”", s:"Substituições assertivas (CP)", b:[
+        "“Perfeito, vamos seguir com a próxima etapa.”",
+        "“Pra ficar tudo certinho, me confirma uma informação.”",
+        "“Agora eu preciso validar um dado com a senhora, tudo bem?”",
+        "“Vamos concluir essa parte com calma.”"
+      ]},
+      {k:"Comparativo", t:"Juros (visual de enquadramento)", s:"Mostre referência e controle.", chart:[
+        {label:"Cartão (ref.)", val:37.5, w:92, good:false},
+        {label:"Crédito pessoal (ref.)", val:12.0, w:55, good:false},
+        {label:"CP (boa condição)", val:6.0, w:34, good:true}
+      ], foot:"No CP: menos pressão e mais segurança + clareza. Mostrou? volte para o comando."},
+      {k:"Fechamento", t:"Comando de fechamento CP", s:"Objetivo: avançar com segurança.", b:[
+        "“Perfeito. Pra seguir, me confirma banco, agência e conta da sua titularidade.”",
+        "“Eu deixo tudo pronto e a senhora só confirma quando chegar.”"
+      ]},
+      {k:"Sondagem", t:"Sondagem de prioridade", s:"Descobre o motivo real.", b:[
+        "“Hoje não é prioridade ou ficou alguma dúvida?”",
+        "Se dúvida: identifique qual. Se timing: follow-up com comando."
+      ]},
+      {k:"Sondagem", t:"Sondagem de segurança", s:"Tira medo sem brigar.", b:[
+        "“O que te deixa mais inseguro: o processo ou a parcela?”",
+        "Ataque 1 ponto. Volte pro comando."
+      ]},
+      {k:"Sondagem", t:"Sondagem de dor", s:"Urgência sem agressividade.", b:[
+        "“Se surgisse um imprevisto, a senhora teria reserva hoje?”",
+        "Se não: CP como solução de fôlego"
+      ]},
+      {k:"Objeção", t:"“Tenho medo”", s:"Valide e traga controle.", b:[
+        "“A senhora está certa em ter cuidado.”",
+        "“Por isso eu explico com calma e a senhora decide.”",
+        "Volta: “Vamos seguir pela conta da titularidade.”"
+      ]},
+      {k:"Objeção", t:"“Vou pensar”", s:"Dúvida vs valor.", b:[
+        "“Claro. A senhora vai pensar por dúvida ou por analisar o valor?”",
+        "“Qual ponto ficou em aberto pra eu esclarecer?”",
+        "Volta: comando."
+      ]},
+      {k:"Objeção", t:"“Não preciso”", s:"Reenquadre como reserva/controle.", b:[
+        "“Ótimo. Mesmo assim, muitos usam como reserva para evitar aperto.”",
+        "Volta: “Quer que eu deixe a condição separada?”"
+      ]},
+      {k:"Objeção", t:"“Juros alto”", s:"Enquadramento leve.", b:[
+        "“Entendo. Vamos comparar com cartão e rotativo.”",
+        "“A ideia é reduzir estresse e organizar o mês.”",
+        "Volta: “Pra seguir: banco e agência.”"
+      ]},
+      {k:"WhatsApp", t:"WhatsApp que funciona no CP", s:"Comando simples.", b:[
+        "Envie: valor + parcela + 1 frase de segurança",
+        "Feche com comando: “Me responde OK pra eu seguir.”"
+      ]},
+      {k:"Erros", t:"Erro fatal #1", s:"Pressão excessiva.", b:[
+        "No CP, pressão vira medo.",
+        "Você conduz com respeito e firmeza."
+      ]},
+      {k:"Erros", t:"Erro fatal #2", s:"Falar difícil.", b:[
+        "Jargão cria desconfiança.",
+        "Use frases simples."
+      ]},
+      {k:"Erros", t:"Erro fatal #3", s:"Responder e não voltar.", b:[
+        "Objeção respondida → volta pro fechamento.",
+        "Sem volta, vira atendimento."
+      ]},
+      {k:"Linguagem", t:"Palavras proibidas", s:"Corte de fraqueza.", b:[
+        "Remover: “se quiser”, “talvez”, “acho”",
+        "Trocar por: “vamos fazer assim”, “me confirma”, “agora eu preciso…”"
+      ]},
+      {k:"Cadência", t:"Follow-up CP", s:"Menos mensagens, mais qualidade.", b:[
+        "D0: ligação + WhatsApp",
+        "D1: segurança + clareza",
+        "D3: comparação (curta)",
+        "D7: decisão final"
+      ]},
+      {k:"Qualidade", t:"Áudio e tom", s:"Conversão invisível.", b:[
+        "Sem ruído, sem pressa, fala clara",
+        "Cliente entende → cliente avança"
+      ]},
+      {k:"Tabulação", t:"Tabule o motivo real", s:"Sem dado, sem melhoria.", b:[
+        "Medo, condição, timing, já tem crédito, não quer",
+        "Isso define treinamento e script"
+      ]},
+      {k:"Reforço", t:"Fechamento em 1 linha", s:"Repita sem medo.", b:[
+        "“Perfeito. Banco, agência e conta da sua titularidade.”"
+      ]},
+      // completar 40 com reforços práticos CP
+      {k:"Prática", t:"Mini-roteiro CP", s:"Modelo 30s.", b:[
+        "Abertura calma → segurança → valor → comando",
+        "Sem palestra, sem insistência"
+      ]},
+      {k:"Prática", t:"Quando pede pra ‘mandar no Whats’", s:"Você comanda.", b:[
+        "“Perfeito. Vou mandar agora e a senhora me responde OK pra eu seguir.”"
+      ]},
+      {k:"Prática", t:"Quando desconfia da empresa", s:"Autoridade simples.", b:[
+        "“Eu entendo. Por isso a senhora só confirma se quiser.”",
+        "“Vamos pelo passo a passo.”"
+      ]},
+      {k:"Prática", t:"Quando quer falar depois", s:"Agendamento com comando.", b:[
+        "“Perfeito. Qual horário a senhora prefere: manhã ou tarde?”",
+        "Anote e confirme."
+      ]},
+      {k:"Prática", t:"Quando some", s:"Retomada respeitosa.", b:[
+        "“Dona [Nome], ficou alguma dúvida ou a senhora preferiu não seguir?”"
+      ]},
+      {k:"Equipe", t:"Padrão N1", s:"Consistência no time.", b:[
+        "Mesmo roteiro, mesma condução",
+        "Sem improviso, sem pressão"
+      ]},
+      {k:"Equipe", t:"Processo vence tudo", s:"Controle e repetição.", b:[
+        "Curto + claro + comando",
+        "Isso escala conversão"
+      ]},
+      {k:"Final", t:"Encerramento", s:"CP: respeito + segurança + comando.", b:[
+        "Objeção respondida → volta pro fechamento",
+        "Sem comando, não avança"
+      ]},
+    ].slice(0,40);
+
+    // =========================
+    // RENDER
+    // =========================
+    const slidesEl = document.getElementById('slides');
+    function esc(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+    function render(){
+      slidesEl.innerHTML = SLIDES.map((x, idx) => {
+        const head = `
+          <div class="topline">
+            <span class="pill"><span class="dot"></span> N1 • CP</span>
+            <span class="pill">${String(idx+1).padStart(2,'0')} / 40</span>
+            <span class="pill">${esc(x.k)}</span>
+          </div>
+        `;
+        const title = `<h1>${esc(x.t)}</h1>`;
+        const sub = x.s ? `<h2>${esc(x.s)}</h2>` : '';
+        const body = (x.b && x.b.length)
+          ? `<div class="box"><div class="list">${x.b.map(it => `<div class="li"><span class="check"></span>${esc(it)}</div>`).join('')}</div></div>`
+          : '';
+        const chart = (x.chart && x.chart.length)
+          ? `<div class="box">
+              <div class="chart">
+                ${x.chart.map(r=>`
+                  <div class="row">
+                    <div class="lbl">${esc(r.label)} <span class="num" data-count="${r.val}">0.0</span>% a.m</div>
+                    <div class="barWrap"><div class="bar ${r.good?'good':''}" data-width="${r.w}"></div></div>
+                  </div>`).join('')}
+              </div>
+              ${x.foot ? `<p style="margin-top:12px; font-size:13px; color: rgba(255,255,255,.72); line-height:1.4">${esc(x.foot)}</p>`:''}
+            </div>`
+          : '';
+        return `<section class="slide"><div class="card">${head}${title}${sub}${chart}${body}</div></section>`;
+      }).join('');
+    }
+    render();
+
+    // =========================
+    // NAV + ANIMS
+    // =========================
+    const slides = () => Array.from(document.querySelectorAll('.slide'));
+    const counterEl = document.getElementById('counter');
+    const progressEl = document.getElementById('progress');
+    const btnPrev = document.getElementById('prev');
+    const btnNext = document.getElementById('next');
+
+    let idx = 0;
+    const total = 40;
+
+    const animatedOnce = new WeakSet();
+
+    function animateNumber(el, to){
+      const start = 0, duration = 900, t0 = performance.now();
+      function step(t){
+        const p = Math.min(1, (t - t0) / duration);
+        const eased = 1 - Math.pow(1-p, 3);
+        const val = start + (to - start) * eased;
+        el.textContent = (to % 1 === 0) ? String(Math.round(val)) : val.toFixed(2).replace(/\.00$/,'');
+        if(p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    function animateChartsInSlide(slide){
+      if(animatedOnce.has(slide)) return;
+      const bars = slide.querySelectorAll('.bar[data-width]');
+      const nums = slide.querySelectorAll('.num[data-count]');
+      if(!bars.length && !nums.length) return;
+      setTimeout(()=>{
+        bars.forEach(b => b.style.width = b.getAttribute('data-width') + '%');
+        nums.forEach(n => animateNumber(n, parseFloat(n.getAttribute('data-count'))));
+        animatedOnce.add(slide);
+      }, 180);
+    }
+
+    function setActive(){
+      const s = slides();
+      s.forEach((el,i)=> el.classList.toggle('active', i===idx));
+      slidesEl.style.transform = `translate3d(-${idx * 100}vw, 0, 0)`;
+      counterEl.textContent = `${String(idx+1).padStart(2,'0')} / 40`;
+      progressEl.style.width = `${((idx+1)/total)*100}%`;
+      animateChartsInSlide(s[idx]);
+    }
+    function go(n){ idx = Math.max(0, Math.min(total-1, n)); setActive(); }
+    function next(){ if(idx < total-1) go(idx+1); }
+    function prev(){ if(idx > 0) go(idx-1); }
+
+    btnNext.addEventListener('click', next);
+    btnPrev.addEventListener('click', prev);
+
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' '){ e.preventDefault(); next(); }
+      if(e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); prev(); }
+      if(e.key === 'Home'){ e.preventDefault(); go(0); }
+      if(e.key === 'End'){ e.preventDefault(); go(total-1); }
+      if(e.key === 'Escape'){ e.preventDefault(); window.location.href = 'index.html'; } // volta dashboard
+    }, {passive:false});
+
+    // swipe mobile
+    let sx=0, sy=0, st=0;
+    document.addEventListener('touchstart', (e)=>{
+      const t = e.touches[0]; sx=t.clientX; sy=t.clientY; st=Date.now();
+    }, {passive:true});
+    document.addEventListener('touchend', (e)=>{
+      const t = e.changedTouches[0];
+      const dx=t.clientX-sx, dy=t.clientY-sy, dt=Date.now()-st;
+      if(dt<450 && Math.abs(dx)>60 && Math.abs(dy)<60){ dx<0 ? next() : prev(); }
+    }, {passive:true});
+
+    go(0);
+
+    // =========================
+    // PARTICLES (mais intenso)
+    // =========================
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d', { alpha:true });
+
+    function resize(){
+      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      canvas.width = Math.floor(innerWidth * dpr);
+      canvas.height = Math.floor(innerHeight * dpr);
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    addEventListener('resize', resize);
+    resize();
+
+    const P = [];
+    const COUNT = Math.round(Math.sqrt(innerWidth * innerHeight) / 1.05);
+    const LINK_DIST = 175;
+    function rand(a,b){ return a + Math.random()*(b-a); }
+
+    function initParticles(){
+      P.length=0;
+      for(let i=0;i<COUNT;i++){
+        P.push({ x:rand(0,innerWidth), y:rand(0,innerHeight), r:rand(0.9,2.6), vx:rand(-0.50,0.50), vy:rand(-0.42,0.42), a:rand(0.14,0.52) });
+      }
+    }
+    initParticles();
+    addEventListener('resize', initParticles);
+
+    function draw(){
+      ctx.clearRect(0,0,innerWidth,innerHeight);
+
+      for(const p of P){
+        p.x += p.vx; p.y += p.vy;
+        if(p.x < -20) p.x = innerWidth + 20;
+        if(p.x > innerWidth + 20) p.x = -20;
+        if(p.y < -20) p.y = innerHeight + 20;
+        if(p.y > innerHeight + 20) p.y = -20;
+
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(217,70,239,${p.a})`;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      for(let i=0;i<P.length;i++){
+        for(let j=i+1;j<P.length;j++){
+          const a=P[i], b=P[j];
+          const dx=a.x-b.x, dy=a.y-b.y;
+          const d=Math.sqrt(dx*dx+dy*dy);
+          if(d < LINK_DIST){
+            const alpha=(1-d/LINK_DIST)*0.30;
+            ctx.strokeStyle = `rgba(168,85,247,${alpha})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x,a.y);
+            ctx.lineTo(b.x,b.y);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
+</html>
