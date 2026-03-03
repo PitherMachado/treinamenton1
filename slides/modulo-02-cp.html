@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -153,21 +152,61 @@
     }
     .num{ font-variant-numeric: tabular-nums; font-weight: 800; color: rgba(255,255,255,.92); }
 
+    /* ===== HUD ===== */
     .hud{
       position: fixed; top: 18px; left: 18px; right: 18px;
       display:flex; align-items:center; justify-content:space-between;
       z-index: 4; pointer-events:none;
+      gap: 12px;
     }
-    .brand{ display:flex; align-items:center; gap:10px; opacity: .92; }
+    .brand{ display:flex; align-items:center; gap:10px; opacity: .92; min-width: 240px; }
     .logoMark{
       width: 34px; height: 34px; border-radius: 12px;
       background: linear-gradient(135deg, rgba(217,70,239,.95), rgba(168,85,247,.85));
       box-shadow: 0 12px 28px rgba(217,70,239,.22);
+      flex: 0 0 34px;
     }
     .brandTxt{ display:flex; flex-direction:column; line-height:1.1; }
     .brandTxt b{ font-size: 13px; letter-spacing:.08em; text-transform: uppercase; }
     .brandTxt span{ font-size: 12px; color: rgba(255,255,255,.70); }
-    .counter{ font-size: 12px; color: rgba(255,255,255,.70); letter-spacing: .12em; text-transform: uppercase; }
+
+    /* ===== NOVO: Botão Painel + contador ===== */
+    .hudRight{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      pointer-events:auto;
+    }
+    .hudBtn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.24);
+      color: rgba(255,255,255,.92);
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor:pointer;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      transition: transform .12s ease, background .2s ease, border-color .2s ease;
+      white-space: nowrap;
+    }
+    .hudBtn:hover{ background: rgba(0,0,0,.32); border-color: rgba(255,255,255,.22); }
+    .hudBtn:active{ transform: translateY(1px); }
+
+    .counter{
+      font-size: 12px; color: rgba(255,255,255,.70);
+      letter-spacing: .12em; text-transform: uppercase;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      white-space: nowrap;
+    }
 
     .progress{
       position: fixed; left: 0; bottom: 0; height: 4px; width: 0%;
@@ -203,6 +242,10 @@
       .btn{ flex: 1; text-align:center; }
       .row{ grid-template-columns: 1fr; gap:10px; }
       .lbl{ white-space: normal; }
+
+      .brand{ min-width: 0; }
+      .brandTxt span{ display:none; }
+      .hudBtn{ padding: 10px 12px; }
     }
   </style>
 </head>
@@ -212,15 +255,19 @@
   <div class="overlay"></div>
   <div class="grain"></div>
 
-  <header class="hud" aria-hidden="true">
-    <div class="brand">
+  <header class="hud" aria-label="HUD do módulo">
+    <div class="brand" aria-hidden="true">
       <div class="logoMark"></div>
       <div class="brandTxt">
         <b>N1 • Módulo 2 • CP</b>
         <span>Crédito Pessoal • Aposentados & Pensionistas</span>
       </div>
     </div>
-    <div class="counter" id="counter">01 / 40</div>
+
+    <div class="hudRight">
+      <button class="hudBtn" type="button" onclick="goPanel()">PAINEL DE TREINAMENTO</button>
+      <div class="counter" id="counter">01 / 40</div>
+    </div>
   </header>
 
   <div class="deck" role="application" aria-label="Slides N1 - CP">
@@ -235,6 +282,11 @@
   </div>
 
   <script>
+    // ====== NAV PARA O PAINEL (slides/index.html) ======
+    function goPanel(){
+      window.location.href = 'index.html';
+    }
+
     // =========================
     // SLIDES DATA (CP ONLY)
     // =========================
@@ -356,7 +408,6 @@
       {k:"Reforço", t:"Fechamento em 1 linha", s:"Repita sem medo.", b:[
         "“Perfeito. Banco, agência e conta da sua titularidade.”"
       ]},
-      // completar 40 com reforços práticos CP
       {k:"Prática", t:"Mini-roteiro CP", s:"Modelo 30s.", b:[
         "Abertura calma → segurança → valor → comando",
         "Sem palestra, sem insistência"
@@ -482,7 +533,7 @@
       if(e.key === 'ArrowLeft'  || e.key === 'PageUp'){ e.preventDefault(); prev(); }
       if(e.key === 'Home'){ e.preventDefault(); go(0); }
       if(e.key === 'End'){ e.preventDefault(); go(total-1); }
-      if(e.key === 'Escape'){ e.preventDefault(); window.location.href = 'index.html'; } // volta dashboard
+      if(e.key === 'Escape'){ e.preventDefault(); goPanel(); } // volta painel
     }, {passive:false});
 
     // swipe mobile
