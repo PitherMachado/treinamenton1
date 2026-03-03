@@ -187,14 +187,26 @@ body{
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 1; /* acima do fundo, abaixo do conteúdo */
+  z-index: 1;
 
   background-image: url("assets/img/logo.png");
   background-repeat: no-repeat;
-  background-position: right 10% center;
-  background-size: min(54vw, 720px);
-  opacity: 0.10;
-  filter: saturate(.9) contrast(1.05);
+  background-position: 70% center;
+  background-size: min(65vw, 900px);
+
+  opacity: 0.16;
+
+  /* máscara de fade lateral */
+  -webkit-mask-image: radial-gradient(circle at center,
+      rgba(0,0,0,1) 55%,
+      rgba(0,0,0,0.85) 65%,
+      rgba(0,0,0,0.4) 75%,
+      rgba(0,0,0,0) 90%);
+  mask-image: radial-gradient(circle at center,
+      rgba(0,0,0,1) 55%,
+      rgba(0,0,0,0.85) 65%,
+      rgba(0,0,0,0.4) 75%,
+      rgba(0,0,0,0) 90%);
 }
 
 /* varredura de luz (moving glow) no HERO */
