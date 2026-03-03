@@ -56,6 +56,80 @@
         linear-gradient(180deg, rgba(255,255,255,.05), transparent 22%);
     }
 
+    /* ========= TOP NAV (NOVO) ========= */
+    .nav{
+      position:fixed;
+      top:16px;
+      left:16px;
+      right:16px;
+      z-index:3;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      pointer-events:none;
+    }
+
+    .navLeft{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      opacity:.95;
+      pointer-events:none;
+    }
+    .mark{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(217,70,239,.95), rgba(168,85,247,.85));
+      box-shadow: 0 12px 28px rgba(217,70,239,.22);
+      flex: 0 0 34px;
+    }
+    .navTxt{
+      line-height:1.1;
+    }
+    .navTxt b{
+      font-size: 12px;
+      letter-spacing:.12em;
+      text-transform: uppercase;
+    }
+    .navTxt span{
+      display:block;
+      font-size: 12px;
+      color: rgba(255,255,255,.70);
+      margin-top:3px;
+    }
+
+    .navActions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      pointer-events:auto;
+    }
+
+    .btnNav{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.22);
+      color: rgba(255,255,255,.92);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor:pointer;
+      transition: transform .12s ease, background .2s ease, border-color .2s ease;
+      white-space: nowrap;
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+    }
+    .btnNav:hover{
+      background: rgba(0,0,0,.30);
+      border-color: rgba(255,255,255,.22);
+    }
+    .btnNav:active{ transform: translateY(1px); }
+    .btnNav.primary{
+      background: linear-gradient(90deg, rgba(217,70,239,.92), rgba(168,85,247,.86));
+      border-color: rgba(255,255,255,.18);
+    }
+    /* ========= /TOP NAV ========= */
+
     .wrap{
       position:relative;
       z-index:2;
@@ -107,12 +181,6 @@
       align-items:center;
       gap:10px;
       opacity:.95;
-    }
-    .mark{
-      width: 34px; height: 34px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, rgba(217,70,239,.95), rgba(168,85,247,.85));
-      box-shadow: 0 12px 28px rgba(217,70,239,.22);
     }
     .brandTxt{
       line-height:1.1;
@@ -251,6 +319,11 @@
 
     @media (max-width: 860px){
       .grid{ grid-template-columns: 1fr; }
+      .nav{ top:12px; left:12px; right:12px; }
+      .navLeft{ display:none; } /* no mobile: some pra sobrar espaço pros botões */
+      .btnNav{ padding: 10px 12px; font-weight: 800; }
+      .navActions{ width:100%; }
+      .navActions .btnNav{ flex:1; text-align:center; }
     }
   </style>
 </head>
@@ -258,6 +331,23 @@
 <body>
   <canvas id="particles"></canvas>
   <div class="overlay"></div>
+
+  <!-- NAV TOPO (NOVO) -->
+  <div class="nav" aria-label="Navegação">
+    <div class="navLeft">
+      <div class="mark"></div>
+      <div class="navTxt">
+        <b>N1 • Operação & Performance</b>
+        <span>Painel do Treinamento</span>
+      </div>
+    </div>
+
+    <div class="navActions">
+      <button class="btnNav" type="button" onclick="go('../index.html')">PORTAL N1</button>
+      <button class="btnNav primary" type="button" onclick="go('./index.html')">PAINEL DE TREINAMENTO</button>
+    </div>
+  </div>
+  <!-- /NAV -->
 
   <main class="wrap">
     <section class="card">
@@ -310,7 +400,7 @@
         </div>
       </div>
 
-      <div class="hint">Dica: Enter abre / Esc volta (se você quiser, eu coloco Esc para voltar aqui)</div>
+      <div class="hint">Dica: Enter abre • Esc (nos módulos) volta pro Painel</div>
     </section>
   </main>
 
@@ -324,6 +414,7 @@
     // Partículas mais intensas (dashboard)
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d', { alpha:true });
+
     function resize(){
       const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
       canvas.width = Math.floor(innerWidth * dpr);
@@ -340,7 +431,6 @@
 
     function init(){
       P.length = 0;
-      // mais intenso que antes
       const COUNT = Math.round(Math.sqrt(innerWidth*innerHeight)/1.10);
       for(let i=0;i<COUNT;i++){
         P.push({
@@ -359,7 +449,6 @@
     function draw(){
       ctx.clearRect(0,0,innerWidth,innerHeight);
 
-      // dots
       for(const p of P){
         p.x += p.vx; p.y += p.vy;
         if(p.x < -20) p.x = innerWidth + 20;
@@ -373,7 +462,6 @@
         ctx.fill();
       }
 
-      // connections (mais visível)
       for(let i=0;i<P.length;i++){
         for(let j=i+1;j<P.length;j++){
           const a = P[i], b = P[j];
