@@ -18,7 +18,7 @@
 
       document.getElementById("logout").onclick = () => {
         window.N1TestAuth.logout();
-        window.location.replace("./login.html");
+        window.location.replace(window.N1TestAuth.getLoginUrl());
       };
     });
   </script>
