@@ -10,7 +10,6 @@
 
 <body>
 
-  <!-- Guard: exige login da área de testes -->
   <script src="../../assets/js/testes-auth.js"></script>
   <script>window.N1TestAuth.guard();</script>
 
@@ -23,28 +22,33 @@
       <button class="btn" id="logout">Sair</button>
     </header>
 
-    <!-- Aqui o motor vai montar tudo -->
     <div id="testRoot"></div>
   </main>
 
   <script src="../../assets/js/testes-engine.js"></script>
   <script>
-    // ===== CONFIG DO TESTE =====
     const TEST_ID = "t1";
+    const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
     const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`;
 
-    // Se tentar acessar a prova direto (sem passar pelo iniciar.html), volta para iniciar
+    // Não deixa entrar na prova sem vídeo concluído
+    if (localStorage.getItem(KEY_WATCHED) !== "1") {
+      window.location.replace("./video.html");
+    }
+
+    // Não deixa entrar na prova “no grito” sem passar pelo iniciar
     if (localStorage.getItem(KEY_STARTED) !== "1") {
       window.location.replace("./iniciar.html");
     }
 
-    // Logout: caminho correto sempre
+    // reforço (caso alguém caia aqui e volte)
+    localStorage.setItem(KEY_STARTED, "1");
+
     document.getElementById("logout").onclick = () => {
       window.N1TestAuth.logout();
       window.location.replace(window.N1TestAuth.getLoginUrl());
     };
 
-    // Monta a prova em modo Wizard (1 por tela)
     window.N1TestsEngine.mount({
       testId: "t1",
       minScore: 70,
@@ -52,7 +56,7 @@
       containerId: "testRoot",
       redirectOnMissingVideo: "./video.html",
       redirectOnDone: "../index.html",
-      allowBackQuestions: false // mais rígido (recomendado)
+      allowBackQuestions: false
     });
   </script>
 
