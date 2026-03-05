@@ -1,90 +1,71 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
-<title>Teste 1 • Iniciar</title>
-<meta name="description" content="Tela de transição para iniciar o teste." />
-<link rel="stylesheet" href="../../style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
+  <title>Teste 1 • Iniciar</title>
+  <meta name="description" content="Tela de transição para iniciar o teste." />
+  <link rel="stylesheet" href="../../style.css" />
 </head>
 
 <body>
 
-<script src="../../assets/js/testes-auth.js"></script>
-<script>window.N1TestAuth.guard();</script>
+  <script src="../../assets/js/testes-auth.js"></script>
+  <script>window.N1TestAuth.guard();</script>
 
-<main class="wrap">
+  <main class="wrap">
+    <header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
+      <div>
+        <h1 style="margin:0;">Teste 1</h1>
+        <p style="opacity:.85;margin:6px 0 0;">Você só tem <strong>1 tentativa</strong>. Leia com atenção e siga para a prova.</p>
+      </div>
+      <button class="btn" id="logout">Sair</button>
+    </header>
 
-<header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
-<div>
-<h1 style="margin:0;">Teste 1</h1>
-<p style="opacity:.85;margin:6px 0 0;">
-Você só tem <strong>1 tentativa</strong>.
-</p>
-</div>
+    <section class="card" style="margin-top:14px; text-align:center; padding:28px 18px;">
+      <p style="opacity:.85;margin:0 0 10px;">Concluiu o vídeo ✅</p>
 
-<button class="btn" id="logout">Sair</button>
-</header>
+      <h2 style="margin:0 0 12px; font-size: clamp(22px, 3vw, 34px); letter-spacing:.2px;">
+        BOA SORTE
+      </h2>
 
-<section class="card" style="margin-top:14px;text-align:center;padding:28px 18px;">
+      <p style="opacity:.85;margin:0 0 18px;">
+        Quando você entrar na prova, não será possível voltar ao vídeo.
+      </p>
 
-<p style="opacity:.85;margin:0 0 10px;">
-Concluiu o vídeo ✅
-</p>
+      <a id="btnStart" class="btn btn-primary" href="./prova.html" style="display:inline-flex;justify-content:center;">
+        ACESSE SEU TESTE
+      </a>
 
-<h2 style="margin:0 0 12px;font-size:clamp(22px,3vw,34px);">
-BOA SORTE
-</h2>
+      <p id="msg" style="opacity:.85;margin:14px 0 0;"></p>
+    </section>
+  </main>
 
-<p style="opacity:.85;margin:0 0 18px;">
-Quando você entrar na prova não poderá voltar ao vídeo.
-</p>
+  <script>
+    const TEST_ID = "t1";
+    const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
+    const KEY_DONE    = `n1_tests_${TEST_ID}_done_v1`;
 
-<a id="btnStart"
-class="btn btn-primary"
-href="./prova.html"
-style="display:inline-flex;justify-content:center;">
-ACESSE SEU TESTE
-</a>
+    const btnStart = document.getElementById("btnStart");
+    const msg = document.getElementById("msg");
 
-<p id="msg" style="opacity:.85;margin:14px 0 0;"></p>
+    document.getElementById("logout").onclick = () => {
+      window.N1TestAuth.logout();
+      window.location.replace(window.N1TestAuth.getLoginUrl());
+    };
 
-</section>
-</main>
+    // Precisa ter assistido o vídeo
+    if (localStorage.getItem(KEY_WATCHED) !== "1") {
+      window.location.replace("./video.html");
+    }
 
-<script>
-
-const TEST_ID="t1";
-
-const KEY_WATCHED=`n1_tests_${TEST_ID}_watched_v1`;
-const KEY_STARTED=`n1_tests_${TEST_ID}_started_v1`;
-const KEY_DONE=`n1_tests_${TEST_ID}_done_v1`;
-
-const btnStart=document.getElementById("btnStart");
-const msg=document.getElementById("msg");
-
-document.getElementById("logout").onclick=()=>{
-window.N1TestAuth.logout();
-window.location.replace(window.N1TestAuth.getLoginUrl());
-};
-
-if(localStorage.getItem(KEY_WATCHED)!=="1"){
-window.location.replace("./video.html");
-}
-
-if(localStorage.getItem(KEY_DONE)==="1"){
-btnStart.style.display="none";
-msg.textContent="⛔ Teste já finalizado.";
-setTimeout(()=>{
-window.location.replace("../index.html");
-},2000);
-}
-
-btnStart.addEventListener("click",()=>{
-localStorage.setItem(KEY_STARTED,"1");
-});
-
-</script>
+    // Bloqueia se já finalizou
+    if (localStorage.getItem(KEY_DONE) === "1") {
+      btnStart.style.display = "none";
+      msg.textContent = "⛔ Este teste já foi finalizado. Você não possui nova tentativa.";
+      setTimeout(() => window.location.replace("../index.html"), 2000);
+    }
+  </script>
 
 </body>
 </html>
