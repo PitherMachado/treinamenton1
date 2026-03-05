@@ -1,44 +1,76 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Área de Testes</title>
-  <link rel="stylesheet" href="../style.css" />
-</head>
-<body>
 
+  <title>Área de Testes</title>
+
+  <!-- Cor do navegador -->
+  <meta name="theme-color" content="#0a0c12" />
+
+  <!-- CSS global do projeto -->
+  <link rel="stylesheet" href="../style.css" />
+
+  <!-- Autenticação dos testes -->
   <script src="../assets/js/testes-auth.js" defer></script>
+
   <script>
     window.addEventListener("DOMContentLoaded", () => {
+
+      /* proteção de acesso */
       window.N1TestAuth.guard();
 
       const u = window.N1TestAuth.getUser();
-      document.getElementById("who").textContent = u?.name ? `Logado como: ${u.name}` : "";
+
+      document.getElementById("who").textContent =
+        u?.name ? `Logado como: ${u.name}` : "";
 
       document.getElementById("logout").onclick = () => {
         window.N1TestAuth.logout();
         window.location.replace("./login.html");
       };
+
     });
   </script>
 
+</head>
+
+<body>
+
   <main class="wrap">
-    <header class="row" style="justify-content:space-between;gap:12px;">
+
+    <header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
+
       <div>
-        <h1>Testes</h1>
+        <h1>Área de Testes</h1>
         <p id="who" style="opacity:.85;margin:0;"></p>
       </div>
-      <button class="btn" id="logout">Sair</button>
+
+      <button class="btn" id="logout">
+        Sair
+      </button>
+
     </header>
 
     <section class="grid">
-      <!-- IMPORTANTE: abre SOMENTE o vídeo -->
+
+      <!-- TESTE 1 -->
+      <!-- abre somente o vídeo obrigatório -->
+
       <a class="card link" href="./t1/video.html">
+
         <h2>Teste 1</h2>
-        <p>Vídeo obrigatório + prova (15 questões)</p>
+
+        <p>
+          Vídeo obrigatório + prova (15 questões)
+        </p>
+
       </a>
+
     </section>
+
   </main>
 
 </body>
