@@ -8,8 +8,20 @@
 </head>
 <body>
 
-  <script src="../assets/js/testes-auth.js"></script>
-  <script>window.N1TestAuth.guard();</script>
+  <script src="../assets/js/testes-auth.js" defer></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      window.N1TestAuth.guard();
+
+      const u = window.N1TestAuth.getUser();
+      document.getElementById("who").textContent = u?.name ? `Logado como: ${u.name}` : "";
+
+      document.getElementById("logout").onclick = () => {
+        window.N1TestAuth.logout();
+        window.location.replace("./login.html");
+      };
+    });
+  </script>
 
   <main class="wrap">
     <header class="row" style="justify-content:space-between;gap:12px;">
@@ -28,14 +40,5 @@
     </section>
   </main>
 
-  <script>
-    const u = window.N1TestAuth.getUser();
-    document.getElementById("who").textContent = u?.name ? `Logado como: ${u.name}` : "";
-
-    document.getElementById("logout").onclick = () => {
-      window.N1TestAuth.logout();
-      window.location.replace("./login.html");
-    };
-  </script>
 </body>
 </html>
