@@ -1,16 +1,17 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Área de Testes</title>
+  <meta name="theme-color" content="#0a0a12" />
+  <link rel="stylesheet" href="../style.css" />
+</head>
 
-  <meta name="theme-color" content="#0a0a12"/>
-  <link rel="stylesheet" href="../style.css"/>
+<body>
 
-  <!-- Auth (não mexer) -->
+  <!-- Guard: trava acesso se não tiver token (NÃO MEXE) -->
   <script src="../assets/js/testes-auth.js" defer></script>
-
   <script>
     window.addEventListener("DOMContentLoaded", () => {
       window.N1TestAuth.guard();
@@ -25,140 +26,68 @@
     });
   </script>
 
-  <!-- VISUAL PREMIUM (apenas visual) -->
-  <style>
-    /* Fundo vivo no estilo do print 2 (glow + aurora) */
-    body{
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at 18% 28%, rgba(255,47,216,0.18), transparent 42%),
-        radial-gradient(circle at 78% 70%, rgba(92,27,143,0.28), transparent 52%),
-        linear-gradient(135deg, #070710 0%, #120022 55%, #070710 100%);
-      overflow-x: hidden;
-    }
+  <!-- Watermark (logo gigante no fundo) -->
+  <div class="bg-watermark bg-watermark--app" aria-hidden="true"></div>
 
-    /* Camadas animadas (vivo) */
-    body::before{
-      content:"";
-      position: fixed;
-      inset: -35%;
-      background: radial-gradient(closest-side, rgba(255,47,216,0.18), transparent 65%);
-      filter: blur(18px);
-      transform: translateX(-35%) rotate(12deg);
-      animation: bgSweep 10s ease-in-out infinite alternate;
-      pointer-events: none;
-      z-index: 0;
-      opacity: .9;
-    }
+  <!-- TOPBAR no padrão do app (visual) -->
+  <header class="app-header">
+    <div class="container app-header-inner">
 
-    body::after{
-      content:"";
-      position: fixed;
-      inset: -40%;
-      background:
-        radial-gradient(circle at 25% 35%, rgba(92,27,143,0.18), transparent 55%),
-        radial-gradient(circle at 78% 72%, rgba(255,47,216,0.10), transparent 60%);
-      filter: blur(22px);
-      animation: bgFloat 14s ease-in-out infinite alternate;
-      pointer-events: none;
-      z-index: 0;
-      opacity: .75;
-    }
-
-    @keyframes bgSweep{
-      0%   { transform: translateX(-35%) rotate(12deg); opacity: .70; }
-      100% { transform: translateX(35%)  rotate(12deg); opacity: 1; }
-    }
-
-    @keyframes bgFloat{
-      0%   { transform: translateY(10px) scale(1); opacity: .60; }
-      100% { transform: translateY(-18px) scale(1.05); opacity: .85; }
-    }
-
-    /* Conteúdo sempre acima do fundo */
-    main.wrap{
-      position: relative;
-      z-index: 1;
-      padding-top: 120px; /* deixa o topo parecido com o print 2 */
-    }
-
-    /* Header alinhado como print 2 (logo/texto à esquerda, ação à direita) */
-    header.row{
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    /* Ajuste fino tipografia */
-    .wrap h1{
-      font-size: 40px;
-      letter-spacing: -0.02em;
-    }
-
-    #who{
-      margin-top: 6px;
-      color: rgba(199,199,214,.95);
-    }
-
-    /* Card mais “glass premium” (como no print 2) */
-    .card{
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      backdrop-filter: blur(18px);
-    }
-
-    .card.link:hover{
-      border-color: rgba(255,47,216,0.40);
-      box-shadow: 0 26px 70px rgba(0,0,0,.65), 0 0 44px rgba(255,47,216,.14);
-    }
-
-    /* Botão Sair no padrão roxo/gradient */
-    #logout.btn{
-      background: var(--gradient-primary);
-      color: #fff;
-      box-shadow: 0 10px 30px rgba(255,47,216,0.22);
-      border: none;
-      padding: 10px 16px;
-      border-radius: 14px;
-      height: 40px;
-    }
-
-    #logout.btn:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 18px 40px rgba(255,47,216,0.35);
-    }
-
-    /* Grid: deixa 1 card largo em telas grandes (igual sensação do print 1/2) */
-    .grid{
-      grid-template-columns: 1fr;
-      margin-top: 26px;
-      max-width: 980px;
-    }
-
-    @media (max-width: 900px){
-      .wrap h1{ font-size: 34px; }
-      main.wrap{ padding-top: 110px; }
-      .grid{ max-width: 100%; }
-    }
-  </style>
-</head>
-
-<body>
-  <main class="wrap">
-    <header class="row" style="justify-content:space-between;gap:12px;">
-      <div>
-        <h1>Área de Testes</h1>
-        <p id="who" style="opacity:.92;margin:0;"></p>
-      </div>
-      <button class="btn" id="logout">Sair</button>
-    </header>
-
-    <section class="grid">
-      <a class="card link" href="./t1/video.html">
-        <h2>Teste 1</h2>
-        <p>Vídeo obrigatório + prova (15 questões)</p>
+      <a class="brand"
+         href="https://pithermachado.github.io/treinamenton1"
+         aria-label="Voltar para a página principal do treinamento">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <strong class="brand-name">PORTAL N1</strong>
       </a>
-    </section>
+
+      <div class="app-actions">
+        <button class="btn btn-ghost" id="logout" type="button">Sair</button>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="app">
+    <div class="container">
+
+      <!-- HERO -->
+      <section class="app-hero">
+        <h1 class="app-title">Área de Testes</h1>
+        <p class="app-subtitle" id="who"></p>
+      </section>
+
+      <!-- GRID -->
+      <section class="section section-modules">
+        <header class="section-header">
+          <h2 class="section-title">Testes disponíveis</h2>
+          <p class="section-subtitle">Abra o teste para iniciar o vídeo obrigatório.</p>
+        </header>
+
+        <div class="grid modules-grid" style="grid-template-columns: 1fr; max-width: 920px;">
+
+          <article class="card module-card module-card-featured">
+            <div class="module-meta">
+              <span class="module-number">01</span>
+              <span class="module-tag">Vídeo + Prova</span>
+            </div>
+
+            <h3 class="module-title">Teste 1</h3>
+
+            <p class="module-desc">
+              Vídeo obrigatório + prova (15 questões).
+            </p>
+
+            <div class="module-footer">
+              <span class="pill">Obrigatório</span>
+              <a class="btn btn-primary" href="./t1/video.html">Abrir →</a>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+    </div>
   </main>
+
 </body>
 </html>
