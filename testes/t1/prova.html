@@ -1,1 +1,52 @@
 
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
+  <title>Teste 1 • Prova</title>
+  <meta name="description" content="Prova em modo 1 pergunta por tela." />
+  <link rel="stylesheet" href="../../style.css" />
+</head>
+
+<body>
+
+  <!-- Guard: exige login da área de testes -->
+  <script src="../../assets/js/testes-auth.js"></script>
+  <script>window.N1TestAuth.guard();</script>
+
+  <main class="wrap">
+    <header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
+      <div>
+        <h1 style="margin:0;">Prova • Teste 1</h1>
+        <p style="opacity:.85;margin:6px 0 0;">1 pergunta por tela • 1 tentativa • Nota mínima 70%</p>
+      </div>
+      <button class="btn" id="logout">Sair</button>
+    </header>
+
+    <!-- Aqui o motor vai montar tudo -->
+    <div id="testRoot"></div>
+  </main>
+
+  <script src="../../assets/js/testes-engine.js"></script>
+  <script>
+    // Logout (mantém a prova travada se já finalizou)
+    document.getElementById("logout").onclick = () => {
+      window.N1TestAuth.logout();
+      window.location.replace("../login.html");
+    };
+
+    // Monta a prova em modo Wizard (1 por tela)
+    window.N1TestsEngine.mount({
+      testId: "t1",
+      minScore: 70,
+      mode: "wizard",
+      containerId: "testRoot",
+      redirectOnMissingVideo: "./video.html",
+      redirectOnDone: "../index.html",
+      allowBackQuestions: false // mais rígido (recomendado)
+    });
+  </script>
+
+</body>
+</html>
