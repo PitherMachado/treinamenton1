@@ -49,6 +49,10 @@
       window.location.replace(window.N1TestAuth.getLoginUrl());
     };
 
+    // ✅ COLE A URL DO SEU WEB APP DO APPS SCRIPT AQUI:
+    // Exemplo: https://script.google.com/macros/s/AKfy.../exec
+    const REPORT_URL = ""; // <-- cole aqui
+
     window.N1TestsEngine.mount({
       testId: "t1",
       minScore: 70,
@@ -57,10 +61,7 @@
       redirectOnMissingVideo: "./video.html",
       redirectOnDone: "../index.html",
       allowBackQuestions: false,
-
-      // (NOVO) identifica aluno + envia para planilha
-      user: (window.N1TestAuth && window.N1TestAuth.getUser) ? window.N1TestAuth.getUser() : null,
-      reportUrl: "https://script.google.com/macros/s/AKfycbxNnyF9ZWMr6fMrxxMJaayRQdQZw00gHUCNLeadFxVEVyXg2jjU7JzndMdgCVPfRT-BGg/exec"
+      reportUrl: REPORT_URL
     });
   </script>
 
