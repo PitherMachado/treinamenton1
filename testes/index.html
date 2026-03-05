@@ -18,7 +18,7 @@
 
       document.getElementById("logout").onclick = () => {
         window.N1TestAuth.logout();
-        window.location.replace(window.N1TestAuth.getLoginUrl());
+        window.location.replace("./login.html");
       };
     });
   </script>
@@ -33,6 +33,7 @@
     </header>
 
     <section class="grid">
+      <!-- IMPORTANTE: abre SOMENTE o vídeo -->
       <a class="card link" href="./t1/video.html">
         <h2>Teste 1</h2>
         <p>Vídeo obrigatório + prova (15 questões)</p>
