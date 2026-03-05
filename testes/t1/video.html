@@ -10,6 +10,7 @@
 
 <body>
 
+  <!-- Guard: exige login específico da área de testes -->
   <script src="../../assets/js/testes-auth.js"></script>
   <script>window.N1TestAuth.guard();</script>
 
@@ -17,18 +18,25 @@
     <header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
       <div>
         <h1 style="margin:0;">Teste 1</h1>
-        <p style="opacity:.85;margin:6px 0 0;">Vídeo obrigatório — ao finalizar, o acesso ao teste será liberado.</p>
+        <p style="opacity:.85;margin:6px 0 0;">
+          Vídeo obrigatório — ao finalizar, o acesso ao teste será liberado.
+        </p>
       </div>
+
       <button class="btn" id="logout">Sair</button>
     </header>
 
     <section class="card" style="margin-top:14px;">
+
       <h2 style="margin-top:0;">Assista até o final</h2>
+
       <p style="opacity:.85;margin-top:6px;">
         O vídeo não permite avançar nem retroceder. Quando terminar, aparecerá o botão para acessar o teste.
       </p>
 
+      <!-- PLAYER -->
       <div style="margin-top:14px;">
+
         <video
           id="testVideo"
           style="width:100%;border-radius:16px;outline:none;"
@@ -38,19 +46,26 @@
           controlsList="nodownload noplaybackrate noremoteplayback"
           disablepictureinpicture
         >
-          <!-- VIDEO OFICIAL -->
           <source src="../../assets/videos/t1.mp4" type="video/mp4" />
           Seu navegador não suporta vídeo HTML5.
         </video>
+
       </div>
 
+      <!-- BOTÃO LIBERADO SOMENTE AO FINAL -->
       <div class="row" style="justify-content:flex-end;gap:10px;margin-top:14px;">
-        <a id="btnGo" class="btn btn-primary" href="./iniciar.html" style="display:none;">
+        <a
+          id="btnGo"
+          class="btn btn-primary"
+          href="./iniciar.html"
+          style="display:none;"
+        >
           Boa sorte, acesse seu teste
         </a>
       </div>
 
       <p id="warn" style="opacity:.85;margin:10px 0 0;"></p>
+
     </section>
   </main>
 
@@ -64,21 +79,25 @@
     const video  = document.getElementById("testVideo");
     const btnGo  = document.getElementById("btnGo");
     const warn   = document.getElementById("warn");
+    const logout = document.getElementById("logout");
 
-    document.getElementById("logout").onclick = () => {
+    logout.onclick = () => {
       window.N1TestAuth.logout();
       window.location.replace(window.N1TestAuth.getLoginUrl());
     };
 
-    // Se já concluiu a prova, não deixa voltar pro vídeo
+    // 1) Se já finalizou a prova (1 tentativa), não entra no vídeo
     if (localStorage.getItem(KEY_DONE) === "1") {
       window.location.replace("../index.html");
     }
 
-    // Marca started SOMENTE quando clicar no botão
-    btnGo.addEventListener("click", () => {
-      localStorage.setItem(KEY_STARTED, "1");
-    });
+    // 2) Se já "iniciou" o fluxo, só pode pular o vídeo se JÁ tiver assistido.
+    //    (isso elimina o loop)
+    const watched = localStorage.getItem(KEY_WATCHED) === "1";
+    const started = localStorage.getItem(KEY_STARTED) === "1";
+    if (started && watched && localStorage.getItem(KEY_DONE) !== "1") {
+      window.location.replace("./iniciar.html");
+    }
 
     // Anti-seek
     let allowedTime = 0;
@@ -101,7 +120,9 @@
     video.addEventListener("seeking", () => {
       if (!ready) return;
       const diff = Math.abs(video.currentTime - lastTime);
-      if (diff > 0.35) {
+      const tolerance = 0.35;
+
+      if (diff > tolerance) {
         warn.textContent = "⛔ Não é permitido avançar ou voltar o vídeo.";
         video.currentTime = allowedTime;
       }
@@ -114,18 +135,24 @@
       }
     });
 
-    // Final -> libera botão
+    // Ao final: libera acesso
     video.addEventListener("ended", () => {
       localStorage.setItem(KEY_WATCHED, "1");
       btnGo.style.display = "inline-flex";
       warn.textContent = "✅ Vídeo concluído. Você já pode acessar seu teste.";
     });
 
-    // Se já assistiu -> libera botão
-    if (localStorage.getItem(KEY_WATCHED) === "1") {
+    // Se já assistiu anteriormente: libera botão direto
+    if (watched) {
       btnGo.style.display = "inline-flex";
       warn.textContent = "✅ Vídeo já concluído anteriormente. Você pode acessar o teste.";
     }
+
+    // Marca "started" só quando o aluno clicar pra ir para a prova
+    btnGo.addEventListener("click", () => {
+      // aqui é seguro porque o botão só aparece quando WATCHED=1
+      localStorage.setItem(KEY_STARTED, "1");
+    });
   </script>
 
 </body>
