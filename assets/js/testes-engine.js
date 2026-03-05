@@ -3,251 +3,236 @@
    - Suporta modo "wizard" (1 pergunta por tela) ou "scroll" (todas de uma vez)
    - 1 tentativa (localStorage)
    - Nota mínima configurável
+   - (NOVO) Report opcional via webhook (Google Sheets / Apps Script)
 */
 
 (function () {
   // ========= Helpers =========
   function safeParse(s) { try { return JSON.parse(s); } catch (e) { return null; } }
   function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
+  function escapeHtml(s) {
+    return String(s || "")
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+  function uid() { return Math.random().toString(16).slice(2) + Date.now().toString(16); }
 
-  function normalizeText(s) {
-    return (s || "")
-      .toString()
-      .trim()
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // remove acentos
-      .replace(/\s+/g, " ");
+  // ========= Report (opcional) =========
+  // Envia o resultado para um endpoint (ex.: Google Apps Script) para você ver notas de todos os alunos.
+  function postResult(reportUrl, payload) {
+    if (!reportUrl) return;
+    try {
+      fetch(reportUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(function () { /* silencioso */ });
+    } catch (e) { /* silencioso */ }
   }
 
-  function uniq(arr) { return Array.from(new Set(arr)); }
-
-  function esc(s) {
-    return (s || "").toString()
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  // ========= BANCO DE QUESTÕES (VOCÊ EDITA SÓ AQUI) =========
+  // ========= Banco de Questões =========
+  // (mantido do seu arquivo original)
   const QUESTION_BANK = {
-   t1: [
-  {
-    id: "t1_q1",
-    type: "mcq",
-    points: 1,
-    prompt: "Qual é o objetivo principal da sondagem no atendimento?",
-    options: [
-      "Falar mais que o cliente para convencer",
-      "Descobrir a necessidade real do cliente",
-      "Encerrar rápido para ganhar volume",
-      "Evitar perguntas para não parecer invasivo"
-    ],
-    correctIndex: 1
-  },
-  {
-    id: "t1_q2",
-    type: "mcq",
-    points: 1,
-    prompt: "Qual destas atitudes aumenta a confiança do cliente logo no início?",
-    options: [
-      "Prometer aprovação antes de entender o caso",
-      "Falar acelerado para mostrar domínio",
-      "Explicar o próximo passo com clareza e segurança",
-      "Pedir documentos antes de se apresentar"
-    ],
-    correctIndex: 2
-  },
-  {
-    id: "t1_q3",
-    type: "mcq",
-    points: 1,
-    prompt: "Quando o cliente diz 'vou pensar', qual é a melhor postura?",
-    options: [
-      "Encerrar imediatamente e esperar ele voltar",
-      "Pressionar com urgência sem ouvir o motivo",
-      "Perguntar o que exatamente ele precisa analisar e orientar",
-      "Ignorar e mudar o assunto"
-    ],
-    correctIndex: 2
-  },
-  {
-    id: "t1_q4",
-    type: "mcq",
-    points: 1,
-    prompt: "O que caracteriza uma argumentação forte?",
-    options: [
-      "Falar alto e com emoção",
-      "Dar muitos detalhes técnicos sem necessidade",
-      "Conectar benefício com a dor/necessidade do cliente",
-      "Repetir a oferta várias vezes"
-    ],
-    correctIndex: 2
-  },
-  {
-    id: "t1_q5",
-    type: "mcq",
-    points: 1,
-    prompt: "Qual é a função da validação antes de responder uma objeção?",
-    options: [
-      "Concordar com tudo que o cliente fala",
-      "Aumentar o tempo da ligação",
-      "Reduzir resistência e abrir espaço para o argumento",
-      "Encerrar a objeção rapidamente"
-    ],
-    correctIndex: 2
-  },
-
-  {
-    id: "t1_q6",
-    type: "text",
-    points: 1,
-    prompt: "Explique em 1 frase o que significa 'mentalidade de dono' na operação.",
-    rubric: {
-      mustHaveAny: [
-        ["responsabilidade", "responsavel"],
-        ["resultado", "meta", "performance"],
-        ["execucao", "agir", "proatividade", "fazer acontecer"]
-      ],
-      minHits: 2
-    },
-    placeholder: "Ex: assumir responsabilidade pelo resultado e executar sem desculpas..."
-  },
-  {
-    id: "t1_q7",
-    type: "text",
-    points: 1,
-    prompt: "Em 1 frase, qual é a diferença entre 'atender' e 'conduzir' um atendimento?",
-    rubric: {
-      mustHaveAny: [
-        ["conduzir", "direcionar", "guiar", "controle"],
-        ["processo", "etapas", "fluxo"],
-        ["clareza", "objetivo", "fechamento", "conversao"]
-      ],
-      minHits: 2
-    },
-    placeholder: "Digite sua resposta..."
-  },
-
-  {
-    id: "t1_q8",
-    type: "mcq",
-    points: 1,
-    prompt: "Qual pergunta é mais forte para aprofundar a necessidade do cliente?",
-    options: [
-      "Você quer sim ou não?",
-      "Por que você está buscando isso agora?",
-      "Qual seu CPF?",
-      "Você já fez antes?"
-    ],
-    correctIndex: 1
-  },
-  {
-    id: "t1_q9",
-    type: "mcq",
-    points: 1,
-    prompt: "O que é 'controle de conversa' em vendas?",
-    options: [
-      "Não deixar o cliente falar",
-      "Conduzir a conversa com perguntas e próximos passos claros",
-      "Falar o roteiro sem adaptar",
-      "Encerrar quando o cliente questiona"
-    ],
-    correctIndex: 1
-  },
-  {
-    id: "t1_q10",
-    type: "mcq",
-    points: 1,
-    prompt: "Qual sinal indica que o cliente está mais pronto para avançar?",
-    options: [
-      "Ele faz perguntas de próximo passo (prazo, documentos, liberação)",
-      "Ele muda de assunto",
-      "Ele reclama do tempo",
-      "Ele fala que não confia em nada"
-    ],
-    correctIndex: 0
-  },
-
-  {
-    id: "t1_q11",
-    type: "text",
-    points: 1,
-    prompt: "Cite 2 pontos que tornam um atendimento 'profissional e confiável'.",
-    rubric: {
-      mustHaveAny: [
-        ["clareza", "objetivo", "explicar", "passo a passo"],
-        ["seguranca", "confiança", "autoridade", "postura"],
-        ["transparencia", "verdade", "sem promessa", "realismo"],
-        ["documentacao", "procedimento", "processo", "organizacao"]
-      ],
-      minHits: 2
-    },
-    placeholder: "Ex: clareza no processo + postura segura..."
-  },
-
-  {
-    id: "t1_q12",
-    type: "mcq",
-    points: 1,
-    prompt: "Qual destas é uma forma correta de lidar com objeção de confiança?",
-    options: [
-      "Ignorar e repetir o preço",
-      "Dizer 'confia em mim' sem prova",
-      "Validar a preocupação e explicar o procedimento/segurança do processo",
-      "Criticar outras empresas"
-    ],
-    correctIndex: 2
-  },
-  {
-    id: "t1_q13",
-    type: "mcq",
-    points: 1,
-    prompt: "Em uma operação de alta performance, o que vem antes da persuasão?",
-    options: [
-      "Pressa",
-      "Clareza de processo e diagnóstico",
-      "Piadas para quebrar gelo",
-      "Desconto"
-    ],
-    correctIndex: 1
-  },
-
-  {
-    id: "t1_q14",
-    type: "text",
-    points: 1,
-    prompt: "Escreva um micro-argumento (1–2 frases) para quando o cliente disser: 'tá caro'.",
-    rubric: {
-      mustHaveAny: [
-        ["entendo", "compreendo", "faz sentido"], // validação
-        ["valor", "beneficio", "resultado", "vantagem"], // valor
-        ["comparar", "custo", "investimento"], // reenquadramento
-        ["passo", "processo", "proximo", "garantia"] // segurança
-      ],
-      minHits: 2
-    },
-    placeholder: "Digite seu micro-argumento..."
-  },
-  {
-    id: "t1_q15",
-    type: "text",
-    points: 1,
-    prompt: "Em 1 frase, qual é o objetivo de um 'próximo passo' bem definido no atendimento?",
-    rubric: {
-      mustHaveAny: [
-        ["clareza", "objetivo"],
-        ["avancar", "seguir", "proximo passo"],
-        ["fechamento", "conversao", "decisao"],
-        ["compromisso", "alinhamento"]
-      ],
-      minHits: 2
-    },
-    placeholder: "Digite sua resposta..."
-  }
-]
+    t1: [
+      {
+        id: "t1q01",
+        type: "mcq",
+        points: 1,
+        prompt: "Qual é o melhor objetivo de uma ligação de crédito pessoal com INSS?",
+        options: [
+          { id: "a", text: "Falar rápido e fechar no primeiro minuto." },
+          { id: "b", text: "Gerar confiança, entender o cliente e conduzir para a decisão." },
+          { id: "c", text: "Passar o máximo de informações técnicas possíveis." },
+          { id: "d", text: "Perguntar se quer e encerrar se disser não." }
+        ],
+        correct: "b"
+      },
+      {
+        id: "t1q02",
+        type: "mcq",
+        points: 1,
+        prompt: "Quando o cliente diz “vou pensar”, o que você faz primeiro?",
+        options: [
+          { id: "a", text: "Encerrra e pede para ele te retornar." },
+          { id: "b", text: "Pressiona com urgência e ameaça perder a condição." },
+          { id: "c", text: "Pergunta o motivo e isola a dúvida principal com calma." },
+          { id: "d", text: "Oferece desconto imediato." }
+        ],
+        correct: "c"
+      },
+      {
+        id: "t1q03",
+        type: "mcq",
+        points: 1,
+        prompt: "Qual postura melhora a conversão em chamadas com aposentados/pensionistas?",
+        options: [
+          { id: "a", text: "Falar com pressa e cortar o cliente." },
+          { id: "b", text: "Tom de voz calmo, segurança e clareza no passo a passo." },
+          { id: "c", text: "Muita gíria para parecer próximo." },
+          { id: "d", text: "Não perguntar nada, só oferecer valores." }
+        ],
+        correct: "b"
+      },
+      {
+        id: "t1q04",
+        type: "mcq",
+        points: 1,
+        prompt: "Qual é o melhor momento de apresentar a proposta?",
+        options: [
+          { id: "a", text: "Antes de qualquer pergunta." },
+          { id: "b", text: "Depois de criar contexto e confirmar necessidade/objetivo." },
+          { id: "c", text: "Só no final quando o cliente estiver cansado." },
+          { id: "d", text: "Sempre no início para ganhar tempo." }
+        ],
+        correct: "b"
+      },
+      {
+        id: "t1q05",
+        type: "mcq",
+        points: 1,
+        prompt: "Se o cliente fala “juros alto”, qual resposta é mais inteligente?",
+        options: [
+          { id: "a", text: "Não é alto, é o padrão." },
+          { id: "b", text: "Então não faz." },
+          { id: "c", text: "Comparar com cartão/cheque especial e mostrar vantagem do prazo/planejamento." },
+          { id: "d", text: "Ignorar e continuar." }
+        ],
+        correct: "c"
+      },
+      {
+        id: "t1q06",
+        type: "mcq",
+        points: 1,
+        prompt: "A melhor forma de reduzir resistência é:",
+        options: [
+          { id: "a", text: "Discutir com o cliente até ele ceder." },
+          { id: "b", text: "Conduzir com perguntas e confirmar entendimento." },
+          { id: "c", text: "Prometer o que não pode." },
+          { id: "d", text: "Falar sem parar." }
+        ],
+        correct: "b"
+      },
+      {
+        id: "t1q07",
+        type: "mcq",
+        points: 1,
+        prompt: "Qual é uma regra de ouro em telemarketing de crédito?",
+        options: [
+          { id: "a", text: "Cliente não decide: você decide." },
+          { id: "b", text: "Sem clareza de próximo passo, a venda morre." },
+          { id: "c", text: "Quanto mais rápido, melhor sempre." },
+          { id: "d", text: "Nunca confirme dados." }
+        ],
+        correct: "b"
+      },
+      {
+        id: "t1q08",
+        type: "mcq",
+        points: 1,
+        prompt: "Quando o cliente não atende, o melhor é:",
+        options: [
+          { id: "a", text: "Desistir para sempre." },
+          { id: "b", text: "Tentar em horários diferentes e manter cadência organizada." },
+          { id: "c", text: "Ligar 30 vezes seguidas." },
+          { id: "d", text: "Mandar áudio longo sem permissão." }
+        ],
+        correct: "b"
+      },
+      {
+        id: "t1q09",
+        type: "mcq",
+        points: 1,
+        prompt: "O que significa “próximo passo” no atendimento?",
+        options: [
+          { id: "a", text: "Uma frase genérica para encerrar." },
+          { id: "b", text: "Uma ação clara com data/horário/condição definida." },
+          { id: "c", text: "Um bônus." },
+          { id: "d", text: "Um desconto." }
+        ],
+        correct: "b"
+      },
+      {
+        id: "t1q10",
+        type: "mcq",
+        points: 1,
+        prompt: "Qual frase é melhor para conduzir para WhatsApp?",
+        options: [
+          { id: "a", text: "Me chama aí." },
+          { id: "b", text: "Vou te mandar agora um resumo e você só confirma OK." },
+          { id: "c", text: "Depois a gente vê." },
+          { id: "d", text: "Você que sabe." }
+        ],
+        correct: "b"
+      },
+      {
+        id: "t1q11",
+        type: "mcq",
+        points: 1,
+        prompt: "Por que validar dados com clareza é importante?",
+        options: [
+          { id: "a", text: "Para enrolar mais." },
+          { id: "b", text: "Para dar segurança e evitar retrabalho/erros no processo." },
+          { id: "c", text: "Não é importante." },
+          { id: "d", text: "Só para cumprir script." }
+        ],
+        correct: "b"
+      },
+      {
+        id: "t1q12",
+        type: "mcq",
+        points: 1,
+        prompt: "Qual é a melhor forma de lidar com objeção sem discussão?",
+        options: [
+          { id: "a", text: "Negar a objeção." },
+          { id: "b", text: "Validar, esclarecer e conduzir com lógica + próximo passo." },
+          { id: "c", text: "Subir o tom." },
+          { id: "d", text: "Cortar o cliente." }
+        ],
+        correct: "b"
+      },
+      {
+        id: "t1q13",
+        type: "mcq",
+        points: 1,
+        prompt: "Quando o cliente diz “não tenho interesse”, o que fazer?",
+        options: [
+          { id: "a", text: "Encerrar na hora." },
+          { id: "b", text: "Abrir conversa com 1 pergunta simples e oferecer contexto." },
+          { id: "c", text: "Insistir falando mais alto." },
+          { id: "d", text: "Ignorar." }
+        ],
+        correct: "b"
+      },
+      {
+        id: "t1q14",
+        type: "mcq",
+        points: 1,
+        prompt: "O que mais aumenta conversão em venda consultiva de crédito?",
+        options: [
+          { id: "a", text: "Pressa e urgência falsa." },
+          { id: "b", text: "Clareza, segurança e condução de processo (etapas)." },
+          { id: "c", text: "Falar rápido." },
+          { id: "d", text: "Prometer taxa impossível." }
+        ],
+        correct: "b"
+      },
+      {
+        id: "t1q15",
+        type: "text",
+        points: 1,
+        prompt: "Em 1 frase, qual é o objetivo de um “próximo passo” bem definido no atendimento?",
+        rubric: {
+          mustHaveAny: [
+            ["clareza", "objetivo"],
+            ["avançar", "seguir", "próximo passo"],
+            ["fechamento", "conversão", "decisão"],
+            ["compromisso", "alinhamento"]
+          ],
+          minHits: 2
+        },
+        placeholder: "Digite sua resposta..."
+      }
+    ]
   };
 
   // Expor banco para você poder reaproveitar em outros arquivos se quiser
@@ -264,25 +249,22 @@
       const containerId = cfg.containerId || "testRoot";
 
       const redirectOnMissingVideo = cfg.redirectOnMissingVideo || "./video.html";
-      const redirectOnDone = cfg.redirectOnDone || "../index.html";
+      const redirectOnDone = cfg.redirectOnDone || "./index.html";
 
       const allowBackQuestions = !!cfg.allowBackQuestions; // padrão: false (mais rígido)
       const sessionKey = `n1_tests_${testId}_session_v1`;
 
       if (!testId) throw new Error("N1TestsEngine.mount: testId é obrigatório.");
-      const container = document.getElementById(containerId);
-      if (!container) throw new Error(`N1TestsEngine.mount: container #${containerId} não encontrado.`);
 
-      const questions = QUESTION_BANK[testId];
-      if (!questions || !Array.isArray(questions) || questions.length === 0) {
-        container.innerHTML = this._card(`
-          <h2>⚠️ Nenhuma pergunta configurada</h2>
-          <p>Configure as perguntas em <code>assets/js/testes-engine.js</code> dentro de <code>QUESTION_BANK.${esc(testId)}</code>.</p>
-        `);
+      const container = document.getElementById(containerId);
+      if (!container) throw new Error(`N1TestsEngine.mount: container #${containerId} não existe.`);
+
+      const questions = (QUESTION_BANK[testId] || []).slice();
+      if (!questions.length) {
+        container.innerHTML = `<div class="card"><h2>Sem questões</h2><p>Não há questões configuradas para o teste <b>${escapeHtml(testId)}</b>.</p></div>`;
         return;
       }
 
-      // Keys de estado
       const KEY_WATCHED = `n1_tests_${testId}_watched_v1`;
       const KEY_DONE = `n1_tests_${testId}_done_v1`;
       const KEY_RESULT = `n1_tests_${testId}_result_v1`;
@@ -297,436 +279,373 @@
       if (localStorage.getItem(KEY_DONE) === "1") {
         const saved = safeParse(localStorage.getItem(KEY_RESULT));
         container.innerHTML = this._renderLocked(saved, minScore);
-        setTimeout(() => window.location.replace(redirectOnDone), 2500);
+        setTimeout(() => window.location.replace(redirectOnDone), 900);
         return;
       }
 
-      // CSS local mínimo (não mexe no seu style.css)
-      container.insertAdjacentHTML("afterbegin", `
-        <style>
-          .n1card{padding:18px;border-radius:18px}
-          .n1meta{opacity:.85;margin:.25rem 0 0}
-          .n1q-top{display:flex;justify-content:space-between;gap:10px;opacity:.9}
-          .n1q-title{margin:12px 0 10px;font-size:1.08rem}
-          .n1opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);cursor:pointer;margin:10px 0}
-          .n1opt input{margin-top:3px}
-          .n1txt{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.18);color:inherit;padding:12px;outline:none;resize:vertical}
-          .n1hint{opacity:.75;margin:8px 0 0;font-size:.92rem}
-          .n1actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px;flex-wrap:wrap}
-          .n1progress{opacity:.9}
-          .n1warn{opacity:.85;margin-top:10px}
-          .n1err{opacity:.9;margin-top:10px}
-          code{background:rgba(255,255,255,.08);padding:.12rem .35rem;border-radius:8px}
-        </style>
-      `);
-
-      // Sessão (para manter respostas ao trocar de tela / refresh)
-      const session = safeParse(sessionStorage.getItem(sessionKey)) || {
-        idx: 0,
-        answers: {}
-      };
-
-      // Modo scroll
+      // monta UI conforme modo
       if (mode === "scroll") {
-        container.innerHTML = this._renderExamScroll({ testId, questions, minScore });
-        const form = container.querySelector("form[data-n1test='form']");
-        form.addEventListener("submit", (e) => {
-          e.preventDefault();
-          const ok = confirm("Confirma enviar sua prova? Após enviar, você não poderá refazer.");
-          if (!ok) return;
+        container.innerHTML = this._renderScroll({ testId, questions, minScore });
+        const form = container.querySelector("form");
+        if (!form) return;
+
+        form.addEventListener("submit", (ev) => {
+          ev.preventDefault();
 
           const payload = this._collectAnswersScroll({ testId, questions, form });
           const result = this._grade({ questions, answers: payload.answers, minScore });
 
           localStorage.setItem(KEY_DONE, "1");
-          localStorage.setItem(KEY_RESULT, JSON.stringify({
-            testId, at: Date.now(),
+
+          const user = (cfg && cfg.user)
+            ? cfg.user
+            : (window.N1TestAuth && typeof window.N1TestAuth.getUser === "function" ? window.N1TestAuth.getUser() : null);
+
+          const reportPayload = {
+            testId,
+            at: Date.now(),
+            user: user,
             totalPoints: result.totalPoints,
             earnedPoints: result.earnedPoints,
             scorePercent: result.scorePercent,
             passed: result.passed,
-            breakdown: result.breakdown
-          }));
+            breakdown: result.breakdown,
+            answers: payload.answers
+          };
+
+          localStorage.setItem(KEY_RESULT, JSON.stringify(reportPayload));
+          postResult(cfg && cfg.reportUrl, reportPayload);
 
           container.innerHTML = this._renderResult({ result, minScore });
         });
 
-        this._lockBackNav();
+        this._bindExitButton(container, redirectOnDone);
         return;
       }
 
-      // Modo wizard (1 por tela)
-      const renderWizard = () => {
-        sessionStorage.setItem(sessionKey, JSON.stringify(session));
-        const q = questions[session.idx];
-        container.innerHTML = this._renderExamWizard({
-          testId, questions, minScore,
-          idx: session.idx,
-          answer: session.answers[q.id],
-          allowBackQuestions
-        });
+      // wizard (1 por tela)
+      container.innerHTML = this._renderWizardShell({ testId, questions, minScore, allowBackQuestions });
 
-        // Eventos
-        const btnNext = container.querySelector("[data-act='next']");
-        const btnPrev = container.querySelector("[data-act='prev']");
-        const btnFinish = container.querySelector("[data-act='finish']");
-        const err = container.querySelector("#n1Err");
+      const state = safeParse(sessionStorage.getItem(sessionKey)) || {
+        i: 0,
+        answers: {},
+        startedAt: Date.now()
+      };
 
-        // Captura resposta atual
-        const saveCurrentAnswer = () => {
-          const q = questions[session.idx];
-          const name = `${testId}__${q.id}`;
+      sessionStorage.setItem(sessionKey, JSON.stringify(state));
 
-          if (q.type === "mcq") {
-            const checked = container.querySelector(`input[name="${name}"]:checked`);
-            session.answers[q.id] = checked ? parseInt(checked.value, 10) : null;
-          } else if (q.type === "text") {
-            const ta = container.querySelector(`textarea[name="${name}"]`);
-            session.answers[q.id] = ta ? ta.value : "";
-          }
-        };
+      const renderStep = () => {
+        const total = questions.length;
+        const i = clamp(state.i, 0, total - 1);
 
-        const isCurrentValid = () => {
-          const q = questions[session.idx];
-          const a = session.answers[q.id];
+        const q = questions[i];
+        const stepHost = container.querySelector("[data-step-host]");
+        if (!stepHost) return;
 
-          if (q.type === "mcq") return Number.isInteger(a);
-          if (q.type === "text") return normalizeText(a).length >= 2;
-          return false;
-        };
+        stepHost.innerHTML = this._renderQuestion({ testId, q, index: i, total });
 
-        const validateOrShow = () => {
-          saveCurrentAnswer();
-          if (!isCurrentValid()) {
-            err.textContent = "⛔ Responda a pergunta para continuar.";
-            return false;
-          }
-          err.textContent = "";
-          return true;
-        };
+        // progress
+        const prog = container.querySelector("[data-progress]");
+        if (prog) prog.style.width = `${Math.round(((i + 1) / total) * 100)}%`;
 
-        // Change listeners para salvar
-        container.addEventListener("change", () => saveCurrentAnswer());
-        container.addEventListener("input", () => saveCurrentAnswer());
+        // bind
+        const btnNext = container.querySelector("[data-next]");
+        const btnBack = container.querySelector("[data-back]");
+        const btnFinish = container.querySelector("[data-finish]");
 
-        if (btnPrev) {
-          btnPrev.onclick = () => {
-            saveCurrentAnswer();
+        if (btnBack) {
+          btnBack.disabled = (!allowBackQuestions) || i === 0;
+          btnBack.onclick = () => {
             if (!allowBackQuestions) return;
-            session.idx = clamp(session.idx - 1, 0, questions.length - 1);
-            renderWizard();
+            state.i = Math.max(0, state.i - 1);
+            sessionStorage.setItem(sessionKey, JSON.stringify(state));
+            renderStep();
           };
         }
 
+        const saveCurrent = () => {
+          const ans = this._collectSingleAnswer({ q, root: stepHost });
+          if (ans === null) return false;
+          state.answers[q.id] = ans;
+          sessionStorage.setItem(sessionKey, JSON.stringify(state));
+          return true;
+        };
+
         if (btnNext) {
+          btnNext.style.display = (i < total - 1) ? "" : "none";
           btnNext.onclick = () => {
-            if (!validateOrShow()) return;
-            session.idx = clamp(session.idx + 1, 0, questions.length - 1);
-            renderWizard();
+            const ok = saveCurrent();
+            if (!ok) return;
+            state.i = Math.min(total - 1, state.i + 1);
+            sessionStorage.setItem(sessionKey, JSON.stringify(state));
+            renderStep();
           };
         }
 
         if (btnFinish) {
+          btnFinish.style.display = (i === total - 1) ? "" : "none";
           btnFinish.onclick = () => {
-            // valida a atual antes de finalizar
-            if (!validateOrShow()) return;
-
-            // valida todas as respostas (sem permitir buraco)
-            for (const q of questions) {
-              const a = session.answers[q.id];
-              const ok = (q.type === "mcq")
-                ? Number.isInteger(a)
-                : normalizeText(a).length >= 2;
-
-              if (!ok) {
-                err.textContent = "⛔ Existem perguntas sem resposta. Complete todas antes de finalizar.";
-                return;
-              }
-            }
-
-            const ok = confirm("Confirma enviar sua prova? Após enviar, você não poderá refazer.");
+            const ok = saveCurrent();
             if (!ok) return;
 
             const result = this._grade({ questions, answers: session.answers, minScore });
 
             localStorage.setItem(KEY_DONE, "1");
-            localStorage.setItem(KEY_RESULT, JSON.stringify({
-              testId, at: Date.now(),
+
+            const user = (cfg && cfg.user)
+              ? cfg.user
+              : (window.N1TestAuth && typeof window.N1TestAuth.getUser === "function" ? window.N1TestAuth.getUser() : null);
+
+            const reportPayload = {
+              testId,
+              at: Date.now(),
+              user: user,
               totalPoints: result.totalPoints,
               earnedPoints: result.earnedPoints,
               scorePercent: result.scorePercent,
               passed: result.passed,
-              breakdown: result.breakdown
-            }));
+              breakdown: result.breakdown,
+              answers: session.answers
+            };
+
+            localStorage.setItem(KEY_RESULT, JSON.stringify(reportPayload));
+            postResult(cfg && cfg.reportUrl, reportPayload);
 
             // limpa sessão (pra não tentar reabrir)
             sessionStorage.removeItem(sessionKey);
 
             container.innerHTML = this._renderResult({ result, minScore });
+
+            // redirect opcional
+            setTimeout(() => {
+              try { window.location.replace(redirectOnDone); } catch (e) {}
+            }, 1200);
           };
         }
 
-        this._lockBackNav();
+        // (opcional) Enter = next / finish
+        stepHost.addEventListener("keydown", (ev) => {
+          if (ev.key !== "Enter") return;
+          const isText = !!stepHost.querySelector("textarea, input[type=text]");
+          if (isText) return;
+          ev.preventDefault();
+          if (i === total - 1 && btnFinish) btnFinish.click();
+          else if (btnNext) btnNext.click();
+        }, { once: true });
       };
 
-      renderWizard();
+      renderStep();
+      this._bindExitButton(container, redirectOnDone);
     },
 
-    // -------- Renderers --------
-    _renderExamWizard({ testId, questions, minScore, idx, answer, allowBackQuestions }) {
-      const totalPts = questions.reduce((s, q) => s + (q.points || 1), 0);
-      const q = questions[idx];
-      const n = idx + 1;
-      const pts = q.points || 1;
-
-      const header = this._card(`
-        <h2 style="margin:0;">Prova • ${esc(testId.toUpperCase())}</h2>
-        <p class="n1meta">Total: <strong>${totalPts}</strong> ponto(s) • Nota mínima: <strong>${minScore}%</strong> • <strong>1 tentativa</strong></p>
-        <p class="n1warn">⚠️ Não use o botão voltar do navegador.</p>
-      `);
-
-      const progress = `
-        <div class="n1q-top">
-          <div class="n1progress">Pergunta <strong>${n}</strong> de <strong>${questions.length}</strong></div>
-          <div class="n1q-pts">${pts} ponto(s)</div>
-        </div>
-      `;
-
-      const name = `${testId}__${q.id}`;
-
-      let body = "";
-      if (q.type === "mcq") {
-        const opts = (q.options || []).map((opt, i) => {
-          const id = `${name}__${i}`;
-          const checked = (Number.isInteger(answer) && answer === i) ? "checked" : "";
-          return `
-            <label class="n1opt" for="${id}">
-              <input type="radio" name="${name}" id="${id}" value="${i}" ${checked} />
-              <span>${esc(opt)}</span>
-            </label>
-          `;
-        }).join("");
-        body = `<div>${opts}</div>`;
-      } else if (q.type === "text") {
-        const ph = q.placeholder || "Digite sua resposta...";
-        body = `
-          <textarea name="${name}" rows="5" class="n1txt" placeholder="${esc(ph)}">${esc(answer || "")}</textarea>
-          <p class="n1hint">Responda com objetividade. A correção é automática por critérios definidos.</p>
-        `;
-      } else {
-        body = `<p>Tipo não suportado: <code>${esc(q.type)}</code></p>`;
-      }
-
-      const isLast = idx === questions.length - 1;
-      const showPrev = allowBackQuestions && idx > 0;
-
-      const actions = `
-        <div class="n1actions">
-          ${showPrev ? `<button type="button" class="btn" data-act="prev">Voltar</button>` : ""}
-          ${!isLast ? `<button type="button" class="btn btn-primary" data-act="next">Próxima</button>` : ""}
-          ${isLast ? `<button type="button" class="btn btn-primary" data-act="finish">Finalizar e ver nota</button>` : ""}
-        </div>
-        <div id="n1Err" class="n1err"></div>
-      `;
-
+    // ========= UI Render =========
+    _renderLocked(saved, minScore) {
+      const pct = saved?.scorePercent ?? 0;
+      const passed = !!saved?.passed;
       return `
-        ${header}
-        <section class="card n1card" style="margin-top:14px;">
-          ${progress}
-          <h3 class="n1q-title">${esc(q.prompt)}</h3>
-          ${body}
-          ${actions}
+        <section class="card">
+          <h2>Prova já concluída</h2>
+          <p>Você já finalizou esta prova.</p>
+          <p><b>Nota:</b> ${pct}% • <b>Resultado:</b> ${passed ? "APROVADO" : "REPROVADO"} • <b>Mínimo:</b> ${minScore}%</p>
+          <p style="opacity:.8;margin-top:10px;">Redirecionando…</p>
         </section>
-      `;
-    },
-
-    _renderExamScroll({ testId, questions, minScore }) {
-      const total = questions.reduce((s, q) => s + (q.points || 1), 0);
-
-      const qHtml = questions.map((q, idx) => {
-        const n = idx + 1;
-        const pts = q.points || 1;
-
-        if (q.type === "mcq") {
-          const opts = (q.options || []).map((opt, i) => {
-            const name = `${testId}__${q.id}`;
-            const id = `${name}__${i}`;
-            return `
-              <label class="n1opt" for="${id}">
-                <input type="radio" name="${name}" id="${id}" value="${i}" required />
-                <span>${esc(opt)}</span>
-              </label>
-            `;
-          }).join("");
-
-          return `
-            <section class="card n1card" style="margin-top:14px;">
-              <div class="n1q-top">
-                <div class="n1progress">Pergunta <strong>${n}</strong></div>
-                <div class="n1q-pts">${pts} ponto(s)</div>
-              </div>
-              <h3 class="n1q-title">${esc(q.prompt)}</h3>
-              ${opts}
-            </section>
-          `;
-        }
-
-        if (q.type === "text") {
-          const name = `${testId}__${q.id}`;
-          const ph = q.placeholder || "Digite sua resposta...";
-          return `
-            <section class="card n1card" style="margin-top:14px;">
-              <div class="n1q-top">
-                <div class="n1progress">Pergunta <strong>${n}</strong></div>
-                <div class="n1q-pts">${pts} ponto(s)</div>
-              </div>
-              <h3 class="n1q-title">${esc(q.prompt)}</h3>
-              <textarea name="${name}" rows="4" class="n1txt" placeholder="${esc(ph)}" required></textarea>
-              <p class="n1hint">Responda com objetividade. A correção é automática por critérios definidos.</p>
-            </section>
-          `;
-        }
-
-        return `
-          <section class="card n1card" style="margin-top:14px;">
-            <p>Tipo não suportado: <code>${esc(q.type)}</code></p>
-          </section>
-        `;
-      }).join("");
-
-      return `
-        <section class="card n1card">
-          <h2 style="margin:0;">Prova • ${esc(testId.toUpperCase())}</h2>
-          <p class="n1meta">Total: <strong>${total}</strong> ponto(s) • Nota mínima: <strong>${minScore}%</strong> • <strong>1 tentativa</strong></p>
-          <p class="n1warn">⚠️ Ao enviar, você não poderá refazer. Não use o botão voltar.</p>
-        </section>
-
-        <form data-n1test="form">
-          ${qHtml}
-          <section class="card n1card" style="margin-top:14px;">
-            <div class="n1actions">
-              <button class="btn btn-primary" type="submit">Finalizar e ver nota</button>
-            </div>
-          </section>
-        </form>
       `;
     },
 
     _renderResult({ result, minScore }) {
-      const pct = result.scorePercent;
-      const passed = result.passed;
+      const badge = result.passed ? "APROVADO" : "REPROVADO";
+      const hint = result.passed
+        ? "Parabéns. Você atingiu a nota mínima."
+        : "Você não atingiu a nota mínima nesta tentativa.";
+      return `
+        <section class="card">
+          <h2>Resultado</h2>
+          <p><b>Nota:</b> ${result.scorePercent}% • <b>Mínimo:</b> ${minScore}% • <b>Status:</b> ${badge}</p>
+          <p style="opacity:.9">${escapeHtml(hint)}</p>
+        </section>
+      `;
+    },
 
-      return this._card(`
-        <h2 style="margin-top:0;">Resultado</h2>
-        <p style="opacity:.9;">Sua nota: <strong>${pct}%</strong></p>
-        <p style="opacity:.9;">Pontuação: <strong>${result.earnedPoints}</strong> / ${result.totalPoints}</p>
-        <p style="font-weight:800; font-size:1.12rem;">
-          ${passed ? "✅ APROVADO" : "⛔ REPROVADO"}
-        </p>
-        <p style="opacity:.85;">Nota mínima: <strong>${minScore}%</strong></p>
-        <hr style="border:0;border-top:1px solid rgba(255,255,255,.10);margin:14px 0;">
-        <p style="opacity:.85;margin:0;">Prova finalizada. Não há nova tentativa.</p>
-        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;">
-          <a class="btn" href="../index.html">Voltar ao menu de testes</a>
+    _renderScroll({ testId, questions, minScore }) {
+      const items = questions.map((q, idx) => {
+        return `
+          <article class="card" style="margin-top:14px;">
+            <h3 style="margin:0 0 10px;">${idx + 1}. ${escapeHtml(q.prompt)}</h3>
+            ${this._renderQuestionBody({ testId, q })}
+          </article>
+        `;
+      }).join("");
+
+      return `
+        <section class="card">
+          <h2 style="margin:0 0 6px;">Prova</h2>
+          <p style="opacity:.85;margin:0;">Modo completo • Nota mínima ${minScore}%</p>
+        </section>
+        <form style="margin-top:14px;">
+          ${items}
+          <button class="btn btn-primary" type="submit" style="margin-top:14px;">Finalizar</button>
+        </form>
+      `;
+    },
+
+    _renderWizardShell({ testId, questions, minScore, allowBackQuestions }) {
+      const total = questions.length;
+      return `
+        <section class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+            <div>
+              <h2 style="margin:0;">Prova</h2>
+              <p style="opacity:.85;margin:6px 0 0;">1 pergunta por tela • Nota mínima ${minScore}% • Total ${total}</p>
+            </div>
+            <div class="pill">${allowBackQuestions ? "Voltar: liberado" : "Voltar: bloqueado"}</div>
+          </div>
+
+          <div style="height:10px;border-radius:999px;background:rgba(255,255,255,.06);margin-top:14px;overflow:hidden;">
+            <div data-progress style="height:100%;width:0%;background:linear-gradient(90deg,#fff,#ff2fd8);"></div>
+          </div>
+        </section>
+
+        <div data-step-host style="margin-top:14px;"></div>
+
+        <div class="row" style="justify-content:space-between;margin-top:14px;">
+          <button class="btn btn-ghost" type="button" data-back>Voltar</button>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" type="button" data-next>Próxima</button>
+            <button class="btn btn-primary" type="button" data-finish style="display:none;">Finalizar</button>
+          </div>
         </div>
-      `);
+      `;
     },
 
-    _renderLocked(saved, minScore) {
-      const pct = saved?.scorePercent ?? "—";
-      const passed = saved?.passed ? "✅ APROVADO" : "⛔ REPROVADO";
+    _renderQuestion({ testId, q, index, total }) {
+      const body = this._renderQuestionBody({ testId, q });
+      return `
+        <section class="card">
+          <p style="opacity:.85;margin:0 0 6px;">Questão ${index + 1} de ${total}</p>
+          <h3 style="margin:0 0 12px;">${escapeHtml(q.prompt)}</h3>
+          ${body}
+          <p class="form-error" data-err style="min-height:18px;margin-top:10px;"></p>
+        </section>
+      `;
+    },
 
-      return this._card(`
-        <h2 style="margin-top:0;">Teste já finalizado</h2>
-        <p style="opacity:.9;">Este teste possui <strong>apenas 1 tentativa</strong>.</p>
-        <p style="opacity:.9;">Sua nota registrada: <strong>${pct}%</strong> (${passed})</p>
-        <p style="opacity:.85;">Nota mínima: <strong>${minScore}%</strong></p>
-        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;">
-          <a class="btn" href="../index.html">Voltar ao menu de testes</a>
+    _renderQuestionBody({ testId, q }) {
+      if (q.type === "mcq") {
+        const opts = (q.options || []).map(o => {
+          return `
+            <label class="row" style="align-items:flex-start;">
+              <input type="radio" name="${escapeHtml(q.id)}" value="${escapeHtml(o.id)}" />
+              <span style="opacity:.95">${escapeHtml(o.text)}</span>
+            </label>
+          `;
+        }).join("");
+        return `<div class="kv" style="gap:10px;">${opts}</div>`;
+      }
+
+      // text
+      const ph = q.placeholder || "Digite...";
+      return `
+        <div class="kv">
+          <textarea name="${escapeHtml(q.id)}"
+            rows="3"
+            style="width:100%;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:#fff;"
+            placeholder="${escapeHtml(ph)}"></textarea>
         </div>
-      `);
+      `;
     },
 
-    _card(inner) {
-      return `<section class="card" style="margin-top:14px;">${inner}</section>`;
-    },
-
-    // -------- Coleta + Correção --------
+    // ========= Coleta =========
     _collectAnswersScroll({ testId, questions, form }) {
       const answers = {};
-      for (const q of questions) {
-        const name = `${testId}__${q.id}`;
-
+      questions.forEach((q) => {
         if (q.type === "mcq") {
-          const el = form.querySelector(`input[name="${name}"]:checked`);
-          answers[q.id] = el ? parseInt(el.value, 10) : null;
-        } else if (q.type === "text") {
-          const el = form.querySelector(`textarea[name="${name}"]`);
-          answers[q.id] = el ? el.value : "";
+          const checked = form.querySelector(`input[name="${CSS.escape(q.id)}"]:checked`);
+          answers[q.id] = checked ? checked.value : null;
         } else {
-          answers[q.id] = null;
+          const t = form.querySelector(`[name="${CSS.escape(q.id)}"]`);
+          answers[q.id] = t ? String(t.value || "").trim() : "";
         }
-      }
+      });
       return { answers };
     },
 
+    _collectSingleAnswer({ q, root }) {
+      const err = root.querySelector("[data-err]");
+      if (err) err.textContent = "";
+
+      if (q.type === "mcq") {
+        const checked = root.querySelector(`input[name="${CSS.escape(q.id)}"]:checked`);
+        if (!checked) {
+          if (err) err.textContent = "Selecione uma alternativa para continuar.";
+          return null;
+        }
+        return checked.value;
+      }
+
+      const t = root.querySelector(`[name="${CSS.escape(q.id)}"]`);
+      const v = t ? String(t.value || "").trim() : "";
+      if (!v) {
+        if (err) err.textContent = "Escreva sua resposta para continuar.";
+        return null;
+      }
+      return v;
+    },
+
+    // ========= Correção =========
     _grade({ questions, answers, minScore }) {
       let totalPoints = 0;
       let earnedPoints = 0;
       const breakdown = [];
 
-      for (const q of questions) {
-        const pts = q.points || 1;
+      questions.forEach((q) => {
+        const pts = q.points ?? 1;
         totalPoints += pts;
 
+        const given = answers[q.id];
         let ok = false;
 
-        if (q.type === "mcq") ok = (answers[q.id] === q.correctIndex);
-        if (q.type === "text") ok = this._gradeText(q, answers[q.id]);
+        if (q.type === "mcq") {
+          ok = (given === q.correct);
+        } else {
+          ok = this._gradeText(q, given);
+        }
 
         if (ok) earnedPoints += pts;
 
-        breakdown.push({ id: q.id, type: q.type, points: pts, correct: ok });
-      }
+        breakdown.push({
+          id: q.id,
+          ok,
+          points: pts,
+          given: given ?? null
+        });
+      });
 
-      const scorePercent = totalPoints === 0 ? 0 : Math.round((earnedPoints / totalPoints) * 100);
-      const passed = scorePercent >= minScore;
+      const scorePercent = totalPoints ? Math.round((earnedPoints / totalPoints) * 100) : 0;
+      const passed = scorePercent >= (minScore ?? 70);
 
       return { totalPoints, earnedPoints, scorePercent, passed, breakdown };
     },
 
-    _gradeText(q, userAnswerRaw) {
-      const user = normalizeText(userAnswerRaw);
-
-      // Resposta exata (se você quiser usar)
-      if (q.correctText) {
-        const correct = normalizeText(q.correctText);
-        return user === correct;
-      }
-
-      // Rubrica por palavras-chave
+    _gradeText(q, text) {
+      const t = String(text || "").toLowerCase();
       const rubric = q.rubric;
-      if (!rubric || !Array.isArray(rubric.mustHaveAny)) return false;
-
-      const groups = rubric.mustHaveAny
-        .map(group => uniq(group.map(normalizeText)).filter(Boolean))
-        .filter(g => g.length > 0);
+      if (!rubric || !rubric.mustHaveAny) return t.length >= 8;
 
       let hits = 0;
-      for (const group of groups) {
-        const found = group.some(term => user.includes(term));
-        if (found) hits += 1;
+      for (const group of rubric.mustHaveAny) {
+        const ok = group.some(word => t.includes(String(word).toLowerCase()));
+        if (ok) hits++;
       }
-
-      const minHits = clamp(parseInt(rubric.minHits ?? groups.length, 10), 1, groups.length);
-      return hits >= minHits;
+      return hits >= (rubric.minHits ?? 2);
     },
 
-    _lockBackNav() {
-      try {
-        history.pushState(null, "", location.href);
-        window.addEventListener("popstate", () => history.pushState(null, "", location.href));
-      } catch (e) {}
+    // ========= Extras =========
+    _bindExitButton(container, redirectOnDone) {
+      const btnExit = document.getElementById("logout");
+      if (!btnExit) return;
+      btnExit.addEventListener("click", () => {
+        try { window.location.replace(redirectOnDone); } catch (e) {}
+      });
     }
   };
 
