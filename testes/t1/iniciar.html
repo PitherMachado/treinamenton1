@@ -60,17 +60,15 @@
       window.location.replace("./video.html");
     }
 
-    // Bloqueia se já finalizou
+    // Se já finalizou, bloqueia
     if (localStorage.getItem(KEY_DONE) === "1") {
       btnStart.style.display = "none";
       msg.textContent = "⛔ Este teste já foi finalizado. Você não possui nova tentativa.";
       setTimeout(() => window.location.replace("../index.html"), 2000);
-    }
-
-    // Só marca started no clique (evita loop)
-    btnStart.addEventListener("click", () => {
+    } else {
+      // A partir daqui, o aluno “entrou no fluxo de prova” (não volta ao vídeo)
       localStorage.setItem(KEY_STARTED, "1");
-    });
+    }
   </script>
 
 </body>
