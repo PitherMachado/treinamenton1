@@ -18,19 +18,25 @@
     <header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
       <div>
         <h1 style="margin:0;">Teste 1</h1>
-        <p style="opacity:.85;margin:6px 0 0;">Vídeo obrigatório — ao finalizar, o acesso ao teste será liberado.</p>
+        <p style="opacity:.85;margin:6px 0 0;">
+          Vídeo obrigatório — ao finalizar, o acesso ao teste será liberado.
+        </p>
       </div>
+
       <button class="btn" id="logout">Sair</button>
     </header>
 
     <section class="card" style="margin-top:14px;">
+
       <h2 style="margin-top:0;">Assista até o final</h2>
+
       <p style="opacity:.85;margin-top:6px;">
         O vídeo não permite avançar nem retroceder. Quando terminar, aparecerá o botão para acessar o teste.
       </p>
 
-      <!-- Player -->
+      <!-- PLAYER -->
       <div style="margin-top:14px;">
+
         <video
           id="testVideo"
           style="width:100%;border-radius:16px;outline:none;"
@@ -40,107 +46,186 @@
           controlsList="nodownload noplaybackrate noremoteplayback"
           disablepictureinpicture
         >
-          <!-- Placeholder: troque depois pelo caminho do seu mp4 -->
-          <source src="../../assets/videos/VIDEO_AQUI.mp4" type="video/mp4" />
+
+          <!-- VIDEO REAL -->
+          <source src="../../assets/videos/t1.mp4" type="video/mp4" />
+
           Seu navegador não suporta vídeo HTML5.
+
         </video>
+
       </div>
 
-      <!-- Ação liberada somente no final -->
+      <!-- BOTÃO LIBERADO SOMENTE AO FINAL -->
       <div class="row" style="justify-content:flex-end;gap:10px;margin-top:14px;">
-        <a id="btnGo" class="btn btn-primary" href="./iniciar.html" style="display:none;">
+
+        <a
+          id="btnGo"
+          class="btn btn-primary"
+          href="./iniciar.html"
+          style="display:none;"
+        >
           Boa sorte, acesse seu teste
         </a>
+
       </div>
 
-      <!-- Avisos -->
       <p id="warn" style="opacity:.85;margin:10px 0 0;"></p>
+
     </section>
   </main>
 
   <script>
-    // ===== CONFIG DO TESTE =====
-    const TEST_ID = "t1";
-    const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
-    const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`; // iniciou fluxo de prova (não volta mais pro vídeo)
-    const KEY_DONE    = `n1_tests_${TEST_ID}_done_v1`;    // prova finalizada
 
-    // ===== UI =====
+    const TEST_ID = "t1";
+
+    const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
+    const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`;
+    const KEY_DONE    = `n1_tests_${TEST_ID}_done_v1`;
+
     const video = document.getElementById("testVideo");
     const btnGo = document.getElementById("btnGo");
     const warn  = document.getElementById("warn");
     const logout = document.getElementById("logout");
 
-    // Logout: volta sempre para o login correto (independente da pasta)
+
+
+    /* =========================
+       LOGOUT
+    ========================= */
+
     logout.onclick = () => {
+
       window.N1TestAuth.logout();
       window.location.replace(window.N1TestAuth.getLoginUrl());
+
     };
 
-    // ===== BLOQUEIO 1: se prova já foi finalizada, não deixa voltar pro vídeo =====
+
+
+    /* =========================
+       BLOQUEIOS DE FLUXO
+    ========================= */
+
     if (localStorage.getItem(KEY_DONE) === "1") {
+
       window.location.replace("../index.html");
+
     }
 
-    // ===== BLOQUEIO 2: se já iniciou o fluxo de prova, não permite voltar ao vídeo =====
-    if (localStorage.getItem(KEY_STARTED) === "1" && localStorage.getItem(KEY_DONE) !== "1") {
+    if (localStorage.getItem(KEY_STARTED) === "1" &&
+        localStorage.getItem(KEY_DONE) !== "1") {
+
       window.location.replace("./iniciar.html");
+
     }
 
-    // Quando clicar para ir ao teste, marcamos "started"
+
+
     btnGo.addEventListener("click", () => {
+
       localStorage.setItem(KEY_STARTED, "1");
+
     });
 
-    // ===== ANTI-SEEK (não avançar e não retroceder) =====
+
+
+    /* =========================
+       ANTI SEEK (anti avançar)
+    ========================= */
+
     let allowedTime = 0;
     let lastTime = 0;
     let ready = false;
 
     video.addEventListener("loadedmetadata", () => {
+
       ready = true;
       allowedTime = 0;
       lastTime = 0;
+
       warn.textContent = "";
+
     });
+
 
     video.addEventListener("timeupdate", () => {
+
       if (!ready) return;
-      if (video.currentTime > allowedTime) allowedTime = video.currentTime;
+
+      if (video.currentTime > allowedTime) {
+        allowedTime = video.currentTime;
+      }
+
       lastTime = video.currentTime;
+
     });
 
+
+
     video.addEventListener("seeking", () => {
+
       if (!ready) return;
 
       const diff = Math.abs(video.currentTime - lastTime);
       const tolerance = 0.35;
 
       if (diff > tolerance) {
+
         warn.textContent = "⛔ Não é permitido avançar ou voltar o vídeo.";
+
         video.currentTime = allowedTime;
+
       }
+
     });
+
+
 
     video.addEventListener("ratechange", () => {
+
       if (video.playbackRate !== 1) {
+
         video.playbackRate = 1;
+
         warn.textContent = "⛔ Não é permitido acelerar o vídeo.";
+
       }
+
     });
 
-    // ===== AO FINAL: libera botão + marca assistiu =====
+
+
+    /* =========================
+       LIBERA TESTE AO FINAL
+    ========================= */
+
     video.addEventListener("ended", () => {
+
       localStorage.setItem(KEY_WATCHED, "1");
+
       btnGo.style.display = "inline-flex";
+
       warn.textContent = "✅ Vídeo concluído. Você já pode acessar seu teste.";
+
     });
 
-    // ===== SE JÁ ASSISTIU (mas ainda não fez prova), libera botão direto =====
+
+
+    /* =========================
+       CASO JÁ TENHA ASSISTIDO
+    ========================= */
+
     if (localStorage.getItem(KEY_WATCHED) === "1") {
+
       btnGo.style.display = "inline-flex";
-      warn.textContent = "✅ Vídeo já concluído anteriormente. Você pode acessar o teste.";
+
+      warn.textContent =
+      "✅ Vídeo já concluído anteriormente. Você pode acessar o teste.";
+
     }
+
   </script>
+
 </body>
 </html>
