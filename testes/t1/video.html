@@ -1,1 +1,153 @@
 
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
+  <title>Teste 1 • Vídeo Obrigatório</title>
+  <meta name="description" content="Assista ao vídeo obrigatório para liberar o teste." />
+  <link rel="stylesheet" href="../../style.css" />
+</head>
+
+<body>
+
+  <!-- Guard: exige login específico da área de testes -->
+  <script src="../../assets/js/testes-auth.js"></script>
+  <script>window.N1TestAuth.guard();</script>
+
+  <main class="wrap">
+    <header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
+      <div>
+        <h1 style="margin:0;">Teste 1</h1>
+        <p style="opacity:.85;margin:6px 0 0;">Vídeo obrigatório — ao finalizar, o acesso ao teste será liberado.</p>
+      </div>
+      <button class="btn" id="logout">Sair</button>
+    </header>
+
+    <section class="card" style="margin-top:14px;">
+      <h2 style="margin-top:0;">Assista até o final</h2>
+      <p style="opacity:.85;margin-top:6px;">
+        O vídeo não permite avançar nem retroceder. Quando terminar, aparecerá o botão para acessar o teste.
+      </p>
+
+      <!-- Player -->
+      <div style="margin-top:14px;">
+        <video
+          id="testVideo"
+          style="width:100%;border-radius:16px;outline:none;"
+          controls
+          playsinline
+          preload="metadata"
+          controlsList="nodownload noplaybackrate noremoteplayback"
+          disablepictureinpicture
+        >
+          <!-- Placeholder: troque depois pelo caminho do seu mp4 -->
+          <source src="../../assets/videos/VIDEO_AQUI.mp4" type="video/mp4" />
+          Seu navegador não suporta vídeo HTML5.
+        </video>
+      </div>
+
+      <!-- Ação liberada somente no final -->
+      <div class="row" style="justify-content:flex-end;gap:10px;margin-top:14px;">
+        <a id="btnGo" class="btn btn-primary" href="./iniciar.html" style="display:none;">
+          Boa sorte, acesse seu teste
+        </a>
+      </div>
+
+      <!-- Avisos -->
+      <p id="warn" style="opacity:.85;margin:10px 0 0;"></p>
+    </section>
+  </main>
+
+  <script>
+    // ===== CONFIG DO TESTE =====
+    const TEST_ID = "t1";
+    const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
+    const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`; // opcional
+    const KEY_DONE    = `n1_tests_${TEST_ID}_done_v1`;    // prova finalizada
+
+    // ===== UI =====
+    const video = document.getElementById("testVideo");
+    const btnGo = document.getElementById("btnGo");
+    const warn  = document.getElementById("warn");
+    const logout = document.getElementById("logout");
+
+    logout.onclick = () => {
+      window.N1TestAuth.logout();
+      window.location.replace("../login.html");
+    };
+
+    // ===== BLOQUEIO: se prova já foi finalizada, não deixa voltar pro vídeo =====
+    // (isso impede reabrir o vídeo depois de finalizar)
+    if (localStorage.getItem(KEY_DONE) === "1") {
+      // manda direto pro hub (ou poderia mandar pra tela final, se existir)
+      window.location.replace("../index.html");
+    }
+
+    // ===== ANTI-SEEK (não avançar e não retroceder) =====
+    // Guardamos o maior tempo permitido (progresso real)
+    let allowedTime = 0;
+    let lastTime = 0;
+    let ready = false;
+
+    // Em conexões lentas, metadata pode demorar — só ativa após carregar.
+    video.addEventListener("loadedmetadata", () => {
+      ready = true;
+      allowedTime = 0;
+      lastTime = 0;
+      warn.textContent = "";
+    });
+
+    // Atualiza progresso real
+    video.addEventListener("timeupdate", () => {
+      if (!ready) return;
+
+      // allowedTime cresce conforme assiste
+      if (video.currentTime > allowedTime) allowedTime = video.currentTime;
+      lastTime = video.currentTime;
+    });
+
+    // Bloqueia qualquer tentativa de pular
+    video.addEventListener("seeking", () => {
+      if (!ready) return;
+
+      // Se tentou ir para qualquer ponto diferente do lastTime/allowedTime, força voltar
+      const diff = Math.abs(video.currentTime - lastTime);
+
+      // tolerância pequena por variações do browser
+      const tolerance = 0.35;
+
+      // Se o usuário tentou mexer na barra, cai aqui
+      if (diff > tolerance) {
+        warn.textContent = "⛔ Não é permitido avançar ou voltar o vídeo.";
+        // Volta para o último tempo permitido
+        video.currentTime = allowedTime;
+      }
+    });
+
+    // Bloqueia mudança de velocidade (caso o navegador permita)
+    video.addEventListener("ratechange", () => {
+      if (video.playbackRate !== 1) {
+        video.playbackRate = 1;
+        warn.textContent = "⛔ Não é permitido acelerar o vídeo.";
+      }
+    });
+
+    // ===== AO FINAL: libera botão + marca assistiu =====
+    video.addEventListener("ended", () => {
+      localStorage.setItem(KEY_WATCHED, "1");
+      btnGo.style.display = "inline-flex";
+      warn.textContent = "✅ Vídeo concluído. Você já pode acessar seu teste.";
+    });
+
+    // ===== SE JÁ ASSISTIU (mas ainda não fez prova), libera botão direto =====
+    if (localStorage.getItem(KEY_WATCHED) === "1") {
+      btnGo.style.display = "inline-flex";
+      warn.textContent = "✅ Vídeo já concluído anteriormente. Você pode acessar o teste.";
+    }
+
+    // ===== Proteção extra: se tentar sair e voltar, não reinicia o vídeo do meio =====
+    // (opcional: se quiser forçar reinício do zero sempre, me avisa)
+  </script>
+</body>
+</html>
