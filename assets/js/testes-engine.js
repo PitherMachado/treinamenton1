@@ -1,24 +1,27 @@
-/* assets/js/testes-engine.js
-   Motor genérico de provas (GitHub Pages / HTML estático)
-   - Suporta modo "wizard" (1 pergunta por tela) ou "scroll" (todas de uma vez)
-   - 1 tentativa (localStorage)
-   - Nota mínima configurável
-   - (NOVO) Report opcional via webhook (Google Sheets / Apps Script)
+/* N1 Tests Engine — wizard/scroll
+   - Provas com MCQ + texto
+   - Modo wizard (1 pergunta por tela) ou scroll (tudo de uma vez)
+
+   FIX (2026-03-05):
+   - No modo wizard, o "Finalizar" usava `session.answers` (estado antigo).
+     Agora sincroniza e corrige/gera relatório usando `answersNow` (estado atual).
+   - Proteção contra duplo clique no Finalizar.
 */
-
-(function () {
+(() => {
   // ========= Helpers =========
-  function safeParse(s) { try { return JSON.parse(s); } catch (e) { return null; } }
-  function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
   function escapeHtml(s) {
-    return String(s || "")
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    return String(s ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
-  function uid() { return Math.random().toString(16).slice(2) + Date.now().toString(16); }
 
-  // ========= Report (opcional) =========
-  // Envia o resultado para um endpoint (ex.: Google Apps Script) para você ver notas de todos os alunos.
+  function safeParse(s) {
+    try { return JSON.parse(s); } catch (e) { return null; }
+  }
+
   function postResult(reportUrl, payload) {
     if (!reportUrl) return;
     try {
@@ -31,7 +34,6 @@
   }
 
   // ========= Banco de Questões =========
-  // (mantido do seu arquivo original)
   const QUESTION_BANK = {
     t1: [
       {
@@ -41,9 +43,9 @@
         prompt: "Qual é o melhor objetivo de uma ligação de crédito pessoal com INSS?",
         options: [
           { id: "a", text: "Falar rápido e fechar no primeiro minuto." },
-          { id: "b", text: "Gerar confiança, entender o cliente e conduzir para a decisão." },
-          { id: "c", text: "Passar o máximo de informações técnicas possíveis." },
-          { id: "d", text: "Perguntar se quer e encerrar se disser não." }
+          { id: "b", text: "Gerar confiança, entender a necessidade e direcionar para o próximo passo." },
+          { id: "c", text: "Pedir dados completos antes de qualquer explicação." },
+          { id: "d", text: "Discutir com o cliente até ele concordar." }
         ],
         correct: "b"
       },
@@ -51,12 +53,12 @@
         id: "t1q02",
         type: "mcq",
         points: 1,
-        prompt: "Quando o cliente diz “vou pensar”, o que você faz primeiro?",
+        prompt: "Quando o cliente diz “não tenho interesse”, qual a melhor postura inicial?",
         options: [
-          { id: "a", text: "Encerrra e pede para ele te retornar." },
-          { id: "b", text: "Pressiona com urgência e ameaça perder a condição." },
-          { id: "c", text: "Pergunta o motivo e isola a dúvida principal com calma." },
-          { id: "d", text: "Oferece desconto imediato." }
+          { id: "a", text: "Encerrar imediatamente sem tentar." },
+          { id: "b", text: "Discutir e insistir para provar que ele está errado." },
+          { id: "c", text: "Acolher, fazer uma pergunta simples e tentar entender o motivo." },
+          { id: "d", text: "Oferecer taxa impossível só pra segurar." }
         ],
         correct: "c"
       },
@@ -64,12 +66,12 @@
         id: "t1q03",
         type: "mcq",
         points: 1,
-        prompt: "Qual postura melhora a conversão em chamadas com aposentados/pensionistas?",
+        prompt: "Qual é um bom “próximo passo” após despertar interesse?",
         options: [
-          { id: "a", text: "Falar com pressa e cortar o cliente." },
-          { id: "b", text: "Tom de voz calmo, segurança e clareza no passo a passo." },
-          { id: "c", text: "Muita gíria para parecer próximo." },
-          { id: "d", text: "Não perguntar nada, só oferecer valores." }
+          { id: "a", text: "Pedir CPF e senha do banco." },
+          { id: "b", text: "Enviar mensagem no WhatsApp com resumo + confirmação do interesse." },
+          { id: "c", text: "Prometer liberação em 5 minutos." },
+          { id: "d", text: "Mandar áudio de 10 minutos sem contexto." }
         ],
         correct: "b"
       },
@@ -77,38 +79,38 @@
         id: "t1q04",
         type: "mcq",
         points: 1,
-        prompt: "Qual é o melhor momento de apresentar a proposta?",
+        prompt: "O que mais destrói a confiança do cliente no início da chamada?",
         options: [
-          { id: "a", text: "Antes de qualquer pergunta." },
-          { id: "b", text: "Depois de criar contexto e confirmar necessidade/objetivo." },
-          { id: "c", text: "Só no final quando o cliente estiver cansado." },
-          { id: "d", text: "Sempre no início para ganhar tempo." }
+          { id: "a", text: "Falar com calma e explicar o processo." },
+          { id: "b", text: "Ser objetivo e confirmar dados básicos." },
+          { id: "c", text: "Pressionar e pedir dados sensíveis sem contexto." },
+          { id: "d", text: "Perguntar qual horário é melhor." }
         ],
-        correct: "b"
+        correct: "c"
       },
       {
         id: "t1q05",
         type: "mcq",
         points: 1,
-        prompt: "Se o cliente fala “juros alto”, qual resposta é mais inteligente?",
+        prompt: "Qual frase melhor abre espaço para sondagem sem parecer interrogatório?",
         options: [
-          { id: "a", text: "Não é alto, é o padrão." },
-          { id: "b", text: "Então não faz." },
-          { id: "c", text: "Comparar com cartão/cheque especial e mostrar vantagem do prazo/planejamento." },
-          { id: "d", text: "Ignorar e continuar." }
+          { id: "a", text: "Me passa seus dados agora." },
+          { id: "b", text: "Só pra eu te orientar certo: qual o principal motivo de buscar esse valor?" },
+          { id: "c", text: "Você vai fazer ou não?" },
+          { id: "d", text: "Se não fizer hoje, perde." }
         ],
-        correct: "c"
+        correct: "b"
       },
       {
         id: "t1q06",
         type: "mcq",
         points: 1,
-        prompt: "A melhor forma de reduzir resistência é:",
+        prompt: "Em objeção de juros, qual é a melhor linha?",
         options: [
-          { id: "a", text: "Discutir com o cliente até ele ceder." },
-          { id: "b", text: "Conduzir com perguntas e confirmar entendimento." },
-          { id: "c", text: "Prometer o que não pode." },
-          { id: "d", text: "Falar sem parar." }
+          { id: "a", text: "Juros é assim mesmo, aceita." },
+          { id: "b", text: "Comparar com alternativas (cartão/cheque especial) e focar no uso inteligente do crédito." },
+          { id: "c", text: "Ignorar o cliente e continuar o script." },
+          { id: "d", text: "Prometer juros zero." }
         ],
         correct: "b"
       },
@@ -116,12 +118,12 @@
         id: "t1q07",
         type: "mcq",
         points: 1,
-        prompt: "Qual é uma regra de ouro em telemarketing de crédito?",
+        prompt: "Qual é o papel da confirmação de dados no atendimento?",
         options: [
-          { id: "a", text: "Cliente não decide: você decide." },
-          { id: "b", text: "Sem clareza de próximo passo, a venda morre." },
-          { id: "c", text: "Quanto mais rápido, melhor sempre." },
-          { id: "d", text: "Nunca confirme dados." }
+          { id: "a", text: "Somente burocracia." },
+          { id: "b", text: "Gerar segurança e garantir elegibilidade antes de avançar." },
+          { id: "c", text: "Ganhar tempo." },
+          { id: "d", text: "Assustar o cliente." }
         ],
         correct: "b"
       },
@@ -129,12 +131,12 @@
         id: "t1q08",
         type: "mcq",
         points: 1,
-        prompt: "Quando o cliente não atende, o melhor é:",
+        prompt: "Se o cliente pede para “pensar”, qual ação mais inteligente?",
         options: [
-          { id: "a", text: "Desistir para sempre." },
-          { id: "b", text: "Tentar em horários diferentes e manter cadência organizada." },
-          { id: "c", text: "Ligar 30 vezes seguidas." },
-          { id: "d", text: "Mandar áudio longo sem permissão." }
+          { id: "a", text: "Dizer que não dá, tem que fechar agora." },
+          { id: "b", text: "Perguntar o que falta pra decidir e combinar um retorno com objetivo claro." },
+          { id: "c", text: "Desligar." },
+          { id: "d", text: "Mandar mensagem todo dia sem contexto." }
         ],
         correct: "b"
       },
@@ -142,12 +144,12 @@
         id: "t1q09",
         type: "mcq",
         points: 1,
-        prompt: "O que significa “próximo passo” no atendimento?",
+        prompt: "Qual é o melhor momento para oferecer simulação/condição?",
         options: [
-          { id: "a", text: "Uma frase genérica para encerrar." },
-          { id: "b", text: "Uma ação clara com data/horário/condição definida." },
-          { id: "c", text: "Um bônus." },
-          { id: "d", text: "Um desconto." }
+          { id: "a", text: "Antes de entender necessidade." },
+          { id: "b", text: "Depois de sondagem e alinhamento do cenário do cliente." },
+          { id: "c", text: "Nunca." },
+          { id: "d", text: "Só no final, sem explicar." }
         ],
         correct: "b"
       },
@@ -155,12 +157,12 @@
         id: "t1q10",
         type: "mcq",
         points: 1,
-        prompt: "Qual frase é melhor para conduzir para WhatsApp?",
+        prompt: "O que significa “conduzir” o atendimento?",
         options: [
-          { id: "a", text: "Me chama aí." },
-          { id: "b", text: "Vou te mandar agora um resumo e você só confirma OK." },
-          { id: "c", text: "Depois a gente vê." },
-          { id: "d", text: "Você que sabe." }
+          { id: "a", text: "Falar sem parar." },
+          { id: "b", text: "Guiar etapas: abrir, sondar, argumentar, confirmar, próximo passo." },
+          { id: "c", text: "Ser agressivo." },
+          { id: "d", text: "Ignorar objeções." }
         ],
         correct: "b"
       },
@@ -168,12 +170,12 @@
         id: "t1q11",
         type: "mcq",
         points: 1,
-        prompt: "Por que validar dados com clareza é importante?",
+        prompt: "Qual erro comum mata conversão em crédito?",
         options: [
-          { id: "a", text: "Para enrolar mais." },
-          { id: "b", text: "Para dar segurança e evitar retrabalho/erros no processo." },
-          { id: "c", text: "Não é importante." },
-          { id: "d", text: "Só para cumprir script." }
+          { id: "a", text: "Explicar processo." },
+          { id: "b", text: "Pular etapas e tentar fechar sem confiança." },
+          { id: "c", text: "Confirmar horário de retorno." },
+          { id: "d", text: "Ouvir o cliente." }
         ],
         correct: "b"
       },
@@ -181,12 +183,12 @@
         id: "t1q12",
         type: "mcq",
         points: 1,
-        prompt: "Qual é a melhor forma de lidar com objeção sem discussão?",
+        prompt: "Qual é o melhor objetivo de uma mensagem no WhatsApp após a ligação?",
         options: [
-          { id: "a", text: "Negar a objeção." },
-          { id: "b", text: "Validar, esclarecer e conduzir com lógica + próximo passo." },
-          { id: "c", text: "Subir o tom." },
-          { id: "d", text: "Cortar o cliente." }
+          { id: "a", text: "Mandar spam." },
+          { id: "b", text: "Registrar o combinado e facilitar o próximo passo com clareza." },
+          { id: "c", text: "Assustar com urgência falsa." },
+          { id: "d", text: "Mandar link sem explicação." }
         ],
         correct: "b"
       },
@@ -194,12 +196,12 @@
         id: "t1q13",
         type: "mcq",
         points: 1,
-        prompt: "Quando o cliente diz “não tenho interesse”, o que fazer?",
+        prompt: "Se o cliente está com receio de golpe, qual resposta é mais sólida?",
         options: [
-          { id: "a", text: "Encerrar na hora." },
-          { id: "b", text: "Abrir conversa com 1 pergunta simples e oferecer contexto." },
-          { id: "c", text: "Insistir falando mais alto." },
-          { id: "d", text: "Ignorar." }
+          { id: "a", text: "Confia em mim." },
+          { id: "b", text: "Explicar passos, canais, validações e dar tempo para ele confirmar." },
+          { id: "c", text: "Ignorar." },
+          { id: "d", text: "Pressionar." }
         ],
         correct: "b"
       },
@@ -207,10 +209,10 @@
         id: "t1q14",
         type: "mcq",
         points: 1,
-        prompt: "O que mais aumenta conversão em venda consultiva de crédito?",
+        prompt: "O que é “próximo passo” no contexto de atendimento consultivo?",
         options: [
-          { id: "a", text: "Pressa e urgência falsa." },
-          { id: "b", text: "Clareza, segurança e condução de processo (etapas)." },
+          { id: "a", text: "Uma frase genérica." },
+          { id: "b", text: "Um combinado específico: o que acontece, quando e por qual canal." },
           { id: "c", text: "Falar rápido." },
           { id: "d", text: "Prometer taxa impossível." }
         ],
@@ -235,7 +237,7 @@
     ]
   };
 
-  // Expor banco para você poder reaproveitar em outros arquivos se quiser
+  // Expor banco para reaproveitar
   window.N1TestsBank = QUESTION_BANK;
 
   // ========= Engine =========
@@ -257,86 +259,49 @@
       if (!testId) throw new Error("N1TestsEngine.mount: testId é obrigatório.");
 
       const container = document.getElementById(containerId);
-      if (!container) throw new Error(`N1TestsEngine.mount: container #${containerId} não existe.`);
+      if (!container) throw new Error(`N1TestsEngine.mount: container #${containerId} não encontrado.`);
 
-      const questions = (QUESTION_BANK[testId] || []).slice();
+      const questions = (cfg.questions && Array.isArray(cfg.questions)) ? cfg.questions : (QUESTION_BANK[testId] || []);
       if (!questions.length) {
-        container.innerHTML = `<div class="card"><h2>Sem questões</h2><p>Não há questões configuradas para o teste <b>${escapeHtml(testId)}</b>.</p></div>`;
+        container.innerHTML = `<div class="card"><h2>Sem questões</h2><p>Não há questões configuradas para este teste (${escapeHtml(testId)}).</p></div>`;
         return;
       }
 
-      const KEY_WATCHED = `n1_tests_${testId}_watched_v1`;
       const KEY_DONE = `n1_tests_${testId}_done_v1`;
       const KEY_RESULT = `n1_tests_${testId}_result_v1`;
 
-      // 1) se não assistiu vídeo, volta
-      if (localStorage.getItem(KEY_WATCHED) !== "1") {
-        window.location.replace(redirectOnMissingVideo);
-        return;
-      }
-
-      // 2) se já concluiu, bloqueia
-      if (localStorage.getItem(KEY_DONE) === "1") {
+      // se já concluiu
+      const done = localStorage.getItem(KEY_DONE) === "1";
+      if (done) {
         const saved = safeParse(localStorage.getItem(KEY_RESULT));
         container.innerHTML = this._renderLocked(saved, minScore);
-        setTimeout(() => window.location.replace(redirectOnDone), 900);
-        return;
-      }
-
-      // monta UI conforme modo
-      if (mode === "scroll") {
-        container.innerHTML = this._renderScroll({ testId, questions, minScore });
-        const form = container.querySelector("form");
-        if (!form) return;
-
-        form.addEventListener("submit", (ev) => {
-          ev.preventDefault();
-
-          const payload = this._collectAnswersScroll({ testId, questions, form });
-          const result = this._grade({ questions, answers: payload.answers, minScore });
-
-          localStorage.setItem(KEY_DONE, "1");
-
-          const user = (cfg && cfg.user)
-            ? cfg.user
-            : (window.N1TestAuth && typeof window.N1TestAuth.getUser === "function" ? window.N1TestAuth.getUser() : null);
-
-          const reportPayload = {
-            testId,
-            at: Date.now(),
-            user: user,
-            totalPoints: result.totalPoints,
-            earnedPoints: result.earnedPoints,
-            scorePercent: result.scorePercent,
-            passed: result.passed,
-            breakdown: result.breakdown,
-            answers: payload.answers
-          };
-
-          localStorage.setItem(KEY_RESULT, JSON.stringify(reportPayload));
-          postResult(cfg && cfg.reportUrl, reportPayload);
-
-          container.innerHTML = this._renderResult({ result, minScore });
-        });
-
         this._bindExitButton(container, redirectOnDone);
         return;
       }
 
-      // wizard (1 por tela)
-      container.innerHTML = this._renderWizardShell({ testId, questions, minScore, allowBackQuestions });
+      // sessão atual do wizard
+      const session = safeParse(sessionStorage.getItem(sessionKey)) || { i: 0, answers: {} };
 
-      const state = safeParse(sessionStorage.getItem(sessionKey)) || {
-        i: 0,
-        answers: {},
-        startedAt: Date.now()
-      };
+      // bloqueio se sem vídeo (opcional, mas aqui respeita seu HTML)
+      if (cfg.requireVideo && cfg.requireVideo === true) {
+        // você controla fora, mas mantém compatível
+        if (cfg.videoKey && localStorage.getItem(cfg.videoKey) !== "1") {
+          window.location.replace(redirectOnMissingVideo);
+          return;
+        }
+      }
 
-      sessionStorage.setItem(sessionKey, JSON.stringify(state));
+      const postResultUrl = cfg.reportUrl;
 
       const renderStep = () => {
         const total = questions.length;
-        const i = clamp(state.i, 0, total - 1);
+
+        // estado mutável (sempre “fonte da verdade”)
+        const state = safeParse(sessionStorage.getItem(sessionKey)) || session;
+        state.i = Number.isFinite(state.i) ? state.i : 0;
+        state.answers = state.answers || {};
+
+        const i = Math.min(Math.max(state.i, 0), total - 1);
 
         const q = questions[i];
         const stepHost = container.querySelector("[data-step-host]");
@@ -367,6 +332,10 @@
           const ans = this._collectSingleAnswer({ q, root: stepHost });
           if (ans === null) return false;
           state.answers[q.id] = ans;
+
+          // sincroniza também no objeto "session" (evita estado antigo na correção final)
+          try { session.answers = state.answers; } catch (e) {}
+
           sessionStorage.setItem(sessionKey, JSON.stringify(state));
           return true;
         };
@@ -385,10 +354,15 @@
         if (btnFinish) {
           btnFinish.style.display = (i === total - 1) ? "" : "none";
           btnFinish.onclick = () => {
+            if (btnFinish.dataset && btnFinish.dataset.busy === "1") return;
+
             const ok = saveCurrent();
             if (!ok) return;
 
-            const result = this._grade({ questions, answers: session.answers, minScore });
+            try { btnFinish.dataset.busy = "1"; btnFinish.disabled = true; } catch (e) {}
+
+            const answersNow = (state && state.answers) ? state.answers : (session && session.answers ? session.answers : {});
+            const result = this._grade({ questions, answers: answersNow, minScore });
 
             localStorage.setItem(KEY_DONE, "1");
 
@@ -405,11 +379,11 @@
               scorePercent: result.scorePercent,
               passed: result.passed,
               breakdown: result.breakdown,
-              answers: session.answers
+              answers: answersNow
             };
 
             localStorage.setItem(KEY_RESULT, JSON.stringify(reportPayload));
-            postResult(cfg && cfg.reportUrl, reportPayload);
+            postResult(postResultUrl, reportPayload);
 
             // limpa sessão (pra não tentar reabrir)
             sessionStorage.removeItem(sessionKey);
@@ -434,6 +408,61 @@
         }, { once: true });
       };
 
+      // shell do wizard
+      if (mode === "wizard") {
+        container.innerHTML = this._renderWizardShell({ testId, questions, minScore, allowBackQuestions });
+      } else {
+        container.innerHTML = this._renderScrollShell({ testId, questions, minScore });
+        const form = container.querySelector("form");
+        if (form) {
+          form.addEventListener("submit", (ev) => {
+            ev.preventDefault();
+            const { answers } = this._collectAnswersScroll({ testId, questions, form });
+
+            // valida: não pode ficar vazia em texto e mcq precisa marcar
+            const invalid = questions.find((q) => {
+              const a = answers[q.id];
+              if (q.type === "mcq") return !a;
+              return !String(a || "").trim();
+            });
+
+            if (invalid) {
+              alert("Responda todas as questões para finalizar.");
+              return;
+            }
+
+            const result = this._grade({ questions, answers, minScore });
+
+            localStorage.setItem(KEY_DONE, "1");
+
+            const user = (cfg && cfg.user)
+              ? cfg.user
+              : (window.N1TestAuth && typeof window.N1TestAuth.getUser === "function" ? window.N1TestAuth.getUser() : null);
+
+            const reportPayload = {
+              testId,
+              at: Date.now(),
+              user: user,
+              totalPoints: result.totalPoints,
+              earnedPoints: result.earnedPoints,
+              scorePercent: result.scorePercent,
+              passed: result.passed,
+              breakdown: result.breakdown,
+              answers: answers
+            };
+
+            localStorage.setItem(KEY_RESULT, JSON.stringify(reportPayload));
+            postResult(postResultUrl, reportPayload);
+
+            container.innerHTML = this._renderResult({ result, minScore });
+
+            setTimeout(() => {
+              try { window.location.replace(redirectOnDone); } catch (e) {}
+            }, 1200);
+          });
+        }
+      }
+
       renderStep();
       this._bindExitButton(container, redirectOnDone);
     },
@@ -447,30 +476,28 @@
           <h2>Prova já concluída</h2>
           <p>Você já finalizou esta prova.</p>
           <p><b>Nota:</b> ${pct}% • <b>Resultado:</b> ${passed ? "APROVADO" : "REPROVADO"} • <b>Mínimo:</b> ${minScore}%</p>
-          <p style="opacity:.8;margin-top:10px;">Redirecionando…</p>
         </section>
       `;
     },
 
     _renderResult({ result, minScore }) {
-      const badge = result.passed ? "APROVADO" : "REPROVADO";
-      const hint = result.passed
-        ? "Parabéns. Você atingiu a nota mínima."
-        : "Você não atingiu a nota mínima nesta tentativa.";
+      const passed = result.passed;
       return `
         <section class="card">
-          <h2>Resultado</h2>
-          <p><b>Nota:</b> ${result.scorePercent}% • <b>Mínimo:</b> ${minScore}% • <b>Status:</b> ${badge}</p>
-          <p style="opacity:.9">${escapeHtml(hint)}</p>
+          <h2 style="margin:0 0 6px;">Resultado</h2>
+          <p style="opacity:.9;margin:0 0 8px;">Nota mínima: ${minScore}%</p>
+          <p style="margin:0;"><b>Nota:</b> ${result.scorePercent}% • <b>${passed ? "APROVADO ✅" : "REPROVADO ❌"}</b></p>
+          <p style="opacity:.85;margin:10px 0 0;">Você será redirecionado…</p>
         </section>
       `;
     },
 
-    _renderScroll({ testId, questions, minScore }) {
+    _renderScrollShell({ testId, questions, minScore }) {
       const items = questions.map((q, idx) => {
         return `
           <article class="card" style="margin-top:14px;">
-            <h3 style="margin:0 0 10px;">${idx + 1}. ${escapeHtml(q.prompt)}</h3>
+            <p style="opacity:.85;margin:0 0 6px;">Questão ${idx + 1} de ${questions.length}</p>
+            <h3 style="margin:0 0 10px;">${escapeHtml(q.prompt)}</h3>
             ${this._renderQuestionBody({ testId, q })}
           </article>
         `;
@@ -497,11 +524,12 @@
               <h2 style="margin:0;">Prova</h2>
               <p style="opacity:.85;margin:6px 0 0;">1 pergunta por tela • Nota mínima ${minScore}% • Total ${total}</p>
             </div>
-            <div class="pill">${allowBackQuestions ? "Voltar: liberado" : "Voltar: bloqueado"}</div>
+            <div>
+              <span class="pill" style="opacity:.95">${allowBackQuestions ? "Voltar permitido" : "Voltar bloqueado"}</span>
+            </div>
           </div>
-
-          <div style="height:10px;border-radius:999px;background:rgba(255,255,255,.06);margin-top:14px;overflow:hidden;">
-            <div data-progress style="height:100%;width:0%;background:linear-gradient(90deg,#fff,#ff2fd8);"></div>
+          <div style="height:10px;background:rgba(255,255,255,.06);border-radius:999px;margin-top:14px;overflow:hidden;">
+            <div data-progress style="height:100%;width:0%;background:linear-gradient(90deg,#ffffff,#ff2fd8);"></div>
           </div>
         </section>
 
@@ -522,18 +550,18 @@
       return `
         <section class="card">
           <p style="opacity:.85;margin:0 0 6px;">Questão ${index + 1} de ${total}</p>
-          <h3 style="margin:0 0 12px;">${escapeHtml(q.prompt)}</h3>
+          <h3 style="margin:0 0 10px;">${escapeHtml(q.prompt)}</h3>
           ${body}
-          <p class="form-error" data-err style="min-height:18px;margin-top:10px;"></p>
+          <p data-err style="margin:10px 0 0;color:#ff8aa1;min-height:18px;"></p>
         </section>
       `;
     },
 
     _renderQuestionBody({ testId, q }) {
       if (q.type === "mcq") {
-        const opts = (q.options || []).map(o => {
+        const opts = (q.options || []).map((o) => {
           return `
-            <label class="row" style="align-items:flex-start;">
+            <label class="split-card" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">
               <input type="radio" name="${escapeHtml(q.id)}" value="${escapeHtml(o.id)}" />
               <span style="opacity:.95">${escapeHtml(o.text)}</span>
             </label>
