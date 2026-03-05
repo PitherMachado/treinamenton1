@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -30,10 +29,19 @@
 
   <script src="../../assets/js/testes-engine.js"></script>
   <script>
-    // Logout (mantém a prova travada se já finalizou)
+    // ===== CONFIG DO TESTE =====
+    const TEST_ID = "t1";
+    const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`;
+
+    // Se tentar acessar a prova direto (sem passar pelo iniciar.html), volta para iniciar
+    if (localStorage.getItem(KEY_STARTED) !== "1") {
+      window.location.replace("./iniciar.html");
+    }
+
+    // Logout: caminho correto sempre
     document.getElementById("logout").onclick = () => {
       window.N1TestAuth.logout();
-      window.location.replace("../login.html");
+      window.location.replace(window.N1TestAuth.getLoginUrl());
     };
 
     // Monta a prova em modo Wizard (1 por tela)
