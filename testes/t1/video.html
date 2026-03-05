@@ -3,9 +3,40 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
-  <title>Teste 1 • Vídeo Obrigatório</title>
-  <meta name="description" content="Assista ao vídeo obrigatório para liberar o teste." />
-  <link rel="stylesheet" href="../../style.css" />
+  <title>Teste 1 • Vídeo</title>
+  <meta name="description" content="Vídeo obrigatório para liberar a prova." />
+  <meta name="theme-color" content="#000000" />
+
+  <style>
+    /* CORTINA DE FERRO */
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #000;
+      overflow: hidden;
+    }
+
+    /* vídeo ocupa a tela toda, sem borda e sem UI */
+    #testVideo{
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      background: #000;
+      object-fit: contain; /* mantém proporção (use cover se quiser preencher cortando) */
+      outline: none;
+    }
+
+    /* overlay discreto (opcional) */
+    .hint {
+      position: fixed;
+      left: 14px;
+      bottom: 14px;
+      font: 500 12px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: rgba(255,255,255,.65);
+      user-select: none;
+      pointer-events: none;
+    }
+  </style>
 </head>
 
 <body>
@@ -14,92 +45,63 @@
   <script src="../../assets/js/testes-auth.js"></script>
   <script>window.N1TestAuth.guard();</script>
 
-  <main class="wrap">
-    <header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
-      <div>
-        <h1 style="margin:0;">Teste 1</h1>
-        <p style="opacity:.85;margin:6px 0 0;">
-          Vídeo obrigatório — ao finalizar, o acesso ao teste será liberado.
-        </p>
-      </div>
+  <video
+    id="testVideo"
+    playsinline
+    preload="auto"
+    disablepictureinpicture
+    controlslist="nodownload noplaybackrate noremoteplayback"
+  >
+    <source src="../../assets/videos/t1.mp4" type="video/mp4" />
+    Seu navegador não suporta vídeo HTML5.
+  </video>
 
-      <button class="btn" id="logout">Sair</button>
-    </header>
-
-    <section class="card" style="margin-top:14px;">
-
-      <h2 style="margin-top:0;">Assista até o final</h2>
-
-      <p style="opacity:.85;margin-top:6px;">
-        O vídeo não permite avançar nem retroceder. Quando terminar, aparecerá o botão para acessar o teste.
-      </p>
-
-      <!-- PLAYER -->
-      <div style="margin-top:14px;">
-
-        <video
-          id="testVideo"
-          style="width:100%;border-radius:16px;outline:none;"
-          controls
-          playsinline
-          preload="metadata"
-          controlsList="nodownload noplaybackrate noremoteplayback"
-          disablepictureinpicture
-        >
-          <source src="../../assets/videos/t1.mp4" type="video/mp4" />
-          Seu navegador não suporta vídeo HTML5.
-        </video>
-
-      </div>
-
-      <!-- BOTÃO LIBERADO SOMENTE AO FINAL -->
-      <div class="row" style="justify-content:flex-end;gap:10px;margin-top:14px;">
-        <a
-          id="btnGo"
-          class="btn btn-primary"
-          href="./iniciar.html"
-          style="display:none;"
-        >
-          Boa sorte, acesse seu teste
-        </a>
-      </div>
-
-      <p id="warn" style="opacity:.85;margin:10px 0 0;"></p>
-
-    </section>
-  </main>
+  <div class="hint" id="hint">Assista até o final para liberar a prova.</div>
 
   <script>
+    // ===== CONFIG DO TESTE =====
     const TEST_ID = "t1";
-
     const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
-    const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`;
-    const KEY_DONE    = `n1_tests_${TEST_ID}_done_v1`;
+    const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`; // se iniciou fluxo, não volta ao vídeo
+    const KEY_DONE    = `n1_tests_${TEST_ID}_done_v1`;    // prova finalizada
 
-    const video  = document.getElementById("testVideo");
-    const btnGo  = document.getElementById("btnGo");
-    const warn   = document.getElementById("warn");
-    const logout = document.getElementById("logout");
+    const video = document.getElementById("testVideo");
+    const hint = document.getElementById("hint");
 
-    logout.onclick = () => {
-      window.N1TestAuth.logout();
-      window.location.replace(window.N1TestAuth.getLoginUrl());
-    };
-
-    // 1) Se já finalizou a prova (1 tentativa), não entra no vídeo
+    // ===== Regras de fluxo =====
+    // Se já finalizou, volta pro menu de testes
     if (localStorage.getItem(KEY_DONE) === "1") {
       window.location.replace("../index.html");
     }
 
-    // 2) Se já "iniciou" o fluxo, só pode pular o vídeo se JÁ tiver assistido.
-    //    (isso elimina o loop)
-    const watched = localStorage.getItem(KEY_WATCHED) === "1";
-    const started = localStorage.getItem(KEY_STARTED) === "1";
-    if (started && watched && localStorage.getItem(KEY_DONE) !== "1") {
+    // Se já iniciou o fluxo (ou já assistiu e vai direto), não fica no vídeo
+    if (localStorage.getItem(KEY_STARTED) === "1" && localStorage.getItem(KEY_DONE) !== "1") {
       window.location.replace("./iniciar.html");
     }
 
-    // Anti-seek
+    // Se já assistiu antes, vai direto pro iniciar (sem mostrar vídeo)
+    if (localStorage.getItem(KEY_WATCHED) === "1" && localStorage.getItem(KEY_DONE) !== "1") {
+      window.location.replace("./iniciar.html");
+    }
+
+    // ===== “Travar” UI do vídeo =====
+    // Remove controles totalmente (não aparece barra)
+    video.controls = false;
+
+    // Bloqueia menu de contexto (download etc)
+    document.addEventListener("contextmenu", (e) => e.preventDefault(), { passive:false });
+
+    // Bloqueia teclas típicas de player
+    window.addEventListener("keydown", (e) => {
+      const k = e.key.toLowerCase();
+      const blocked = [" ", "arrowleft", "arrowright", "arrowup", "arrowdown", "home", "end", "k", "j", "l", "f"];
+      if (blocked.includes(k)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, { capture:true });
+
+    // Anti-seek (mesmo sem controles, impede “pulo”)
     let allowedTime = 0;
     let lastTime = 0;
     let ready = false;
@@ -108,7 +110,6 @@
       ready = true;
       allowedTime = 0;
       lastTime = 0;
-      warn.textContent = "";
     });
 
     video.addEventListener("timeupdate", () => {
@@ -121,37 +122,40 @@
       if (!ready) return;
       const diff = Math.abs(video.currentTime - lastTime);
       const tolerance = 0.35;
-
       if (diff > tolerance) {
-        warn.textContent = "⛔ Não é permitido avançar ou voltar o vídeo.";
         video.currentTime = allowedTime;
       }
     });
 
     video.addEventListener("ratechange", () => {
-      if (video.playbackRate !== 1) {
-        video.playbackRate = 1;
-        warn.textContent = "⛔ Não é permitido acelerar o vídeo.";
+      if (video.playbackRate !== 1) video.playbackRate = 1;
+    });
+
+    // Evita “sair” sem querer (não impede fechar aba, mas avisa)
+    window.addEventListener("beforeunload", (e) => {
+      if (localStorage.getItem(KEY_WATCHED) !== "1") {
+        e.preventDefault();
+        e.returnValue = "";
       }
     });
 
-    // Ao final: libera acesso
+    // Clique para iniciar (já que não tem botão)
+    // (mantém simples: se o usuário tocar/clicar, o vídeo dá play)
+    document.addEventListener("click", async () => {
+      try { await video.play(); } catch(e) {}
+    }, { once:true });
+
+    // ===== AO FINAL: marca e REDIRECIONA AUTOMÁTICO =====
     video.addEventListener("ended", () => {
       localStorage.setItem(KEY_WATCHED, "1");
-      btnGo.style.display = "inline-flex";
-      warn.textContent = "✅ Vídeo concluído. Você já pode acessar seu teste.";
+      hint.textContent = "Vídeo concluído. Abrindo a prova...";
+      // vai direto pro “BOA SORTE” (iniciar)
+      window.location.replace("./iniciar.html");
     });
 
-    // Se já assistiu anteriormente: libera botão direto
-    if (watched) {
-      btnGo.style.display = "inline-flex";
-      warn.textContent = "✅ Vídeo já concluído anteriormente. Você pode acessar o teste.";
-    }
-
-    // Marca "started" só quando o aluno clicar pra ir para a prova
-    btnGo.addEventListener("click", () => {
-      // aqui é seguro porque o botão só aparece quando WATCHED=1
-      localStorage.setItem(KEY_STARTED, "1");
+    // Fallback: se der erro no player
+    video.addEventListener("error", () => {
+      hint.textContent = "Erro ao carregar o vídeo. Verifique o arquivo em /assets/videos/t1.mp4";
     });
   </script>
 
