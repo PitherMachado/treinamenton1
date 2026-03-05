@@ -22,16 +22,30 @@
     try { return JSON.parse(s); } catch (e) { return null; }
   }
 
-  function postResult(reportUrl, payload) {
-    if (!reportUrl) return;
-    try {
-      fetch(reportUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      }).catch(function () { /* silencioso */ });
-    } catch (e) { /* silencioso */ }
-  }
+function postResult(reportUrl, payload) {
+  if (!reportUrl) return;
+
+  const data = JSON.stringify(payload);
+
+  // 1) Melhor caminho (não depende de CORS)
+  try {
+    if (navigator && typeof navigator.sendBeacon === "function") {
+      // text/plain evita preflight
+      const blob = new Blob([data], { type: "text/plain;charset=UTF-8" });
+      navigator.sendBeacon(reportUrl, blob);
+      return;
+    }
+  } catch (e) { /* ignora */ }
+
+  // 2) Fallback: fetch sem headers + no-cors (evita preflight)
+  try {
+    fetch(reportUrl, {
+      method: "POST",
+      mode: "no-cors",
+      body: data
+    }).catch(function () { /* silencioso */ });
+  } catch (e) { /* silencioso */ }
+}
 
   // ========= Banco de Questões =========
   const QUESTION_BANK = {
