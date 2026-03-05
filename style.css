@@ -979,3 +979,78 @@ body{
   position: relative;
   z-index: 1;
 }
+/* ===============================
+   13) TESTES — LAYOUT PADRÃO
+   (wrap / row / grid / card)
+   =============================== */
+
+.wrap{
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 110px 24px 60px; /* espaço topo + respiro */
+}
+
+/* Linha utilitária */
+.row{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Grid de cards */
+.grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+}
+
+/* Card genérico (usado em Testes/Login/Prova) */
+.card{
+  padding: 22px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 14px 44px rgba(0,0,0,.45);
+}
+
+/* Card clicável */
+.card.link{
+  text-decoration: none;
+  color: inherit;
+  transition: .35s ease;
+}
+
+.card.link:hover{
+  transform: translateY(-6px);
+  border-color: rgba(255,47,216,0.35);
+  box-shadow: 0 26px 70px rgba(0,0,0,.65), 0 0 44px rgba(255,47,216,.12);
+}
+
+.card.link h2{
+  margin: 0 0 6px;
+  font-size: 22px;
+  background: linear-gradient(90deg, #ffffff, #ff2fd8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card.link p{
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* Ajuste do header do bloco Testes */
+.wrap h1{
+  font-size: 34px;
+  line-height: 1.1;
+}
+
+/* Responsivo */
+@media (max-width: 900px){
+  .grid{ grid-template-columns: 1fr; }
+  .wrap{ padding: 100px 16px 50px; }
+}
