@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login • Área de Testes</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+
+  <!-- se você tem topbar padrão, pode reutilizar, mas SEM botões do portal -->
+  <main class="wrap">
+    <section class="card">
+      <h1>Área de Testes</h1>
+      <p>Login exclusivo para avaliações.</p>
+
+      <form id="f">
+        <label>Usuário</label>
+        <input id="u" autocomplete="username" required />
+
+        <label>Senha</label>
+        <input id="p" type="password" autocomplete="current-password" required />
+
+        <button class="btn primary" type="submit">Entrar</button>
+        <p id="msg" style="opacity:.85;margin-top:10px;"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="../assets/js/users-tests.js"></script>
+  <script src="../assets/js/testes-auth.js"></script>
+  <script>
+    const f = document.getElementById("f");
+    const msg = document.getElementById("msg");
+
+    f.addEventListener("submit", (e)=>{
+      e.preventDefault();
+      msg.textContent = "";
+      const u = document.getElementById("u").value.trim();
+      const p = document.getElementById("p").value;
+
+      const res = window.N1TestAuth.login(u,p);
+      if(!res.ok){
+        msg.textContent = res.message;
+        return;
+      }
+      window.location.replace("./index.html");
+    });
+  </script>
+</body>
+</html>
