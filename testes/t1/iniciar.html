@@ -1,1 +1,79 @@
 
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
+  <title>Teste 1 • Iniciar</title>
+  <meta name="description" content="Tela de transição para iniciar o teste." />
+  <link rel="stylesheet" href="../../style.css" />
+</head>
+
+<body>
+
+  <!-- Guard: exige login específico da área de testes -->
+  <script src="../../assets/js/testes-auth.js"></script>
+  <script>window.N1TestAuth.guard();</script>
+
+  <main class="wrap">
+    <header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
+      <div>
+        <h1 style="margin:0;">Teste 1</h1>
+        <p style="opacity:.85;margin:6px 0 0;">Você só tem <strong>1 tentativa</strong>. Leia com atenção e siga para a prova.</p>
+      </div>
+      <button class="btn" id="logout">Sair</button>
+    </header>
+
+    <section class="card" style="margin-top:14px; text-align:center; padding:28px 18px;">
+      <p style="opacity:.85;margin:0 0 10px;">Concluiu o vídeo ✅</p>
+
+      <h2 style="margin:0 0 12px; font-size: clamp(22px, 3vw, 34px); letter-spacing:.2px;">
+        BOA SORTE
+      </h2>
+
+      <p style="opacity:.85;margin:0 0 18px;">
+        Quando você entrar na prova, não será possível voltar ao vídeo.
+      </p>
+
+      <a id="btnStart" class="btn btn-primary" href="./prova.html" style="display:inline-flex;justify-content:center;">
+        ACESSE SEU TESTE
+      </a>
+
+      <p id="msg" style="opacity:.85;margin:14px 0 0;"></p>
+    </section>
+  </main>
+
+  <script>
+    // ===== CONFIG DO TESTE =====
+    const TEST_ID = "t1";
+    const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
+    const KEY_DONE    = `n1_tests_${TEST_ID}_done_v1`;
+
+    const btnStart = document.getElementById("btnStart");
+    const msg = document.getElementById("msg");
+
+    // Logout
+    document.getElementById("logout").onclick = () => {
+      window.N1TestAuth.logout();
+      window.location.replace("../login.html");
+    };
+
+    // 1) Precisa ter assistido o vídeo
+    if (localStorage.getItem(KEY_WATCHED) !== "1") {
+      // Não assistiu -> volta para o vídeo
+      window.location.replace("./video.html");
+    }
+
+    // 2) Bloqueia se já finalizou (1 tentativa)
+    if (localStorage.getItem(KEY_DONE) === "1") {
+      btnStart.style.display = "none";
+      msg.textContent = "⛔ Este teste já foi finalizado. Você não possui nova tentativa.";
+      // opcional: manda pro hub depois de 2s
+      setTimeout(() => window.location.replace("../index.html"), 2000);
+    } else {
+      msg.textContent = "";
+    }
+  </script>
+
+</body>
+</html>
