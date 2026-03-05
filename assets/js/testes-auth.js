@@ -9,24 +9,21 @@
     try { return JSON.parse(s); } catch(e){ return null; }
   }
 
-  // Descobre o "base path" do projeto no GitHub Pages.
-  // Ex: https://usuario.github.io/treinamenton1/testes/login.html
-  // basePath = "/treinamenton1"
+  // Base do projeto = tudo antes de "/testes/"
+  // Ex:
+  // /treinamenton1/testes/t1/video.html  -> base "/treinamenton1"
+  // /testes/t1/video.html               -> base ""
   function getBasePath(){
-    const parts = window.location.pathname.split("/").filter(Boolean);
-    // Se estiver em github.io/REPO/...
-    // parts[0] geralmente é o nome do repo.
-    // Em domínio próprio pode ser diferente, mas ainda funciona bem (base = "").
-    if (window.location.hostname.endsWith("github.io") && parts.length >= 1) {
-      return "/" + parts[0];
-    }
-    // Domínio próprio (ex.: treinamenton1.com/testes/...)
-    // Nesse caso, assume raiz como base.
-    return "";
+    const p = window.location.pathname || "/";
+    const idx = p.indexOf("/testes/");
+    if (idx === -1) return "";           // fallback: raiz
+    const base = p.slice(0, idx);        // inclui "/treinamenton1"
+    return base || "";
   }
 
   function loginUrl(){
-    return getBasePath() + "/testes/login.html";
+    // URL absoluta (à prova de path relativo/caching)
+    return window.location.origin + getBasePath() + "/testes/login.html";
   }
 
   const N1TestAuth = {
@@ -35,12 +32,7 @@
       const found = list.find(u => (u.user === username && u.pass === password));
       if(!found) return { ok:false, message:"Usuário ou senha inválidos." };
 
-      const token = {
-        v: 1,
-        u: found.user,
-        n: found.name || found.user,
-        t: now()
-      };
+      const token = { v:1, u:found.user, n:(found.name || found.user), t: now() };
 
       localStorage.setItem(TOKEN_KEY, JSON.stringify(token));
       localStorage.setItem(USER_KEY, JSON.stringify({ user: found.user, name: token.n }));
@@ -51,8 +43,7 @@
     logout(){
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
-      // opcional: não limpar resultados de prova automaticamente
-      // (assim a tentativa única permanece travada)
+      // Mantém locks/resultados para garantir tentativa única
     },
 
     getUser(){
