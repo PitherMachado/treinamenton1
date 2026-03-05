@@ -2,76 +2,202 @@
 <html lang="pt-BR">
 <head>
 
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Área de Testes</title>
 
-  <title>Área de Testes</title>
+<meta name="theme-color" content="#0a0c12"/>
 
-  <!-- Cor do navegador -->
-  <meta name="theme-color" content="#0a0c12" />
+<link rel="stylesheet" href="../style.css"/>
 
-  <!-- CSS global do projeto -->
-  <link rel="stylesheet" href="../style.css" />
+<!-- Autenticação -->
+<script src="../assets/js/testes-auth.js" defer></script>
 
-  <!-- Autenticação dos testes -->
-  <script src="../assets/js/testes-auth.js" defer></script>
+<script>
+window.addEventListener("DOMContentLoaded", () => {
 
-  <script>
-    window.addEventListener("DOMContentLoaded", () => {
+  window.N1TestAuth.guard();
 
-      /* proteção de acesso */
-      window.N1TestAuth.guard();
+  const u = window.N1TestAuth.getUser();
 
-      const u = window.N1TestAuth.getUser();
+  document.getElementById("who").textContent =
+    u?.name ? `Logado como: ${u.name}` : "";
 
-      document.getElementById("who").textContent =
-        u?.name ? `Logado como: ${u.name}` : "";
+  document.getElementById("logout").onclick = () => {
+    window.N1TestAuth.logout();
+    window.location.replace("./login.html");
+  };
 
-      document.getElementById("logout").onclick = () => {
-        window.N1TestAuth.logout();
-        window.location.replace("./login.html");
-      };
+});
+</script>
 
-    });
-  </script>
+<style>
+
+/* =========================
+   BACKGROUND PREMIUM
+========================= */
+
+body{
+background:
+radial-gradient(circle at 20% 20%, rgba(59,130,246,0.15), transparent 40%),
+radial-gradient(circle at 80% 80%, rgba(139,92,246,0.18), transparent 45%),
+#0a0c12;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.wrap{
+width:100%;
+max-width:1100px;
+padding:40px 20px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header h1{
+font-size:34px;
+font-weight:700;
+margin:0;
+letter-spacing:-0.02em;
+}
+
+#who{
+font-size:14px;
+color:#cbd5e1;
+}
+
+/* =========================
+   GRID
+========================= */
+
+.grid{
+margin-top:40px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:24px;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.card{
+display:block;
+padding:28px;
+border-radius:16px;
+text-decoration:none;
+
+background:
+linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));
+
+border:1px solid rgba(255,255,255,0.08);
+
+backdrop-filter:blur(6px);
+
+transition:
+transform .25s ease,
+box-shadow .25s ease,
+border .25s ease;
+}
+
+.card:hover{
+
+transform:translateY(-6px);
+
+box-shadow:
+0 20px 40px rgba(0,0,0,0.6),
+0 0 25px rgba(99,102,241,0.35);
+
+border:1px solid rgba(99,102,241,0.45);
+
+}
+
+.card h2{
+margin:0 0 10px 0;
+font-size:22px;
+}
+
+.card p{
+margin:0;
+opacity:.8;
+font-size:15px;
+}
+
+/* =========================
+   BOTÃO SAIR
+========================= */
+
+.btn{
+
+padding:10px 16px;
+border-radius:10px;
+
+background:linear-gradient(135deg,#6366f1,#8b5cf6);
+
+border:none;
+
+color:white;
+
+cursor:pointer;
+
+font-weight:600;
+
+transition:transform .2s, box-shadow .2s;
+}
+
+.btn:hover{
+
+transform:translateY(-2px);
+
+box-shadow:
+0 8px 20px rgba(99,102,241,0.45);
+
+}
+
+</style>
 
 </head>
 
 <body>
 
-  <main class="wrap">
+<main class="wrap">
 
-    <header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
+<header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
 
-      <div>
-        <h1>Área de Testes</h1>
-        <p id="who" style="opacity:.85;margin:0;"></p>
-      </div>
+<div>
+<h1>Área de Testes</h1>
+<p id="who"></p>
+</div>
 
-      <button class="btn" id="logout">
-        Sair
-      </button>
+<button class="btn" id="logout">
+Sair
+</button>
 
-    </header>
+</header>
 
-    <section class="grid">
+<section class="grid">
 
-      <!-- TESTE 1 -->
-      <!-- abre somente o vídeo obrigatório -->
+<a class="card link" href="./t1/video.html">
 
-      <a class="card link" href="./t1/video.html">
+<h2>Teste 1</h2>
 
-        <h2>Teste 1</h2>
+<p>
+Vídeo obrigatório + prova (15 questões)
+</p>
 
-        <p>
-          Vídeo obrigatório + prova (15 questões)
-        </p>
+</a>
 
-      </a>
+</section>
 
-    </section>
-
-  </main>
+</main>
 
 </body>
 </html>
