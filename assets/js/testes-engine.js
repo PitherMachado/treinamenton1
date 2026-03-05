@@ -33,49 +33,221 @@
 
   // ========= BANCO DE QUESTÕES (VOCÊ EDITA SÓ AQUI) =========
   const QUESTION_BANK = {
-    t1: [
-      {
-        id: "t1_q1",
-        type: "mcq",
-        points: 1,
-        prompt: "Qual é o objetivo da sondagem no atendimento?",
-        options: [
-          "Oferecer qualquer produto",
-          "Descobrir a necessidade do cliente",
-          "Encerrar rapidamente a ligação",
-          "Ignorar objeções"
-        ],
-        correctIndex: 1
-      },
-      {
-        id: "t1_q2",
-        type: "mcq",
-        points: 1,
-        prompt: "Quando o cliente apresenta uma objeção, o que é mais adequado?",
-        options: [
-          "Interromper e insistir no preço",
-          "Ouvir, validar e responder com argumento",
-          "Encerrar a conversa",
-          "Mudar de assunto imediatamente"
-        ],
-        correctIndex: 1
-      },
-      {
-        id: "t1_q3",
-        type: "text",
-        points: 1,
-        prompt: "Em uma frase, descreva o que significa 'mentalidade de dono' na operação.",
-        rubric: {
-          mustHaveAny: [
-            ["responsabilidade", "responsavel"],
-            ["resultado", "meta", "performance"],
-            ["execucao", "agir", "fazer acontecer", "proatividade"]
-          ],
-          minHits: 2
-        },
-        placeholder: "Digite sua resposta aqui..."
-      }
+   t1: [
+  {
+    id: "t1_q1",
+    type: "mcq",
+    points: 1,
+    prompt: "Qual é o objetivo principal da sondagem no atendimento?",
+    options: [
+      "Falar mais que o cliente para convencer",
+      "Descobrir a necessidade real do cliente",
+      "Encerrar rápido para ganhar volume",
+      "Evitar perguntas para não parecer invasivo"
+    ],
+    correctIndex: 1
+  },
+  {
+    id: "t1_q2",
+    type: "mcq",
+    points: 1,
+    prompt: "Qual destas atitudes aumenta a confiança do cliente logo no início?",
+    options: [
+      "Prometer aprovação antes de entender o caso",
+      "Falar acelerado para mostrar domínio",
+      "Explicar o próximo passo com clareza e segurança",
+      "Pedir documentos antes de se apresentar"
+    ],
+    correctIndex: 2
+  },
+  {
+    id: "t1_q3",
+    type: "mcq",
+    points: 1,
+    prompt: "Quando o cliente diz 'vou pensar', qual é a melhor postura?",
+    options: [
+      "Encerrar imediatamente e esperar ele voltar",
+      "Pressionar com urgência sem ouvir o motivo",
+      "Perguntar o que exatamente ele precisa analisar e orientar",
+      "Ignorar e mudar o assunto"
+    ],
+    correctIndex: 2
+  },
+  {
+    id: "t1_q4",
+    type: "mcq",
+    points: 1,
+    prompt: "O que caracteriza uma argumentação forte?",
+    options: [
+      "Falar alto e com emoção",
+      "Dar muitos detalhes técnicos sem necessidade",
+      "Conectar benefício com a dor/necessidade do cliente",
+      "Repetir a oferta várias vezes"
+    ],
+    correctIndex: 2
+  },
+  {
+    id: "t1_q5",
+    type: "mcq",
+    points: 1,
+    prompt: "Qual é a função da validação antes de responder uma objeção?",
+    options: [
+      "Concordar com tudo que o cliente fala",
+      "Aumentar o tempo da ligação",
+      "Reduzir resistência e abrir espaço para o argumento",
+      "Encerrar a objeção rapidamente"
+    ],
+    correctIndex: 2
+  },
 
+  {
+    id: "t1_q6",
+    type: "text",
+    points: 1,
+    prompt: "Explique em 1 frase o que significa 'mentalidade de dono' na operação.",
+    rubric: {
+      mustHaveAny: [
+        ["responsabilidade", "responsavel"],
+        ["resultado", "meta", "performance"],
+        ["execucao", "agir", "proatividade", "fazer acontecer"]
+      ],
+      minHits: 2
+    },
+    placeholder: "Ex: assumir responsabilidade pelo resultado e executar sem desculpas..."
+  },
+  {
+    id: "t1_q7",
+    type: "text",
+    points: 1,
+    prompt: "Em 1 frase, qual é a diferença entre 'atender' e 'conduzir' um atendimento?",
+    rubric: {
+      mustHaveAny: [
+        ["conduzir", "direcionar", "guiar", "controle"],
+        ["processo", "etapas", "fluxo"],
+        ["clareza", "objetivo", "fechamento", "conversao"]
+      ],
+      minHits: 2
+    },
+    placeholder: "Digite sua resposta..."
+  },
+
+  {
+    id: "t1_q8",
+    type: "mcq",
+    points: 1,
+    prompt: "Qual pergunta é mais forte para aprofundar a necessidade do cliente?",
+    options: [
+      "Você quer sim ou não?",
+      "Por que você está buscando isso agora?",
+      "Qual seu CPF?",
+      "Você já fez antes?"
+    ],
+    correctIndex: 1
+  },
+  {
+    id: "t1_q9",
+    type: "mcq",
+    points: 1,
+    prompt: "O que é 'controle de conversa' em vendas?",
+    options: [
+      "Não deixar o cliente falar",
+      "Conduzir a conversa com perguntas e próximos passos claros",
+      "Falar o roteiro sem adaptar",
+      "Encerrar quando o cliente questiona"
+    ],
+    correctIndex: 1
+  },
+  {
+    id: "t1_q10",
+    type: "mcq",
+    points: 1,
+    prompt: "Qual sinal indica que o cliente está mais pronto para avançar?",
+    options: [
+      "Ele faz perguntas de próximo passo (prazo, documentos, liberação)",
+      "Ele muda de assunto",
+      "Ele reclama do tempo",
+      "Ele fala que não confia em nada"
+    ],
+    correctIndex: 0
+  },
+
+  {
+    id: "t1_q11",
+    type: "text",
+    points: 1,
+    prompt: "Cite 2 pontos que tornam um atendimento 'profissional e confiável'.",
+    rubric: {
+      mustHaveAny: [
+        ["clareza", "objetivo", "explicar", "passo a passo"],
+        ["seguranca", "confiança", "autoridade", "postura"],
+        ["transparencia", "verdade", "sem promessa", "realismo"],
+        ["documentacao", "procedimento", "processo", "organizacao"]
+      ],
+      minHits: 2
+    },
+    placeholder: "Ex: clareza no processo + postura segura..."
+  },
+
+  {
+    id: "t1_q12",
+    type: "mcq",
+    points: 1,
+    prompt: "Qual destas é uma forma correta de lidar com objeção de confiança?",
+    options: [
+      "Ignorar e repetir o preço",
+      "Dizer 'confia em mim' sem prova",
+      "Validar a preocupação e explicar o procedimento/segurança do processo",
+      "Criticar outras empresas"
+    ],
+    correctIndex: 2
+  },
+  {
+    id: "t1_q13",
+    type: "mcq",
+    points: 1,
+    prompt: "Em uma operação de alta performance, o que vem antes da persuasão?",
+    options: [
+      "Pressa",
+      "Clareza de processo e diagnóstico",
+      "Piadas para quebrar gelo",
+      "Desconto"
+    ],
+    correctIndex: 1
+  },
+
+  {
+    id: "t1_q14",
+    type: "text",
+    points: 1,
+    prompt: "Escreva um micro-argumento (1–2 frases) para quando o cliente disser: 'tá caro'.",
+    rubric: {
+      mustHaveAny: [
+        ["entendo", "compreendo", "faz sentido"], // validação
+        ["valor", "beneficio", "resultado", "vantagem"], // valor
+        ["comparar", "custo", "investimento"], // reenquadramento
+        ["passo", "processo", "proximo", "garantia"] // segurança
+      ],
+      minHits: 2
+    },
+    placeholder: "Digite seu micro-argumento..."
+  },
+  {
+    id: "t1_q15",
+    type: "text",
+    points: 1,
+    prompt: "Em 1 frase, qual é o objetivo de um 'próximo passo' bem definido no atendimento?",
+    rubric: {
+      mustHaveAny: [
+        ["clareza", "objetivo"],
+        ["avancar", "seguir", "proximo passo"],
+        ["fechamento", "conversao", "decisao"],
+        ["compromisso", "alinhamento"]
+      ],
+      minHits: 2
+    },
+    placeholder: "Digite sua resposta..."
+  }
+]
       // ✅ COPIE/COLE MAIS QUESTÕES ATÉ CHEGAR EM 15 (ou a quantidade que quiser)
       // Não precisa mudar mais nada no código.
     ]
