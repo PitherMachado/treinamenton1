@@ -38,6 +38,7 @@
           controlsList="nodownload noplaybackrate noremoteplayback"
           disablepictureinpicture
         >
+          <!-- VIDEO OFICIAL -->
           <source src="../../assets/videos/t1.mp4" type="video/mp4" />
           Seu navegador não suporta vídeo HTML5.
         </video>
@@ -55,25 +56,26 @@
 
   <script>
     const TEST_ID = "t1";
+
     const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
     const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`;
     const KEY_DONE    = `n1_tests_${TEST_ID}_done_v1`;
 
-    const video = document.getElementById("testVideo");
-    const btnGo = document.getElementById("btnGo");
-    const warn  = document.getElementById("warn");
+    const video  = document.getElementById("testVideo");
+    const btnGo  = document.getElementById("btnGo");
+    const warn   = document.getElementById("warn");
 
     document.getElementById("logout").onclick = () => {
       window.N1TestAuth.logout();
       window.location.replace(window.N1TestAuth.getLoginUrl());
     };
 
-    // Se já finalizou, não volta para vídeo
+    // Se já concluiu a prova, não deixa voltar pro vídeo
     if (localStorage.getItem(KEY_DONE) === "1") {
       window.location.replace("../index.html");
     }
 
-    // Marca started SOMENTE quando clicar pra avançar
+    // Marca started SOMENTE quando clicar no botão
     btnGo.addEventListener("click", () => {
       localStorage.setItem(KEY_STARTED, "1");
     });
@@ -112,17 +114,17 @@
       }
     });
 
-    // Final do vídeo -> libera botão
+    // Final -> libera botão
     video.addEventListener("ended", () => {
       localStorage.setItem(KEY_WATCHED, "1");
       btnGo.style.display = "inline-flex";
       warn.textContent = "✅ Vídeo concluído. Você já pode acessar seu teste.";
     });
 
-    // Já assistiu -> libera botão
+    // Se já assistiu -> libera botão
     if (localStorage.getItem(KEY_WATCHED) === "1") {
       btnGo.style.display = "inline-flex";
-      warn.textContent = "✅ Vídeo já concluído anteriormente. Você pode acessar seu teste.";
+      warn.textContent = "✅ Vídeo já concluído anteriormente. Você pode acessar o teste.";
     }
   </script>
 
