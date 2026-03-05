@@ -56,7 +56,11 @@
       containerId: "testRoot",
       redirectOnMissingVideo: "./video.html",
       redirectOnDone: "../index.html",
-      allowBackQuestions: false
+      allowBackQuestions: false,
+
+      // (NOVO) identifica aluno + envia para planilha
+      user: (window.N1TestAuth && window.N1TestAuth.getUser) ? window.N1TestAuth.getUser() : null,
+      reportUrl: "COLE_AQUI_O_URL_DO_APPS_SCRIPT"
     });
   </script>
 
