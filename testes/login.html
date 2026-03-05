@@ -2,27 +2,155 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
   <title>Login • Área de Testes</title>
+  <meta name="description" content="Login exclusivo para avaliações e testes." />
   <link rel="stylesheet" href="../style.css" />
+
+  <!-- Estilo local (não mexe no style.css) -->
+  <style>
+    .login-shell{
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 22px 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-shell::before{
+      content:"";
+      position:absolute;
+      inset:-20%;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(124,58,237,.25), transparent 45%),
+        radial-gradient(circle at 80% 30%, rgba(59,130,246,.18), transparent 45%),
+        radial-gradient(circle at 40% 80%, rgba(236,72,153,.10), transparent 55%);
+      filter: blur(0px);
+      pointer-events:none;
+    }
+    .login-shell::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,.45));
+      pointer-events:none;
+    }
+    .login-card{
+      width: min(520px, 100%);
+      padding: 20px;
+      border-radius: 18px;
+      position: relative;
+      z-index: 1;
+    }
+    .login-head{
+      margin-bottom: 14px;
+    }
+    .login-title{
+      margin: 0;
+      font-size: clamp(22px, 3vw, 30px);
+      letter-spacing: .2px;
+    }
+    .login-sub{
+      margin: 8px 0 0;
+      opacity: .85;
+      line-height: 1.35;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-top:12px;
+    }
+    .field label{
+      opacity:.9;
+      font-weight:600;
+      font-size:.95rem;
+    }
+    .field input{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      color: inherit;
+      outline: none;
+    }
+    .field input:focus{
+      border-color: rgba(124,58,237,.55);
+      box-shadow: 0 0 0 3px rgba(124,58,237,.18);
+    }
+    .actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-top:14px;
+    }
+    .btn-fallback{
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: inherit;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .hint{
+      margin: 12px 0 0;
+      opacity: .75;
+      font-size: .92rem;
+    }
+    .msg{
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      display:none;
+    }
+    .msg.err{
+      display:block;
+      border-color: rgba(239,68,68,.35);
+      background: rgba(239,68,68,.10);
+    }
+    .msg.ok{
+      display:block;
+      border-color: rgba(34,197,94,.35);
+      background: rgba(34,197,94,.10);
+    }
+    .mini{
+      margin-top:12px;
+      opacity:.7;
+      font-size:.88rem;
+    }
+  </style>
 </head>
+
 <body>
+  <main class="login-shell">
+    <section class="card login-card">
+      <div class="login-head">
+        <h1 class="login-title">Área de Testes</h1>
+        <p class="login-sub">Login exclusivo para avaliações. Seu acesso aqui é separado do Portal/Treinamento.</p>
+      </div>
 
-  <!-- se você tem topbar padrão, pode reutilizar, mas SEM botões do portal -->
-  <main class="wrap">
-    <section class="card">
-      <h1>Área de Testes</h1>
-      <p>Login exclusivo para avaliações.</p>
+      <form id="f" autocomplete="on">
+        <div class="field">
+          <label for="u">Usuário</label>
+          <input id="u" autocomplete="username" required />
+        </div>
 
-      <form id="f">
-        <label>Usuário</label>
-        <input id="u" autocomplete="username" required />
+        <div class="field">
+          <label for="p">Senha</label>
+          <input id="p" type="password" autocomplete="current-password" required />
+        </div>
 
-        <label>Senha</label>
-        <input id="p" type="password" autocomplete="current-password" required />
+        <div class="actions">
+          <!-- Se o seu CSS tiver .btn e .btn-primary, vai usar. Se não tiver, cai no fallback. -->
+          <button id="btn" class="btn btn-primary" type="submit">Entrar</button>
+        </div>
 
-        <button class="btn primary" type="submit">Entrar</button>
-        <p id="msg" style="opacity:.85;margin-top:10px;"></p>
+        <div id="msg" class="msg"></div>
+        <p class="mini">⚠️ Ao finalizar um teste, não existe nova tentativa.</p>
       </form>
     </section>
   </main>
@@ -30,20 +158,42 @@
   <script src="../assets/js/users-tests.js"></script>
   <script src="../assets/js/testes-auth.js"></script>
   <script>
+    // Fallback se não existir .btn/.btn-primary no seu CSS
+    (function(){
+      const b = document.getElementById("btn");
+      const cs = window.getComputedStyle(b);
+      // se o botão estiver "sem estilo", aplica fallback
+      const tooPlain = (cs.backgroundColor === "rgba(0, 0, 0, 0)" && cs.borderStyle === "none");
+      if (tooPlain) b.className = "btn-fallback";
+    })();
+
+    // Se já estiver logado, manda direto para a área
+    if (window.N1TestAuth && window.N1TestAuth.isAuthed()) {
+      window.location.replace("./index.html");
+    }
+
     const f = document.getElementById("f");
     const msg = document.getElementById("msg");
 
+    function showMsg(text, type){
+      msg.textContent = text;
+      msg.className = "msg " + (type || "");
+    }
+
     f.addEventListener("submit", (e)=>{
       e.preventDefault();
-      msg.textContent = "";
+      showMsg("", "");
+
       const u = document.getElementById("u").value.trim();
       const p = document.getElementById("p").value;
 
       const res = window.N1TestAuth.login(u,p);
       if(!res.ok){
-        msg.textContent = res.message;
+        showMsg(res.message || "Falha no login.", "err");
         return;
       }
+
+      showMsg("✅ Login efetuado. Redirecionando...", "ok");
       window.location.replace("./index.html");
     });
   </script>
