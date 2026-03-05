@@ -44,6 +44,7 @@
   <script>
     const TEST_ID = "t1";
     const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
+    const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`;
     const KEY_DONE    = `n1_tests_${TEST_ID}_done_v1`;
 
     const btnStart = document.getElementById("btnStart");
@@ -65,6 +66,11 @@
       msg.textContent = "⛔ Este teste já foi finalizado. Você não possui nova tentativa.";
       setTimeout(() => window.location.replace("../index.html"), 2000);
     }
+
+    // Só marca started no clique (evita loop)
+    btnStart.addEventListener("click", () => {
+      localStorage.setItem(KEY_STARTED, "1");
+    });
   </script>
 
 </body>
