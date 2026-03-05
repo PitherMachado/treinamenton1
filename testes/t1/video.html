@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -63,7 +62,7 @@
     // ===== CONFIG DO TESTE =====
     const TEST_ID = "t1";
     const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
-    const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`; // opcional
+    const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`; // iniciou fluxo de prova (não volta mais pro vídeo)
     const KEY_DONE    = `n1_tests_${TEST_ID}_done_v1`;    // prova finalizada
 
     // ===== UI =====
@@ -72,25 +71,32 @@
     const warn  = document.getElementById("warn");
     const logout = document.getElementById("logout");
 
+    // Logout: volta sempre para o login correto (independente da pasta)
     logout.onclick = () => {
       window.N1TestAuth.logout();
-      window.location.replace("../login.html");
+      window.location.replace(window.N1TestAuth.getLoginUrl());
     };
 
-    // ===== BLOQUEIO: se prova já foi finalizada, não deixa voltar pro vídeo =====
-    // (isso impede reabrir o vídeo depois de finalizar)
+    // ===== BLOQUEIO 1: se prova já foi finalizada, não deixa voltar pro vídeo =====
     if (localStorage.getItem(KEY_DONE) === "1") {
-      // manda direto pro hub (ou poderia mandar pra tela final, se existir)
       window.location.replace("../index.html");
     }
 
+    // ===== BLOQUEIO 2: se já iniciou o fluxo de prova, não permite voltar ao vídeo =====
+    if (localStorage.getItem(KEY_STARTED) === "1" && localStorage.getItem(KEY_DONE) !== "1") {
+      window.location.replace("./iniciar.html");
+    }
+
+    // Quando clicar para ir ao teste, marcamos "started"
+    btnGo.addEventListener("click", () => {
+      localStorage.setItem(KEY_STARTED, "1");
+    });
+
     // ===== ANTI-SEEK (não avançar e não retroceder) =====
-    // Guardamos o maior tempo permitido (progresso real)
     let allowedTime = 0;
     let lastTime = 0;
     let ready = false;
 
-    // Em conexões lentas, metadata pode demorar — só ativa após carregar.
     video.addEventListener("loadedmetadata", () => {
       ready = true;
       allowedTime = 0;
@@ -98,34 +104,24 @@
       warn.textContent = "";
     });
 
-    // Atualiza progresso real
     video.addEventListener("timeupdate", () => {
       if (!ready) return;
-
-      // allowedTime cresce conforme assiste
       if (video.currentTime > allowedTime) allowedTime = video.currentTime;
       lastTime = video.currentTime;
     });
 
-    // Bloqueia qualquer tentativa de pular
     video.addEventListener("seeking", () => {
       if (!ready) return;
 
-      // Se tentou ir para qualquer ponto diferente do lastTime/allowedTime, força voltar
       const diff = Math.abs(video.currentTime - lastTime);
-
-      // tolerância pequena por variações do browser
       const tolerance = 0.35;
 
-      // Se o usuário tentou mexer na barra, cai aqui
       if (diff > tolerance) {
         warn.textContent = "⛔ Não é permitido avançar ou voltar o vídeo.";
-        // Volta para o último tempo permitido
         video.currentTime = allowedTime;
       }
     });
 
-    // Bloqueia mudança de velocidade (caso o navegador permita)
     video.addEventListener("ratechange", () => {
       if (video.playbackRate !== 1) {
         video.playbackRate = 1;
@@ -145,9 +141,6 @@
       btnGo.style.display = "inline-flex";
       warn.textContent = "✅ Vídeo já concluído anteriormente. Você pode acessar o teste.";
     }
-
-    // ===== Proteção extra: se tentar sair e voltar, não reinicia o vídeo do meio =====
-    // (opcional: se quiser forçar reinício do zero sempre, me avisa)
   </script>
 </body>
 </html>
