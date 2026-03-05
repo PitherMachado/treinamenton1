@@ -1,231 +1,186 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
-  <title>Teste 1 • Vídeo Obrigatório</title>
-  <meta name="description" content="Assista ao vídeo obrigatório para liberar o teste." />
-  <link rel="stylesheet" href="../../style.css" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
+<title>Teste 1 • Vídeo Obrigatório</title>
+<meta name="description" content="Assista ao vídeo obrigatório para liberar o teste." />
+<link rel="stylesheet" href="../../style.css" />
 </head>
 
 <body>
 
-  <!-- Guard: exige login específico da área de testes -->
-  <script src="../../assets/js/testes-auth.js"></script>
-  <script>window.N1TestAuth.guard();</script>
+<script src="../../assets/js/testes-auth.js"></script>
+<script>window.N1TestAuth.guard();</script>
 
-  <main class="wrap">
-    <header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
-      <div>
-        <h1 style="margin:0;">Teste 1</h1>
-        <p style="opacity:.85;margin:6px 0 0;">
-          Vídeo obrigatório — ao finalizar, o acesso ao teste será liberado.
-        </p>
-      </div>
+<main class="wrap">
 
-      <button class="btn" id="logout">Sair</button>
-    </header>
+<header class="row" style="justify-content:space-between;gap:12px;align-items:center;">
+<div>
+<h1 style="margin:0;">Teste 1</h1>
+<p style="opacity:.85;margin:6px 0 0;">
+Vídeo obrigatório — ao finalizar, o acesso ao teste será liberado.
+</p>
+</div>
 
-    <section class="card" style="margin-top:14px;">
+<button class="btn" id="logout">Sair</button>
+</header>
 
-      <h2 style="margin-top:0;">Assista até o final</h2>
+<section class="card" style="margin-top:14px;">
 
-      <p style="opacity:.85;margin-top:6px;">
-        O vídeo não permite avançar nem retroceder. Quando terminar, aparecerá o botão para acessar o teste.
-      </p>
+<h2 style="margin-top:0;">Assista até o final</h2>
 
-      <!-- PLAYER -->
-      <div style="margin-top:14px;">
+<p style="opacity:.85;margin-top:6px;">
+O vídeo não permite avançar nem retroceder. Quando terminar, aparecerá o botão para acessar o teste.
+</p>
 
-        <video
-          id="testVideo"
-          style="width:100%;border-radius:16px;outline:none;"
-          controls
-          playsinline
-          preload="metadata"
-          controlsList="nodownload noplaybackrate noremoteplayback"
-          disablepictureinpicture
-        >
+<div style="margin-top:14px;">
 
-          <!-- VIDEO REAL -->
-          <source src="../../assets/videos/t1.mp4" type="video/mp4" />
+<video
+id="testVideo"
+style="width:100%;border-radius:16px;outline:none;"
+controls
+playsinline
+preload="metadata"
+controlsList="nodownload noplaybackrate noremoteplayback"
+disablepictureinpicture
+>
 
-          Seu navegador não suporta vídeo HTML5.
+<source src="../../assets/videos/t1.mp4" type="video/mp4" />
 
-        </video>
+Seu navegador não suporta vídeo HTML5.
 
-      </div>
+</video>
 
-      <!-- BOTÃO LIBERADO SOMENTE AO FINAL -->
-      <div class="row" style="justify-content:flex-end;gap:10px;margin-top:14px;">
+</div>
 
-        <a
-          id="btnGo"
-          class="btn btn-primary"
-          href="./iniciar.html"
-          style="display:none;"
-        >
-          Boa sorte, acesse seu teste
-        </a>
+<div class="row" style="justify-content:flex-end;gap:10px;margin-top:14px;">
 
-      </div>
+<a
+id="btnGo"
+class="btn btn-primary"
+href="./iniciar.html"
+style="display:none;"
+>
+Boa sorte, acesse seu teste
+</a>
 
-      <p id="warn" style="opacity:.85;margin:10px 0 0;"></p>
+</div>
 
-    </section>
-  </main>
+<p id="warn" style="opacity:.85;margin:10px 0 0;"></p>
 
-  <script>
+</section>
+</main>
 
-    const TEST_ID = "t1";
+<script>
 
-    const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
-    const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`;
-    const KEY_DONE    = `n1_tests_${TEST_ID}_done_v1`;
+const TEST_ID = "t1";
 
-    const video = document.getElementById("testVideo");
-    const btnGo = document.getElementById("btnGo");
-    const warn  = document.getElementById("warn");
-    const logout = document.getElementById("logout");
+const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
+const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`;
+const KEY_DONE = `n1_tests_${TEST_ID}_done_v1`;
 
+const video = document.getElementById("testVideo");
+const btnGo = document.getElementById("btnGo");
+const warn = document.getElementById("warn");
+const logout = document.getElementById("logout");
 
+logout.onclick = () => {
+window.N1TestAuth.logout();
+window.location.replace(window.N1TestAuth.getLoginUrl());
+};
 
-    /* =========================
-       LOGOUT
-    ========================= */
+/* BLOQUEIOS */
 
-    logout.onclick = () => {
+if(localStorage.getItem(KEY_DONE) === "1"){
+window.location.replace("../index.html");
+}
 
-      window.N1TestAuth.logout();
-      window.location.replace(window.N1TestAuth.getLoginUrl());
+if(localStorage.getItem(KEY_STARTED) === "1"){
+window.location.replace("./iniciar.html");
+}
 
-    };
+/* BOTÃO */
 
+btnGo.addEventListener("click",()=>{
+localStorage.setItem(KEY_STARTED,"1");
+});
 
+/* ANTI SEEK */
 
-    /* =========================
-       BLOQUEIOS DE FLUXO
-    ========================= */
+let allowedTime=0;
+let lastTime=0;
+let ready=false;
 
-    if (localStorage.getItem(KEY_DONE) === "1") {
+video.addEventListener("loadedmetadata",()=>{
+ready=true;
+allowedTime=0;
+lastTime=0;
+warn.textContent="";
+});
 
-      window.location.replace("../index.html");
+video.addEventListener("timeupdate",()=>{
+if(!ready)return;
 
-    }
+if(video.currentTime>allowedTime){
+allowedTime=video.currentTime;
+}
 
-    if (localStorage.getItem(KEY_STARTED) === "1" &&
-        localStorage.getItem(KEY_DONE) !== "1") {
+lastTime=video.currentTime;
+});
 
-      window.location.replace("./iniciar.html");
+video.addEventListener("seeking",()=>{
 
-    }
+if(!ready)return;
 
+const diff=Math.abs(video.currentTime-lastTime);
+const tolerance=0.35;
 
+if(diff>tolerance){
 
-    btnGo.addEventListener("click", () => {
+warn.textContent="⛔ Não é permitido avançar ou voltar o vídeo.";
 
-      localStorage.setItem(KEY_STARTED, "1");
+video.currentTime=allowedTime;
 
-    });
+}
 
+});
 
+video.addEventListener("ratechange",()=>{
 
-    /* =========================
-       ANTI SEEK (anti avançar)
-    ========================= */
+if(video.playbackRate!==1){
 
-    let allowedTime = 0;
-    let lastTime = 0;
-    let ready = false;
+video.playbackRate=1;
 
-    video.addEventListener("loadedmetadata", () => {
+warn.textContent="⛔ Não é permitido acelerar o vídeo.";
 
-      ready = true;
-      allowedTime = 0;
-      lastTime = 0;
+}
 
-      warn.textContent = "";
+});
 
-    });
+/* FINAL DO VIDEO */
 
+video.addEventListener("ended",()=>{
 
-    video.addEventListener("timeupdate", () => {
+localStorage.setItem(KEY_WATCHED,"1");
 
-      if (!ready) return;
+btnGo.style.display="inline-flex";
 
-      if (video.currentTime > allowedTime) {
-        allowedTime = video.currentTime;
-      }
+warn.textContent="✅ Vídeo concluído. Você já pode acessar seu teste.";
 
-      lastTime = video.currentTime;
+});
 
-    });
+/* SE JÁ ASSISTIU */
 
+if(localStorage.getItem(KEY_WATCHED)==="1"){
 
+btnGo.style.display="inline-flex";
 
-    video.addEventListener("seeking", () => {
+warn.textContent="✅ Vídeo já concluído anteriormente.";
 
-      if (!ready) return;
+}
 
-      const diff = Math.abs(video.currentTime - lastTime);
-      const tolerance = 0.35;
-
-      if (diff > tolerance) {
-
-        warn.textContent = "⛔ Não é permitido avançar ou voltar o vídeo.";
-
-        video.currentTime = allowedTime;
-
-      }
-
-    });
-
-
-
-    video.addEventListener("ratechange", () => {
-
-      if (video.playbackRate !== 1) {
-
-        video.playbackRate = 1;
-
-        warn.textContent = "⛔ Não é permitido acelerar o vídeo.";
-
-      }
-
-    });
-
-
-
-    /* =========================
-       LIBERA TESTE AO FINAL
-    ========================= */
-
-    video.addEventListener("ended", () => {
-
-      localStorage.setItem(KEY_WATCHED, "1");
-
-      btnGo.style.display = "inline-flex";
-
-      warn.textContent = "✅ Vídeo concluído. Você já pode acessar seu teste.";
-
-    });
-
-
-
-    /* =========================
-       CASO JÁ TENHA ASSISTIDO
-    ========================= */
-
-    if (localStorage.getItem(KEY_WATCHED) === "1") {
-
-      btnGo.style.display = "inline-flex";
-
-      warn.textContent =
-      "✅ Vídeo já concluído anteriormente. Você pode acessar o teste.";
-
-    }
-
-  </script>
+</script>
 
 </body>
 </html>
