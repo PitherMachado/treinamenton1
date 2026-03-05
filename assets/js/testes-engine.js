@@ -248,9 +248,6 @@
     placeholder: "Digite sua resposta..."
   }
 ]
-      // ✅ COPIE/COLE MAIS QUESTÕES ATÉ CHEGAR EM 15 (ou a quantidade que quiser)
-      // Não precisa mudar mais nada no código.
-    ]
   };
 
   // Expor banco para você poder reaproveitar em outros arquivos se quiser
