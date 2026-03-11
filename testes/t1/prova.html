@@ -31,17 +31,14 @@
     const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
     const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`;
 
-    // Não deixa entrar na prova sem vídeo concluído
     if (localStorage.getItem(KEY_WATCHED) !== "1") {
       window.location.replace("./video.html");
     }
 
-    // Não deixa entrar na prova “no grito” sem passar pelo iniciar
     if (localStorage.getItem(KEY_STARTED) !== "1") {
       window.location.replace("./iniciar.html");
     }
 
-    // reforço (caso alguém caia aqui e volte)
     localStorage.setItem(KEY_STARTED, "1");
 
     document.getElementById("logout").onclick = () => {
