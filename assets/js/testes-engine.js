@@ -1,7 +1,7 @@
 /* N1 Tests Engine — wizard/scroll
    - Provas com MCQ + texto
    - Modo wizard (1 pergunta por tela) ou scroll (tudo de uma vez)
-   - Envio do resultado para Google Sheets com espera real da resposta
+   - Envio do resultado para Google Sheets via form hidden iframe
 */
 (() => {
   function escapeHtml(s) {
@@ -17,41 +17,46 @@
     try { return JSON.parse(s); } catch (e) { return null; }
   }
 
-  async function postResult(reportUrl, payload) {
-    if (!reportUrl) return { ok: false, error: "Sem reportUrl" };
-
-    try {
-      const resp = await fetch(reportUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=UTF-8"
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const text = await resp.text();
-
-      let json = null;
+  function postResult(reportUrl, payload) {
+    return new Promise((resolve) => {
       try {
-        json = JSON.parse(text);
-      } catch (e) {
-        json = { raw: text };
+        if (!reportUrl) {
+          resolve({ ok: false, error: "Sem reportUrl" });
+          return;
+        }
+
+        const iframeName = "n1_report_frame_" + Date.now();
+        const iframe = document.createElement("iframe");
+        iframe.name = iframeName;
+        iframe.style.display = "none";
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = reportUrl;
+        form.target = iframeName;
+        form.style.display = "none";
+
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "payload";
+        input.value = JSON.stringify(payload);
+
+        form.appendChild(input);
+        document.body.appendChild(iframe);
+        document.body.appendChild(form);
+
+        form.submit();
+
+        setTimeout(() => {
+          try { form.remove(); } catch (e) {}
+          try { iframe.remove(); } catch (e) {}
+          resolve({ ok: true, transport: "form-post" });
+        }, 1200);
+      } catch (err) {
+        console.error("Erro ao enviar resultado:", err);
+        resolve({ ok: false, error: String(err) });
       }
-
-      console.log("Resultado enviado para planilha:", json);
-
-      return {
-        ok: true,
-        status: resp.status,
-        data: json
-      };
-    } catch (err) {
-      console.error("Erro ao enviar resultado:", err);
-      return {
-        ok: false,
-        error: String(err)
-      };
-    }
+    });
   }
 
   const QUESTION_BANK = {
@@ -402,7 +407,7 @@
 
             setTimeout(() => {
               try { window.location.replace(redirectOnDone); } catch (e) {}
-            }, 2500);
+            }, 3000);
           };
         }
 
@@ -469,7 +474,7 @@
 
             setTimeout(() => {
               try { window.location.replace(redirectOnDone); } catch (e) {}
-            }, 2500);
+            }, 3000);
           });
         }
       }
