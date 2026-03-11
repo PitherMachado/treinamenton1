@@ -26,42 +26,42 @@
   </main>
 
   <script src="../../assets/js/testes-engine.js"></script>
-<script>
-  const TEST_ID = "t1";
-  const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
-  const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`;
+  <script>
+    const TEST_ID = "t1";
+    const KEY_WATCHED = `n1_tests_${TEST_ID}_watched_v1`;
+    const KEY_STARTED = `n1_tests_${TEST_ID}_started_v1`;
 
-  // Não deixa entrar na prova sem vídeo concluído
-  if (localStorage.getItem(KEY_WATCHED) !== "1") {
-    window.location.replace("./video.html");
-  }
+    // Não deixa entrar na prova sem vídeo concluído
+    if (localStorage.getItem(KEY_WATCHED) !== "1") {
+      window.location.replace("./video.html");
+    }
 
-  // Não deixa entrar na prova “no grito” sem passar pelo iniciar
-  if (localStorage.getItem(KEY_STARTED) !== "1") {
-    window.location.replace("./iniciar.html");
-  }
+    // Não deixa entrar na prova “no grito” sem passar pelo iniciar
+    if (localStorage.getItem(KEY_STARTED) !== "1") {
+      window.location.replace("./iniciar.html");
+    }
 
-  // reforço (caso alguém caia aqui e volte)
-  localStorage.setItem(KEY_STARTED, "1");
+    // reforço (caso alguém caia aqui e volte)
+    localStorage.setItem(KEY_STARTED, "1");
 
-  document.getElementById("logout").onclick = () => {
-    window.N1TestAuth.logout();
-    window.location.replace(window.N1TestAuth.getLoginUrl());
-  };
+    document.getElementById("logout").onclick = () => {
+      window.N1TestAuth.logout();
+      window.location.replace(window.N1TestAuth.getLoginUrl());
+    };
 
-  const REPORT_URL = "COLE_AQUI_A_URL_COPIADA_DO_APPS_SCRIPT";
+    const REPORT_URL = "https://script.google.com/macros/s/AKfycbytdHaTJyGfYSPvYvv-FqTH_W-ljK4PHCKOA1Z951N6Bh7iIjRZHLUV2GtNnrS79TGOfA/exec";
 
-  window.N1TestsEngine.mount({
-    testId: "t1",
-    minScore: 70,
-    mode: "wizard",
-    containerId: "testRoot",
-    redirectOnMissingVideo: "./video.html",
-    redirectOnDone: "../index.html",
-    allowBackQuestions: false,
-    reportUrl: REPORT_URL
-  });
-</script>
+    window.N1TestsEngine.mount({
+      testId: "t1",
+      minScore: 70,
+      mode: "wizard",
+      containerId: "testRoot",
+      redirectOnMissingVideo: "./video.html",
+      redirectOnDone: "../index.html",
+      allowBackQuestions: false,
+      reportUrl: REPORT_URL
+    });
+  </script>
   
 </body>
 </html>
