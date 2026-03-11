@@ -1,14 +1,9 @@
 /* N1 Tests Engine — wizard/scroll
    - Provas com MCQ + texto
    - Modo wizard (1 pergunta por tela) ou scroll (tudo de uma vez)
-
-   FIX (2026-03-05):
-   - No modo wizard, o "Finalizar" usava `session.answers` (estado antigo).
-     Agora sincroniza e corrige/gera relatório usando `answersNow` (estado atual).
-   - Proteção contra duplo clique no Finalizar.
+   - Envio do resultado para Google Sheets com espera real da resposta
 */
 (() => {
-  // ========= Helpers =========
   function escapeHtml(s) {
     return String(s ?? "")
       .replaceAll("&", "&amp;")
@@ -22,32 +17,43 @@
     try { return JSON.parse(s); } catch (e) { return null; }
   }
 
-function postResult(reportUrl, payload) {
-  if (!reportUrl) return;
+  async function postResult(reportUrl, payload) {
+    if (!reportUrl) return { ok: false, error: "Sem reportUrl" };
 
-  const data = JSON.stringify(payload);
+    try {
+      const resp = await fetch(reportUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=UTF-8"
+        },
+        body: JSON.stringify(payload)
+      });
 
-  // 1) Melhor caminho (não depende de CORS)
-  try {
-    if (navigator && typeof navigator.sendBeacon === "function") {
-      // text/plain evita preflight
-      const blob = new Blob([data], { type: "text/plain;charset=UTF-8" });
-      navigator.sendBeacon(reportUrl, blob);
-      return;
+      const text = await resp.text();
+
+      let json = null;
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        json = { raw: text };
+      }
+
+      console.log("Resultado enviado para planilha:", json);
+
+      return {
+        ok: true,
+        status: resp.status,
+        data: json
+      };
+    } catch (err) {
+      console.error("Erro ao enviar resultado:", err);
+      return {
+        ok: false,
+        error: String(err)
+      };
     }
-  } catch (e) { /* ignora */ }
+  }
 
-  // 2) Fallback: fetch sem headers + no-cors (evita preflight)
-  try {
-    fetch(reportUrl, {
-      method: "POST",
-      mode: "no-cors",
-      body: data
-    }).catch(function () { /* silencioso */ });
-  } catch (e) { /* silencioso */ }
-}
-
-  // ========= Banco de Questões =========
   const QUESTION_BANK = {
     t1: [
       {
@@ -251,23 +257,18 @@ function postResult(reportUrl, payload) {
     ]
   };
 
-  // Expor banco para reaproveitar
   window.N1TestsBank = QUESTION_BANK;
 
-  // ========= Engine =========
   const N1TestsEngine = {
     mount(config) {
       const cfg = config || {};
       const testId = cfg.testId;
       const minScore = cfg.minScore ?? 70;
-
-      const mode = (cfg.mode || "wizard").toLowerCase(); // "wizard" | "scroll"
+      const mode = (cfg.mode || "wizard").toLowerCase();
       const containerId = cfg.containerId || "testRoot";
-
       const redirectOnMissingVideo = cfg.redirectOnMissingVideo || "./video.html";
       const redirectOnDone = cfg.redirectOnDone || "./index.html";
-
-      const allowBackQuestions = !!cfg.allowBackQuestions; // padrão: false (mais rígido)
+      const allowBackQuestions = !!cfg.allowBackQuestions;
       const sessionKey = `n1_tests_${testId}_session_v1`;
 
       if (!testId) throw new Error("N1TestsEngine.mount: testId é obrigatório.");
@@ -284,7 +285,6 @@ function postResult(reportUrl, payload) {
       const KEY_DONE = `n1_tests_${testId}_done_v1`;
       const KEY_RESULT = `n1_tests_${testId}_result_v1`;
 
-      // se já concluiu
       const done = localStorage.getItem(KEY_DONE) === "1";
       if (done) {
         const saved = safeParse(localStorage.getItem(KEY_RESULT));
@@ -293,12 +293,9 @@ function postResult(reportUrl, payload) {
         return;
       }
 
-      // sessão atual do wizard
       const session = safeParse(sessionStorage.getItem(sessionKey)) || { i: 0, answers: {} };
 
-      // bloqueio se sem vídeo (opcional, mas aqui respeita seu HTML)
       if (cfg.requireVideo && cfg.requireVideo === true) {
-        // você controla fora, mas mantém compatível
         if (cfg.videoKey && localStorage.getItem(cfg.videoKey) !== "1") {
           window.location.replace(redirectOnMissingVideo);
           return;
@@ -309,25 +306,20 @@ function postResult(reportUrl, payload) {
 
       const renderStep = () => {
         const total = questions.length;
-
-        // estado mutável (sempre “fonte da verdade”)
         const state = safeParse(sessionStorage.getItem(sessionKey)) || session;
         state.i = Number.isFinite(state.i) ? state.i : 0;
         state.answers = state.answers || {};
 
         const i = Math.min(Math.max(state.i, 0), total - 1);
-
         const q = questions[i];
         const stepHost = container.querySelector("[data-step-host]");
         if (!stepHost) return;
 
         stepHost.innerHTML = this._renderQuestion({ testId, q, index: i, total });
 
-        // progress
         const prog = container.querySelector("[data-progress]");
         if (prog) prog.style.width = `${Math.round(((i + 1) / total) * 100)}%`;
 
-        // bind
         const btnNext = container.querySelector("[data-next]");
         const btnBack = container.querySelector("[data-back]");
         const btnFinish = container.querySelector("[data-finish]");
@@ -346,10 +338,7 @@ function postResult(reportUrl, payload) {
           const ans = this._collectSingleAnswer({ q, root: stepHost });
           if (ans === null) return false;
           state.answers[q.id] = ans;
-
-          // sincroniza também no objeto "session" (evita estado antigo na correção final)
           try { session.answers = state.answers; } catch (e) {}
-
           sessionStorage.setItem(sessionKey, JSON.stringify(state));
           return true;
         };
@@ -367,13 +356,16 @@ function postResult(reportUrl, payload) {
 
         if (btnFinish) {
           btnFinish.style.display = (i === total - 1) ? "" : "none";
-          btnFinish.onclick = () => {
+          btnFinish.onclick = async () => {
             if (btnFinish.dataset && btnFinish.dataset.busy === "1") return;
 
             const ok = saveCurrent();
             if (!ok) return;
 
-            try { btnFinish.dataset.busy = "1"; btnFinish.disabled = true; } catch (e) {}
+            try {
+              btnFinish.dataset.busy = "1";
+              btnFinish.disabled = true;
+            } catch (e) {}
 
             const answersNow = (state && state.answers) ? state.answers : (session && session.answers ? session.answers : {});
             const result = this._grade({ questions, answers: answersNow, minScore });
@@ -393,25 +385,27 @@ function postResult(reportUrl, payload) {
               scorePercent: result.scorePercent,
               passed: result.passed,
               breakdown: result.breakdown,
-              answers: answersNow
+              answers: answersNow,
+              origin: window.location.origin,
+              page: window.location.href,
+              userAgent: navigator.userAgent
             };
 
             localStorage.setItem(KEY_RESULT, JSON.stringify(reportPayload));
-            postResult(postResultUrl, reportPayload);
 
-            // limpa sessão (pra não tentar reabrir)
+            const sendResult = await postResult(postResultUrl, reportPayload);
+            console.log("Retorno do envio:", sendResult);
+
             sessionStorage.removeItem(sessionKey);
 
             container.innerHTML = this._renderResult({ result, minScore });
 
-            // redirect opcional
             setTimeout(() => {
               try { window.location.replace(redirectOnDone); } catch (e) {}
-            }, 1200);
+            }, 2500);
           };
         }
 
-        // (opcional) Enter = next / finish
         stepHost.addEventListener("keydown", (ev) => {
           if (ev.key !== "Enter") return;
           const isText = !!stepHost.querySelector("textarea, input[type=text]");
@@ -422,18 +416,16 @@ function postResult(reportUrl, payload) {
         }, { once: true });
       };
 
-      // shell do wizard
       if (mode === "wizard") {
         container.innerHTML = this._renderWizardShell({ testId, questions, minScore, allowBackQuestions });
       } else {
         container.innerHTML = this._renderScrollShell({ testId, questions, minScore });
         const form = container.querySelector("form");
         if (form) {
-          form.addEventListener("submit", (ev) => {
+          form.addEventListener("submit", async (ev) => {
             ev.preventDefault();
             const { answers } = this._collectAnswersScroll({ testId, questions, form });
 
-            // valida: não pode ficar vazia em texto e mcq precisa marcar
             const invalid = questions.find((q) => {
               const a = answers[q.id];
               if (q.type === "mcq") return !a;
@@ -462,17 +454,22 @@ function postResult(reportUrl, payload) {
               scorePercent: result.scorePercent,
               passed: result.passed,
               breakdown: result.breakdown,
-              answers: answers
+              answers: answers,
+              origin: window.location.origin,
+              page: window.location.href,
+              userAgent: navigator.userAgent
             };
 
             localStorage.setItem(KEY_RESULT, JSON.stringify(reportPayload));
-            postResult(postResultUrl, reportPayload);
+
+            const sendResult = await postResult(postResultUrl, reportPayload);
+            console.log("Retorno do envio:", sendResult);
 
             container.innerHTML = this._renderResult({ result, minScore });
 
             setTimeout(() => {
               try { window.location.replace(redirectOnDone); } catch (e) {}
-            }, 1200);
+            }, 2500);
           });
         }
       }
@@ -481,7 +478,6 @@ function postResult(reportUrl, payload) {
       this._bindExitButton(container, redirectOnDone);
     },
 
-    // ========= UI Render =========
     _renderLocked(saved, minScore) {
       const pct = saved?.scorePercent ?? 0;
       const passed = !!saved?.passed;
@@ -584,7 +580,6 @@ function postResult(reportUrl, payload) {
         return `<div class="kv" style="gap:10px;">${opts}</div>`;
       }
 
-      // text
       const ph = q.placeholder || "Digite...";
       return `
         <div class="kv">
@@ -596,7 +591,6 @@ function postResult(reportUrl, payload) {
       `;
     },
 
-    // ========= Coleta =========
     _collectAnswersScroll({ testId, questions, form }) {
       const answers = {};
       questions.forEach((q) => {
@@ -633,7 +627,6 @@ function postResult(reportUrl, payload) {
       return v;
     },
 
-    // ========= Correção =========
     _grade({ questions, answers, minScore }) {
       let totalPoints = 0;
       let earnedPoints = 0;
@@ -681,7 +674,6 @@ function postResult(reportUrl, payload) {
       return hits >= (rubric.minHits ?? 2);
     },
 
-    // ========= Extras =========
     _bindExitButton(container, redirectOnDone) {
       const btnExit = document.getElementById("logout");
       if (!btnExit) return;
