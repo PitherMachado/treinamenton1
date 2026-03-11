@@ -2,5 +2,6 @@
 window.N1TestUsers = [
   // EXEMPLO — você troca e cria quantos quiser
   { user: "teste01", pass: "1234", name: "Aluno Teste 01" },
-  { user: "teste02", pass: "1234", name: "Aluno Teste 02" }
+  { user: "teste02", pass: "1234", name: "Aluno Teste 02" },
+  { user: "PitherN1", pass: "1234", name: "Pither Machado" }
 ];
